@@ -119,5 +119,7 @@ InitTestScene*.unity*
 /*.txt
 /*.ps1
 /AGENTS.md
+/[Aa]ssets/_Recovery/
+
 
 
