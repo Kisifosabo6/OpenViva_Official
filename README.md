@@ -54,17 +54,25 @@ The following dependencies are third-party paid, proprietary, or subject to redi
 * **Skybox Texture Pack (`Assets/Plugins/Fantasy Skybox FREE`):**
   * *Type:* Unity Asset Store EULA asset (redistribution restricted even if free on store).
   * *TODO: Fetching/building free replacements* (procedural day-night cycle shaders / CC0 public domain textures).
-* **Character IP, Meshes & Voice Lines (Shinobu / Monogatari):**
-  * *Type:* Legacy fan-game assets extracted from older Viva Project builds (`Assets/Imported/Shinobu`, character audio clips).
+* **Character IP, Meshes & Voice Lines:**
+  * *Type:* Legacy fan-game assets extracted from older builds or third-party franchises. Excluded from the repository (see detailed IP notice below).
   * *TODO: Fetching/building free replacements* (original community 3D character models, custom clothing cards, and open-source voice packs).
 * **Level & Prefab Painting Tooling (nTools / Prefab Painter):**
   * *Type:* Legacy commercial editor tool leftovers.
   * *TODO: Fetching/building free replacements* (Unity native Polybrush, Terrain Tools, and open-source editor utilities).
 
-## Copyrights
+## Licensing & Intellectual Property (IP)
 
-This repository is based on original Viva source code. Sir Hal shared
-it publicly and gave us permissions to do whatever we want with it.
-We decided to republish it under MIT licence. This repository does not
-include assets from Unity Asset Store that were present in original source
-code. We plan to find free alternatives for these assets or create our own.
+### Source Code
+This repository is based on the original Viva source code shared publicly by Sir Hal with permission to continue development. The source code, custom tools, and scripts developed by the OpenViva community are released under the [MIT License](LICENSE).
+
+### Character IP, Companion Models & Commercial Use Disclaimer
+While this repository is freely distributed under the **MIT License**, the MIT license inherently grants downstream developers the freedom to modify, redistribute, and even utilize the software for **commercial purposes**. 
+
+Because of this legal scope, **copyrighted character IP, meshes, models, and voice lines are intentionally omitted from this repository**:
+
+1. **Incompatible with Permissive Licensing:** Third-party character designs, likenesses, meshes, and voice clips (such as those inspired by or extracted from copyrighted franchises like *Monogatari* / *Shinobu*) are protected intellectual property. They cannot legally be re-licensed under an open-source permissive license such as MIT, nor can they be conveyed for commercial redistribution.
+2. **Preventing Downstream Legal Conflicts:** If copyrighted character assets were bundled directly into the MIT-licensed repository, downstream developers or creators utilizing the project under MIT terms could unknowingly face trademark and copyright infringement liabilities.
+3. **Framework-First Architecture:** OpenViva is designed as a modular character AI and interaction engine. The repository contains the core inverse kinematics, behavior state machines, shaders, and interaction mechanics. Developers and players are expected to provide their own original humanoid models (e.g., custom VRoid models, original Blender rigs) and voice packs.
+4. **Commercial Compliance Notice:** Anyone forking, adapting, or creating commercial products based on OpenViva is strictly responsible for providing 100% original, appropriately licensed, or royalty-free 3D character models, textures, animations, audio, and plugins.
+
