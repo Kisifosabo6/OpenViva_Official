@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.XR.CoreUtils;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.InputSystem.XR;
@@ -19,8 +20,10 @@ public class PlayerSwitchInputMode : MonoBehaviour
 
     [Header("KB Components:")]
     [SerializeField] private PlayerController _playerController;
+    [SerializeField] private Camera _cameraKB;
 
     private InputSystemUIInputModule _UIInputModule;
+    private StandaloneInputModule _standaloneInputModule;
 
     [Header("VR Components:")]
     [SerializeField] private InputActionManager _XRInputActionMananger;
@@ -64,6 +67,11 @@ public class PlayerSwitchInputMode : MonoBehaviour
     private void Awake()
     {
         _UIInputModule = _eventSystem.GetComponent<InputSystemUIInputModule>();
+        _standaloneInputModule = _eventSystem.GetComponent<StandaloneInputModule>();
+        if (_standaloneInputModule == null)
+        {
+            _standaloneInputModule = _eventSystem.AddComponent<StandaloneInputModule>();
+        }
 
         _XRUIInputModule = _eventSystem.GetComponent<XRUIInputModule>();
         _XROrigin = GetComponent<XROrigin>();
@@ -80,6 +88,16 @@ public class PlayerSwitchInputMode : MonoBehaviour
         _rightWristOriginalPosition = _rightWrist.transform.localPosition;
         _leftWristOriginalRotation = _leftWrist.transform.localRotation;
         _rightWristOriginalRotation = _rightWrist.transform.localRotation;
+
+        if (_cameraKB == null && _playerController != null)
+        {
+            _cameraKB = _playerController.GetComponentInChildren<Camera>(true);
+        }
+        if (_cameraKB == null)
+        {
+            var kbGo = GameObject.Find("Main Camera KB");
+            if (kbGo != null) _cameraKB = kbGo.GetComponent<Camera>();
+        }
     }
 
     private void OnEnable()
@@ -127,7 +145,14 @@ public class PlayerSwitchInputMode : MonoBehaviour
     {
         // KB Components
         _playerController.enabled = !_VRActive;
-        _UIInputModule.enabled = !_VRActive;
+        if (_UIInputModule != null)
+        {
+            _UIInputModule.enabled = !_VRActive;
+        }
+        if (_standaloneInputModule != null)
+        {
+            _standaloneInputModule.enabled = false;
+        }
 
         // VR Components
         _XRUIInputModule.enabled = _VRActive;
@@ -152,6 +177,9 @@ public class PlayerSwitchInputMode : MonoBehaviour
 
         if (_VRActive)
         {
+            if (_mainCamera != null) _mainCamera.tag = "MainCamera";
+            if (_cameraKB != null) _cameraKB.tag = "Untagged";
+
             _mainCamera.localPosition = Vector3.zero;
 
             _leftWrist.transform.SetParent(_cameraOffset.transform);
@@ -164,6 +192,9 @@ public class PlayerSwitchInputMode : MonoBehaviour
         }
         else
         {
+            if (_mainCamera != null) _mainCamera.tag = "Untagged";
+            if (_cameraKB != null) _cameraKB.tag = "MainCamera";
+
             _mainCamera.localPosition = Vector3.up * 1.65f;
 
             _leftWrist.transform.SetParent(_playerArmature.transform);

@@ -1,0 +1,567 @@
+﻿#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+/// <summary>
+/// Full desktop (KB&M) interaction controller. Handles all non-VR hand interactions:
+/// - LMB/RMB: grab/drop items (toggle mode, like old system)
+/// - E: interact with world objects (doors, buttons, NPCs)
+/// - Q: toggle bag open/close
+/// - Scroll: extend/retract hands
+/// - Crosshair-based item detection (raycast from camera center)
+/// - Item held in hand stays locked relative to head (like old freezeKeyboardLocalPosition)
+/// - HUD hints for available actions
+///
+/// Replaces: PlayerKB_GrabObject (per-item), parts of PlayerKB_BasicActions (scroll),
+///           and adds missing interact/use/gesture functionality.
+/// </summary>
+public class PlayerKB_GrabController : MonoBehaviour
+{
+    [Header("Hand References")]
+    [Tooltip("HandGrabSystem on the left hand")]
+    public HandGrabSystem leftHand;
+    [Tooltip("HandGrabSystem on the right hand")]
+    public HandGrabSystem rightHand;
+
+    [Header("Hand Driver")]
+    [Tooltip("Controls desktop hand positioning (extend/retract, head-lock)")]
+    public DesktopHandDriver handDriver;
+
+    [Header("Hand Animators (Optional)")]
+    public HandAnimator leftHandAnimator;
+    public HandAnimator rightHandAnimator;
+
+    [Header("Grab Detection")]
+    [Tooltip("Camera used for screen-center raycasting")]
+    public Camera playerCamera;
+    [Tooltip("Max raycast distance from camera for grab/interact detection")]
+    public float cameraReachDistance = 2.5f;
+    [Tooltip("Layer mask for grabbable objects")]
+    public LayerMask grabLayerMask = ~0;
+    [Tooltip("Layer mask for interactable objects (doors, buttons, etc.)")]
+    public LayerMask interactLayerMask = ~0;
+
+    [Header("Physical Hand Proximity & Reach")]
+    [Tooltip("Maximum physical distance between hand grip point and object surface to allow grab")]
+    public float maxHandReachDistance = 0.65f;
+    [Tooltip("Layer mask for solid obstacles (walls, doors, floors) blocking line of sight")]
+    public LayerMask obstacleLayerMask = ~0;
+
+    [Header("HUD")]
+    public HintManager hintManager;
+
+    [Header("Crosshair")]
+    [Tooltip("Optional crosshair UI element — enabled when not in menu")]
+    public GameObject crosshairUI;
+
+    public static PlayerKB_GrabController Instance { get; private set; }
+
+    // Input — shared single instance
+    PlayerControls playerInput;
+
+    // Highlight tracking
+    GrabbableItem highlightedItem;
+    IInteractable highlightedInteractable;
+    string currentGrabPrompt;
+
+    // Interaction cooldown
+    float interactCooldown;
+
+    void Awake()
+    {
+        Instance = this;
+        playerInput = new PlayerControls();
+
+        // Grab bindings
+        playerInput.Viva.DesktopLeftGrab.performed += OnLeftGrab;
+        playerInput.Viva.DesktopRightGrab.performed += OnRightGrab;
+
+        // Interact (E key)
+        playerInput.Viva.UniversalInteract.performed += OnInteract;
+
+        // Scroll (hand extend/retract)
+        playerInput.Viva.ScrollUp.performed += OnScrollUp;
+        playerInput.Viva.ScrollDown.performed += OnScrollDown;
+    }
+
+    void OnEnable()
+    {
+        playerInput.Viva.Enable();
+        SubscribeToHands();
+    }
+
+    void OnDisable()
+    {
+        playerInput.Viva.Disable();
+        UnsubscribeFromHands();
+    }
+
+    /// <summary>
+    /// Re-subscribe in Start() in case references were set after OnEnable
+    /// (happens when components are added dynamically at runtime by bootstrap).
+    /// </summary>
+    void Start()
+    {
+        SubscribeToHands();
+    }
+
+    void SubscribeToHands()
+    {
+        // Avoid double-subscription
+        UnsubscribeFromHands();
+
+        if (leftHand != null)
+        {
+            leftHand.OnItemGrabbed += OnLeftHandGrabbed;
+            leftHand.OnItemReleased += OnLeftHandReleased;
+        }
+        if (rightHand != null)
+        {
+            rightHand.OnItemGrabbed += OnRightHandGrabbed;
+            rightHand.OnItemReleased += OnRightHandReleased;
+        }
+    }
+
+    void UnsubscribeFromHands()
+    {
+        if (leftHand != null)
+        {
+            leftHand.OnItemGrabbed -= OnLeftHandGrabbed;
+            leftHand.OnItemReleased -= OnLeftHandReleased;
+        }
+        if (rightHand != null)
+        {
+            rightHand.OnItemGrabbed -= OnRightHandGrabbed;
+            rightHand.OnItemReleased -= OnRightHandReleased;
+        }
+    }
+
+    void Update()
+    {
+        if (Globals.isMenuOpen)
+        {
+            if (crosshairUI != null && crosshairUI.activeSelf)
+                crosshairUI.SetActive(false);
+            return;
+        }
+
+        // Crosshair is disabled/hidden by default unless explicitly configured and enabled
+        if (interactCooldown > 0f)
+            interactCooldown -= Time.deltaTime;
+
+        UpdateCameraHighlight();
+    }
+
+    #region Input Handlers
+
+    void OnLeftGrab(InputAction.CallbackContext ctx)
+    {
+        if (Globals.isMenuOpen || leftHand == null) return;
+
+        if (leftHand.IsHolding)
+        {
+            // Toggle drop
+            leftHand.ReleaseItem(true);
+        }
+        else
+        {
+            TryGrabWithHand(leftHand);
+        }
+    }
+
+    void OnRightGrab(InputAction.CallbackContext ctx)
+    {
+        if (Globals.isMenuOpen || rightHand == null) return;
+
+        if (rightHand.IsHolding)
+        {
+            rightHand.ReleaseItem(true);
+        }
+        else
+        {
+            TryGrabWithHand(rightHand);
+        }
+    }
+
+    void TryGrabWithHand(HandGrabSystem hand)
+    {
+        if (hand == null || hand.IsHolding) return;
+
+        // 1. Try camera raycast target if THIS hand can physically reach it without wall obstruction
+        var target = GetLookedAtGrabbable();
+        if (target != null && CanHandReachItem(hand, target, out _))
+        {
+            hand.GrabItem(target);
+            return;
+        }
+
+        // 2. Proximity fallback: hand is touching/overlapping an item without camera aim
+        var nearby = hand.FindBestGrabbable();
+        if (nearby != null && CanHandReachItem(hand, nearby, out _))
+        {
+            hand.GrabItem(nearby);
+        }
+    }
+
+    void OnInteract(InputAction.CallbackContext ctx)
+    {
+        if (Globals.isMenuOpen) return;
+        if (interactCooldown > 0f) return;
+
+        // Try to interact with whatever we're looking at
+        if (highlightedInteractable != null)
+        {
+            highlightedInteractable.Interact(this.gameObject);
+            interactCooldown = 0.3f;
+            return;
+        }
+
+        // Also check for any Collider with IInteractable via raycast
+        if (playerCamera != null)
+        {
+            Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            if (Physics.Raycast(ray, out RaycastHit hit, cameraReachDistance, interactLayerMask))
+            {
+                var interactable = hit.collider.GetComponentInParent<IInteractable>();
+                if (interactable != null)
+                {
+                    interactable.Interact(this.gameObject);
+                    interactCooldown = 0.3f;
+                }
+            }
+        }
+    }
+
+    void OnScrollUp(InputAction.CallbackContext ctx)
+    {
+        if (Globals.isMenuOpen) return;
+        if (handDriver != null)
+            handDriver.ExtendHands();
+    }
+
+    void OnScrollDown(InputAction.CallbackContext ctx)
+    {
+        if (Globals.isMenuOpen) return;
+        if (handDriver != null)
+            handDriver.RetractHands();
+    }
+
+    #endregion
+
+    #region Physical Reach & Line of Sight Checks
+
+    /// <summary>
+    /// Checks whether a specific hand is physically close enough to reach an item and has clear line of sight.
+    /// </summary>
+    public bool CanHandReachItem(HandGrabSystem hand, GrabbableItem item, out float distance)
+    {
+        distance = float.MaxValue;
+        if (hand == null || hand.gripPoint == null || item == null) return false;
+
+        Vector3 handPos = hand.gripPoint.position;
+
+        var colliders = item.GetComponentsInChildren<Collider>();
+        if (colliders != null && colliders.Length > 0)
+        {
+            foreach (var col in colliders)
+            {
+                if (col == null || !col.enabled || col.isTrigger) continue;
+                Vector3 closest = GetClosestPointSafe(col, handPos);
+                float d = Vector3.Distance(handPos, closest);
+                if (d < distance) distance = d;
+            }
+        }
+
+        if (distance == float.MaxValue)
+        {
+            distance = Vector3.Distance(handPos, item.transform.position);
+        }
+
+        if (distance > maxHandReachDistance) return false;
+
+        return HasLineOfSight(handPos, item);
+    }
+
+    Vector3 GetClosestPointSafe(Collider col, Vector3 point)
+    {
+        if (col is BoxCollider || col is SphereCollider || col is CapsuleCollider)
+            return col.ClosestPoint(point);
+        if (col is MeshCollider mc)
+        {
+            if (mc.convex) return mc.ClosestPoint(point);
+            return col.bounds.ClosestPoint(point);
+        }
+        return col.bounds.ClosestPoint(point);
+    }
+
+    /// <summary>
+    /// Verifies there is no solid wall or obstacle between the hand position and the item surface.
+    /// </summary>
+    public bool HasLineOfSight(Vector3 handPos, GrabbableItem item)
+    {
+        if (item == null) return false;
+
+        Vector3 targetPoint = item.transform.position;
+        var cols = item.GetComponentsInChildren<Collider>();
+        if (cols != null && cols.Length > 0)
+        {
+            foreach (var col in cols)
+            {
+                if (col != null && col.enabled && !col.isTrigger)
+                {
+                    targetPoint = GetClosestPointSafe(col, handPos);
+                    break;
+                }
+            }
+        }
+
+        Vector3 toTarget = targetPoint - handPos;
+        float dist = toTarget.magnitude;
+        if (dist <= 0.05f) return true;
+
+        Vector3 dir = toTarget / dist;
+        float rayDist = Mathf.Max(0.01f, dist - 0.02f);
+        RaycastHit[] hits = Physics.RaycastAll(handPos, dir, rayDist, obstacleLayerMask, QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var hitCol = hits[i].collider;
+            if (hitCol == null) continue;
+
+            if (hitCol.transform.IsChildOf(item.transform) || hitCol.gameObject == item.gameObject)
+                continue;
+            if (hitCol.CompareTag("Player") || hitCol.GetComponentInParent<CharacterController>() != null)
+                continue;
+            if (hitCol.name.StartsWith("hand_") || hitCol.name.StartsWith("PhysicsHand_") || hitCol.name.StartsWith("wrist_"))
+                continue;
+            if (hitCol.transform.IsChildOf(transform))
+                continue;
+
+            // Blocked by a solid wall or obstacle!
+            return false;
+        }
+
+        return true;
+    }
+
+    #endregion
+
+    #region Camera-based detection (Desktop specific)
+
+    /// <summary>
+    /// Raycasts from screen center to find what grabbable item the player is looking at (unfiltered by hand reach).
+    /// </summary>
+    public GrabbableItem GetLookedAtGrabbable()
+    {
+        if (playerCamera == null) return null;
+
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        if (Physics.Raycast(ray, out RaycastHit hit, cameraReachDistance, ~0, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.collider.CompareTag("Player") || hit.collider.GetComponentInParent<CharacterController>() != null)
+                return null;
+
+            var item = HandGrabSystem.GetOrAddGrabbable(hit.collider.gameObject);
+            if (item != null && item.canBePickedUp && !item.IsHeld)
+                return item;
+        }
+        return null;
+    }
+
+    void UpdateCameraHighlight()
+    {
+        bool bothFull = (leftHand != null && leftHand.IsHolding) && (rightHand != null && rightHand.IsHolding);
+
+        GrabbableItem foundItem = null;
+        IInteractable foundInteractable = null;
+        string grabPrompt = null;
+
+        if (playerCamera != null)
+        {
+            Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            if (Physics.Raycast(ray, out RaycastHit hit, cameraReachDistance, ~0, QueryTriggerInteraction.Ignore))
+            {
+                if (!hit.collider.CompareTag("Player") && hit.collider.GetComponentInParent<CharacterController>() == null)
+                {
+                    // Check for grabbable items only if hands aren't both full
+                    if (!bothFull)
+                    {
+                        var item = HandGrabSystem.GetOrAddGrabbable(hit.collider.gameObject);
+                        if (item != null && item.canBePickedUp && !item.IsHeld)
+                        {
+                            // Physical proximity check: can either hand reach it without wall obstructions?
+                            bool leftCanReach = leftHand != null && !leftHand.IsHolding && CanHandReachItem(leftHand, item, out _);
+                            bool rightCanReach = rightHand != null && !rightHand.IsHolding && CanHandReachItem(rightHand, item, out _);
+
+                            if (leftCanReach && rightCanReach)
+                            {
+                                foundItem = item;
+                                grabPrompt = "[LMB] or [RMB]: Grab";
+                            }
+                            else if (leftCanReach)
+                            {
+                                foundItem = item;
+                                grabPrompt = "[LMB]: Grab";
+                            }
+                            else if (rightCanReach)
+                            {
+                                foundItem = item;
+                                grabPrompt = "[RMB]: Grab";
+                            }
+                        }
+                    }
+
+                    // Check for interactables if not grabbing
+                    if (foundItem == null)
+                    {
+                        foundInteractable = hit.collider.GetComponentInParent<IInteractable>();
+                    }
+                }
+            }
+        }
+
+        // Update item highlight & HUD hint
+        if (foundItem != highlightedItem)
+        {
+            if (highlightedItem != null)
+            {
+                highlightedItem.SetHighlight(false);
+                if (!string.IsNullOrEmpty(currentGrabPrompt))
+                {
+                    ClearHudHint(currentGrabPrompt);
+                    currentGrabPrompt = null;
+                }
+            }
+
+            highlightedItem = foundItem;
+
+            if (highlightedItem != null && !string.IsNullOrEmpty(grabPrompt))
+            {
+                highlightedItem.SetHighlight(true);
+                currentGrabPrompt = grabPrompt;
+                ShowHudHint(currentGrabPrompt);
+            }
+        }
+        else if (highlightedItem != null && currentGrabPrompt != grabPrompt)
+        {
+            if (!string.IsNullOrEmpty(currentGrabPrompt)) ClearHudHint(currentGrabPrompt);
+            currentGrabPrompt = grabPrompt;
+            if (!string.IsNullOrEmpty(currentGrabPrompt)) ShowHudHint(currentGrabPrompt);
+        }
+
+        // Update interactable highlight
+        if (foundInteractable != highlightedInteractable)
+        {
+            if (highlightedInteractable != null)
+                ClearHudHint("[E]: Interact");
+
+            highlightedInteractable = foundInteractable;
+
+            if (highlightedInteractable != null)
+                ShowHudHint("[E]: Interact");
+        }
+    }
+
+    #endregion
+
+    #region Grab/Release Callbacks
+
+    void OnLeftHandGrabbed(GrabbableItem item)
+    {
+        if (!string.IsNullOrEmpty(currentGrabPrompt))
+        {
+            ClearHudHint(currentGrabPrompt);
+            currentGrabPrompt = null;
+        }
+        ShowHudHint("[LMB]: Drop");
+
+        if (leftHandAnimator != null)
+            leftHandAnimator.SetHoldPose(item);
+    }
+
+    void OnLeftHandReleased(GrabbableItem item)
+    {
+        ClearHudHint("[LMB]: Drop");
+
+        if (leftHandAnimator != null)
+            leftHandAnimator.ClearHoldPose();
+    }
+
+    void OnRightHandGrabbed(GrabbableItem item)
+    {
+        if (!string.IsNullOrEmpty(currentGrabPrompt))
+        {
+            ClearHudHint(currentGrabPrompt);
+            currentGrabPrompt = null;
+        }
+        ShowHudHint("[RMB]: Drop");
+
+        if (rightHandAnimator != null)
+            rightHandAnimator.SetHoldPose(item);
+    }
+
+    void OnRightHandReleased(GrabbableItem item)
+    {
+        ClearHudHint("[RMB]: Drop");
+
+        if (rightHandAnimator != null)
+            rightHandAnimator.ClearHoldPose();
+    }
+
+    #endregion
+
+    #region HUD Helpers
+
+    void ShowHudHint(string text)
+    {
+        if (hintManager == null)
+            hintManager = Object.FindFirstObjectByType<HintManager>();
+        if (hintManager != null)
+            hintManager.CreateHint(text);
+    }
+
+    void ClearHudHint(string text)
+    {
+        if (hintManager == null)
+            hintManager = Object.FindFirstObjectByType<HintManager>();
+        if (hintManager != null)
+            hintManager.ClearHint(text);
+    }
+
+    #endregion
+
+    #region Public Queries
+
+    /// <summary>
+    /// Get what item the player is currently looking at (for other systems to use).
+    /// </summary>
+    public GrabbableItem GetLookedAtItem() => highlightedItem;
+
+    /// <summary>
+    /// Check if a specific hand is holding something.
+    /// </summary>
+    public bool IsHandHolding(bool left) => left ? (leftHand != null && leftHand.IsHolding) : (rightHand != null && rightHand.IsHolding);
+
+    /// <summary>
+    /// Get the held item for a hand.
+    /// </summary>
+    public GrabbableItem GetHeldItem(bool left) => left ? leftHand?.HeldItem : rightHand?.HeldItem;
+
+    #endregion
+
+    void OnDestroy()
+    {
+        if (playerInput != null)
+        {
+            playerInput.Viva.DesktopLeftGrab.performed -= OnLeftGrab;
+            playerInput.Viva.DesktopRightGrab.performed -= OnRightGrab;
+            playerInput.Viva.UniversalInteract.performed -= OnInteract;
+            playerInput.Viva.ScrollUp.performed -= OnScrollUp;
+            playerInput.Viva.ScrollDown.performed -= OnScrollDown;
+            playerInput.Dispose();
+        }
+    }
+}
+
+#endif

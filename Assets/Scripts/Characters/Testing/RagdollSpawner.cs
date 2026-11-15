@@ -1,4 +1,4 @@
-using FIMSpace.FProceduralAnimation;
+﻿using FIMSpace.FProceduralAnimation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -118,15 +118,60 @@ public class RagdollSpawner : MonoBehaviour
         return instance;
     }
 
+    [NaughtyAttributes.Button("Spawn Companion")]
+    public void SpawnCompanion()
+    {
+        SpawnAndSetupRagdoll("shinobu");
+    }
+
     private void SpawnAndSetupRagdoll(string bundleName)
     {
-        if (characterPrefab == null) return;
+        GameObject prefabToUse = characterPrefab;
+        CharacterAssembler.CharacterModel importedModel = null;
+        if (_characterReader != null && !string.IsNullOrEmpty(bundleName))
+        {
+            importedModel = _characterReader.GetModelByName(bundleName);
+            if (importedModel != null && importedModel.prefab != null)
+            {
+                prefabToUse = importedModel.prefab;
+                characterPrefab = prefabToUse;
+                loadedCharacters.Add(prefabToUse);
+            }
+        }
 
-        CharacterAssembler.CharacterModel importedModel = _characterReader.GetModelByName(bundleName);
-        characterPrefab = importedModel.prefab;
-        loadedCharacters.Add(importedModel.prefab);
+        if (prefabToUse == null)
+        {
+            prefabToUse = Resources.Load<GameObject>("Prefabs/ShinobuCompanion");
+            if (prefabToUse == null)
+            {
+                Debug.LogWarning("[RagdollSpawner] No characterPrefab assigned and no imported model found.");
+                return;
+            }
+        }
 
-        GameObject newChar = SpawnCharacter(characterPrefab);
+        GameObject newChar = SpawnCharacter(prefabToUse);
+
+        // Check if this is an advanced companion character with its own AI
+        if (newChar.TryGetComponent<CompanionAI>(out var companionAI))
+        {
+            if (playerFollowObject != null)
+            {
+                companionAI.target = playerFollowObject;
+            }
+
+            if (selectorPrefab != null && !newChar.TryGetComponent<SpawnSelectorVisuals>(out _))
+            {
+                SpawnSelectorVisuals selectorScript = newChar.AddComponent<SpawnSelectorVisuals>();
+                selectorScript.SpawnPrefab = selectorPrefab;
+                selectorScript.SpawnSelectorVisual(newChar.transform);
+
+                if (newChar.TryGetComponent<CharacterInteractable>(out var charInteractable))
+                {
+                    charInteractable.selectionArrow = selectorScript.SpawnedSelector;
+                }
+            }
+            return;
+        }
 
         newChar.layer = LayerMask.NameToLayer(tagToGive);
 
@@ -138,7 +183,7 @@ public class RagdollSpawner : MonoBehaviour
         AssignAnimatorController(newChar, animationControllerName);
 
         // Find root bones for cloth physics if script is present
-        if (importedModel.vivaCharacterData != null)
+        if (importedModel != null && importedModel.vivaCharacterData != null)
         {
             physicsBoneDataList = importedModel.vivaCharacterData.PhysicsBones;
         }

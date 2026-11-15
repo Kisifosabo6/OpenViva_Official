@@ -39,6 +39,12 @@ public class CharacterInteractable : MonoBehaviour, IItemInteractable
     {
         Debug.Log($"{gameObject.name} received command: {commandID}");
 
+        if (TryGetComponent<CompanionAI>(out var companionAI))
+        {
+            companionAI.ReceiveCommand(commandID);
+            return;
+        }
+
         // TODO: Route these commands to the character manager
         switch (commandID)
         {

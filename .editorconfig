@@ -1,0 +1,15 @@
+# EditorConfig for Unity Project
+root = true
+
+[*.cs]
+# Unity Project Auditor - Domain Reload Analyzers
+# UDR0001: Static field without [RuntimeInitializeOnLoadMethod]
+# UDR0002: Static field not initialized in [RuntimeInitializeOnLoadMethod]
+# UDR0003: Static event subscriber
+# UDR0004: Static event callback not deregistered in OnDestroy
+# UDR0005: MonoBehaviour with static event subscription missing OnDestroy
+dotnet_diagnostic.UDR0001.severity = none
+dotnet_diagnostic.UDR0002.severity = none
+dotnet_diagnostic.UDR0003.severity = none
+dotnet_diagnostic.UDR0004.severity = none
+dotnet_diagnostic.UDR0005.severity = none

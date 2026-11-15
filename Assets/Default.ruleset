@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Default Ruleset" Description="Suppress Domain Reload warnings" ToolsVersion="10.0">
+  <Rules AnalyzerId="Domain_Reload_Analyzer" RuleNamespace="Domain_Reload_Analyzer">
+    <Rule Id="UDR0001" Action="None" />
+    <Rule Id="UDR0002" Action="None" />
+    <Rule Id="UDR0003" Action="None" />
+    <Rule Id="UDR0004" Action="None" />
+    <Rule Id="UDR0005" Action="None" />
+  </Rules>
+</RuleSet>

@@ -12,10 +12,10 @@ public class Rinvos_MissingScriptsRemover : EditorWindow
     private GameObject LastTargetObject = null;
 
     // windows setup
-    float minWidthForNames = 120;
 
-    static float minWindowWidth = 500;
-    static float minWindowHeight = 400;
+
+    const float minWindowWidth = 500;
+    const float minWindowHeight = 400;
 
 
     [MenuItem("Tools/Rinvo's/Missing Scripts Remover")]

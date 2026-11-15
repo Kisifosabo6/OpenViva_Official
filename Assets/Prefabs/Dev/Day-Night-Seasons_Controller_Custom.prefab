@@ -642,7 +642,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5088200060727617133}
-  - component: {fileID: 7506777137564465163}
   m_Layer: 0
   m_Name: DNS_Controller
   m_TagString: Untagged
@@ -665,75 +664,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3163653030322530664}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7506777137564465163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 871788973440216993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a113bd25482be49b536f48e523739a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _liveUpdateProfile: 0
-  _startTimeOfDay: 9
-  _customTimeOfDay: 6
-  _gameMinutesPerSecond: 1
-  _resetMode: 0
-  _resetSpeed: 1
-  _sunLight: {fileID: 5865087016758747202}
-  _rotationPivot: {fileID: 7547748073937194014}
-  _eastWestRotation: 220
-  _sceneCamera: {fileID: 0}
-  _useSunDisk: 0
-  _sunShadowResolution: -1
-  _seasonalProfile: {fileID: 11400000, guid: 78171f8853ded374cb5673218517717f, type: 2}
-  _daysPerYear: 80
-  _currentDayOfYear: 1
-  _skyboxMode: 0
-  _proceduralSkyboxMaterial: {fileID: 2100000, guid: 782f66f1de9bd174887ecc812a60fcbd, type: 2}
-  _singleCubemapMaterial: {fileID: 0}
-  _cubemapBlendMaterial: {fileID: 0}
-  _customSkyboxMaterial: {fileID: 0}
-  _driveCustomProperties: 0
-  _propTexDay: _TexDay
-  _propTexNight: _TexNight
-  _propBlend: _Blend
-  _propExposure: _Exposure
-  _propRotation: _Rotation
-  _supportCubemapRotation: 0
-  _skyboxRotationMultiplier: 1
-  _skyboxRotationOffset: 0
-  _skyTintColorSpace: 0
-  _shadowSmoothSpeed: 3
-  _shadowBiasSmooth: 6
-  _invertBlendRotation: 1
-  _useAdvancedBlend: 0
-  _advancedBlendWasAutofilled: 0
-  _advancedBlend:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _celestialBodiesContainer: {fileID: 7734897516012900448}
-  _starsGameObject: {fileID: 7771049812662474962}
-  _useMoon: 1
-  _moonGameObject: {fileID: 3664851267037647280}
-  _moonRotationPivot: {fileID: 1946662333823400947}
-  _noParallax: 1
-  _moonOrbitalDays: 27
-  _lunarPhaseDays: 8
-  _moonOrbitRadius: 800
-  _moonOrbitAxis: 23
-  _moonOrbitalInclination: 0
-  _enableFogControl: 1
-  _waterRenderer: {fileID: 0}
-  _waterColorProperty: _Color_Deep
-  _timeText: {fileID: 4259020339198206872}
-  _dateText: {fileID: 5118504135002281785}
 --- !u!1 &892690798934344094
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,7 +784,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -986,7 +916,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -1007,8 +937,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 847867167565996587}
-  - component: {fileID: 1876780960799829957}
-  - component: {fileID: 3678059819028895259}
   m_Layer: 0
   m_Name: Satellite
   m_TagString: Untagged
@@ -1032,53 +960,6 @@ Transform:
   - {fileID: 4560244032914738741}
   m_Father: {fileID: 3479275562950893888}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1876780960799829957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1124147177884468989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32c332415ce01e3419059d8cd0a7bf85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 7506777137564465163}
-  _orbitPivot: {fileID: 3479275562950893888}
-  _orbitalPeriodDays: 5
-  _orbitRadius: 679
-  _orbitalInclination: 117.4
-  _orbitalRotation: 0
-  _orbitalOffset: 233
-  _eccentricity: 0
-  _lockForwardRotation: 1
-  _faceMovementDirection: 1
-  _faceOrbitCenter: 0
-  _noParallax: 0
-  _targetCamera: {fileID: 0}
-  _showOrbitPath: 1
-  _orbitPathColor: {r: 0.20445704, g: 1, b: 0, a: 1}
---- !u!114 &3678059819028895259
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1124147177884468989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 508bb3f117d2d954e9680b62bef9456e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enableCommunication: 1
-  _communicationRange: 50
-  _communicationTarget: {fileID: 0}
-  _beaconLight: {fileID: 0}
-  _thrusterParticles: {fileID: 0}
-  _satelliteRenderer: {fileID: 2194761884199690835}
-  _audioSource: {fileID: 0}
-  _communicationSound: {fileID: 0}
 --- !u!1 &1196587030083380761
 GameObject:
   m_ObjectHideFlags: 0
@@ -1379,7 +1260,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -1650,7 +1531,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -1782,7 +1663,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -1893,7 +1774,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1542332754339861176}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.13088545, y: 0.8681628, z: -0.35960484, w: -0.3159854}
+  m_LocalRotation: {x: 0.22707263, y: 0.7643722, z: -0.48695886, w: 0.3564326}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1910,6 +1791,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3163653030322530664}
+  - component: {fileID: 2378192467707067705}
   m_Layer: 0
   m_Name: Day-Night-Seasons_Controller_Custom
   m_TagString: Untagged
@@ -1939,6 +1821,491 @@ Transform:
   - {fileID: 7361593129431135035}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2378192467707067705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551549906234188957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 002468b4704502f48b44973cbe4db51b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DayNightCycle
+  timeOfDay: 12
+  hours: 12
+  minutes: 0
+  timeString: 12h00
+  runCycleInPlayMode: 1
+  currentCycleSpeed: 0
+  sunPivot: {fileID: 7547748073937194014}
+  sunLight: {fileID: 5865087016758747202}
+  moonPivot: {fileID: 1946662333823400947}
+  moonObject: {fileID: 3664851267037647280}
+  moonLight: {fileID: 0}
+  starsParticleSystem: {fileID: 192137901850070696}
+  blendedSkyboxMaterial: {fileID: 2100000, guid: ca03f43f381be2b4b9c61f569e0e8785, type: 2}
+  nightCubemap: {fileID: 8900000, guid: b64dc5c23b5a31242aabbc1ed246c924, type: 3}
+  dawnCubemap: {fileID: 8900000, guid: 9a8c3b101b919f74abbe49ef15d51b94, type: 3}
+  morningCubemap: {fileID: 8900000, guid: 896804b28237e054db68f700d9120927, type: 3}
+  dayCubemap: {fileID: 8900000, guid: 3c508461b5767344aa3de7120ad89012, type: 3}
+  afternoonCubemap: {fileID: 8900000, guid: edaa4e04aaede004aa08f8d3b76e82b1, type: 3}
+  duskCubemap: {fileID: 8900000, guid: c6dbab06d7c10414ebf988c7ac9e6b4d, type: 3}
+  sunColorGradient:
+    serializedVersion: 2
+    key0: {r: 0.25, g: 0.35, b: 0.55, a: 1}
+    key1: {r: 0.95, g: 0.48, b: 0.35, a: 1}
+    key2: {r: 1, g: 0.72, b: 0.42, a: 0}
+    key3: {r: 1, g: 0.92, b: 0.78, a: 0}
+    key4: {r: 1, g: 0.98, b: 0.94, a: 0}
+    key5: {r: 1, g: 0.82, b: 0.55, a: 0}
+    key6: {r: 1, g: 0.52, b: 0.22, a: 0}
+    key7: {r: 0.85, g: 0.32, b: 0.28, a: 0}
+    ctime0: 0
+    ctime1: 14418
+    ctime2: 16384
+    ctime3: 19661
+    ctime4: 32768
+    ctime5: 45875
+    ctime6: 49151
+    ctime7: 51773
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 8
+    m_NumAlphaKeys: 2
+  sunIntensityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2
+      value: 0
+      inSlope: 1.724138
+      outSlope: 1.724138
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.229
+      value: 0.1
+      inSlope: 8.866996
+      outSlope: 8.866996
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.4
+      inSlope: 12.500002
+      outSlope: 12.500002
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.292
+      value: 0.85
+      inSlope: 7.164372
+      outSlope: 7.164372
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.375
+      value: 1.15
+      inSlope: 2.6072288
+      outSlope: 2.6072288
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 1.35
+      inSlope: 0.4000001
+      outSlope: 0.4000001
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.625
+      value: 1.25
+      inSlope: -1.9060241
+      outSlope: -1.9060241
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.708
+      value: 1
+      inSlope: -7.458414
+      outSlope: -7.458414
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.729
+      value: 0.75
+      inSlope: -14.285713
+      outSlope: -14.285713
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.4
+      inSlope: -15.476171
+      outSlope: -15.476171
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.771
+      value: 0.1
+      inSlope: -8.866987
+      outSlope: -8.866987
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.8
+      value: 0
+      inSlope: -1.7241389
+      outSlope: -1.7241389
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ambientIntensityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.35
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2
+      value: 0.35
+      inSlope: 2.0000002
+      outSlope: 2.0000002
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.55
+      inSlope: 3.0000002
+      outSlope: 3.0000002
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 0.75
+      inSlope: 1.4999999
+      outSlope: 1.4999999
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 0.9
+      inSlope: 0.16666666
+      outSlope: 0.16666666
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.65
+      value: 0.8
+      inSlope: -1.583333
+      outSlope: -1.583333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.55
+      inSlope: -2.6785715
+      outSlope: -2.6785715
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.82
+      value: 0.35
+      inSlope: -1.4285717
+      outSlope: -1.4285717
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.35
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fogColorGradient:
+    serializedVersion: 2
+    key0: {r: 0.04, g: 0.06, b: 0.12, a: 1}
+    key1: {r: 0.38, g: 0.28, b: 0.42, a: 1}
+    key2: {r: 0.78, g: 0.6, b: 0.55, a: 0}
+    key3: {r: 0.72, g: 0.8, b: 0.8, a: 0}
+    key4: {r: 0.78, g: 0.88, b: 0.85, a: 0}
+    key5: {r: 0.82, g: 0.7, b: 0.58, a: 0}
+    key6: {r: 0.78, g: 0.48, b: 0.3, a: 0}
+    key7: {r: 0.2, g: 0.15, b: 0.25, a: 0}
+    ctime0: 0
+    ctime1: 14418
+    ctime2: 16384
+    ctime3: 19661
+    ctime4: 32768
+    ctime5: 45875
+    ctime6: 49151
+    ctime7: 52428
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 8
+    m_NumAlphaKeys: 2
+  moonIntensityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.18
+      inSlope: -0.15
+      outSlope: -0.15
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2
+      value: 0.15
+      inSlope: -1.2416668
+      outSlope: -1.2416668
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.23
+      value: 0.08
+      inSlope: -3.1666672
+      outSlope: -3.1666672
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.25
+      value: 0
+      inSlope: -2.0000005
+      outSlope: -2.0000005
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.73
+      value: 0
+      inSlope: 0.7500007
+      outSlope: 0.7500007
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.03
+      inSlope: 1.7500017
+      outSlope: 1.7500017
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.78
+      value: 0.09
+      inSlope: 1.5000005
+      outSlope: 1.5000005
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.85
+      value: 0.16
+      inSlope: 0.5666663
+      outSlope: 0.5666663
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.18
+      inSlope: 0.13333343
+      outSlope: 0.13333343
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  moonColor: {r: 0.68, g: 0.82, b: 0.98, a: 1}
+  starEmissionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 900
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2
+      value: 900
+      inSlope: -9166.666
+      outSlope: -9166.666
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.23
+      value: 350
+      inSlope: -15000.002
+      outSlope: -15000.002
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.26
+      value: 0
+      inSlope: -5833.336
+      outSlope: -5833.336
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.73
+      value: 0
+      inSlope: 3333.3364
+      outSlope: 3333.3364
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.76
+      value: 200
+      inSlope: 7916.6694
+      outSlope: 7916.6694
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.82
+      value: 750
+      inSlope: 6458.332
+      outSlope: 6458.332
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.86
+      value: 900
+      inSlope: 1874.999
+      outSlope: 1874.999
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 900
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1614578077793072617
 GameObject:
   m_ObjectHideFlags: 0
@@ -2059,7 +2426,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -2258,7 +2625,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -2390,7 +2757,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -7442,7 +7809,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -7641,7 +8008,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -7848,7 +8215,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -7873,7 +8240,7 @@ GameObject:
   - component: {fileID: 8921737467715301716}
   m_Layer: 0
   m_Name: SunLight
-  m_TagString: Untagged
+  m_TagString: MainLight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7903,8 +8270,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 1.0987188, g: 1.049402, b: 0.92, a: 1}
-  m_Intensity: 1.1138937
+  m_Color: {r: 1, g: 0.97999775, b: 0.93999386, a: 1}
+  m_Intensity: 1.35
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -8220,7 +8587,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeSmoothBackwards
         m_Mode: 1
@@ -8352,7 +8719,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -8626,7 +8993,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -9034,7 +9401,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -9055,7 +9422,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5591004205792109244}
-  - component: {fileID: 6733142227297425174}
   m_Layer: 0
   m_Name: Lights_Moon
   m_TagString: Untagged
@@ -9080,91 +9446,6 @@ Transform:
   - {fileID: 8411189201946631947}
   m_Father: {fileID: 3163653030322530664}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6733142227297425174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3247910623825812012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b428e8d684001ad4aa68c02e4f7a3f37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 7506777137564465163}
-  _lights:
-  - {fileID: 0}
-  _lightsOnTime: 17
-  _lightsOffTime: 6
-  _lightFlickerCount: 1
-  _lightRandomness: 600
-  _lightColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: 0
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  _emissiveRenderers: []
-  _emissivesOnTime: 17
-  _emissivesOffTime: 6
-  _emissiveFlickerCount: 0
-  _emissiveRandomness: 2713
-  _emissiveColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.3160377, b: 0.3895213, a: 1}
-    key1: {r: 1, g: 0.6586509, b: 0.18396229, a: 1}
-    key2: {r: 0.3254717, g: 1, b: 0.36871076, a: 0}
-    key3: {r: 0.3160377, g: 0.55448323, b: 1, a: 0}
-    key4: {r: 1, g: 0.96936494, b: 0.28773582, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 16228
-    ctime2: 33704
-    ctime3: 49931
-    ctime4: 65535
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 5
-    m_NumAlphaKeys: 2
-  _emissionBrightness: 1
 --- !u!1 &3476184491120089186
 GameObject:
   m_ObjectHideFlags: 0
@@ -9424,7 +9705,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -9557,7 +9838,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: StopTime
         m_Mode: 1
@@ -9641,7 +9922,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7067389327762142260
 Transform:
   m_ObjectHideFlags: 0
@@ -9652,7 +9933,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.37663016, y: 0.37663007, z: -0.59845614, w: 0.5984561}
   m_LocalPosition: {x: 0, y: 800, z: 0}
-  m_LocalScale: {x: 103.461, y: 103.461, z: 103.461}
+  m_LocalScale: {x: 140, y: 140, z: 140}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1946662333823400947}
@@ -9664,7 +9945,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3664851267037647280}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &880977612752379487
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9690,7 +9971,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0c6e927da4f727840925b08f028a102c, type: 2}
+  - {fileID: 2100000, guid: 0782982bf2e54804aa461dff5d9221a1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10010,7 +10291,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -10142,7 +10423,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -10274,7 +10555,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -10543,7 +10824,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -10675,7 +10956,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -10807,7 +11088,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -11014,7 +11295,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: set_GameMinutesPerSecond
         m_Mode: 0
@@ -11340,7 +11621,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -11472,7 +11753,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -11552,7 +11833,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ddd214c5bb77b4849936dc5221fed2ea, type: 2}
+  - {fileID: 2100000, guid: 0782982bf2e54804aa461dff5d9221a1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11696,7 +11977,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -11828,7 +12109,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -11851,7 +12132,6 @@ GameObject:
   - component: {fileID: 9056789415380308103}
   - component: {fileID: 2311311784056229997}
   - component: {fileID: 2448693684597603262}
-  - component: {fileID: 713870931913248636}
   m_Layer: 0
   m_Name: FamousThing
   m_TagString: Untagged
@@ -11907,7 +12187,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ddd214c5bb77b4849936dc5221fed2ea, type: 2}
+  - {fileID: 2100000, guid: 0782982bf2e54804aa461dff5d9221a1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11931,33 +12211,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &713870931913248636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5637777981457424370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32c332415ce01e3419059d8cd0a7bf85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 7506777137564465163}
-  _orbitPivot: {fileID: 3479275562950893888}
-  _orbitalPeriodDays: 20
-  _orbitRadius: 816
-  _orbitalInclination: 112.7
-  _orbitalRotation: 41
-  _orbitalOffset: 285
-  _eccentricity: 0
-  _lockForwardRotation: 0
-  _faceMovementDirection: 0
-  _faceOrbitCenter: 0
-  _noParallax: 1
-  _targetCamera: {fileID: 0}
-  _showOrbitPath: 1
-  _orbitPathColor: {r: 0, g: 1, b: 0.93225074, a: 1}
 --- !u!1 &5726172808428187564
 GameObject:
   m_ObjectHideFlags: 0
@@ -12079,7 +12332,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: StartTime
         m_Mode: 1
@@ -12175,7 +12428,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5861793799378984490}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.056565586, y: 0.20167936, z: 0.05977581, w: 0.97598803}
+  m_LocalRotation: {x: -0.4339018, y: 0.30337557, z: 0.15792733, w: 0.83351755}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -12445,7 +12698,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -12578,7 +12831,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeSmoothForwards
         m_Mode: 1
@@ -12710,7 +12963,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -13023,7 +13276,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -13601,8 +13854,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
-      minScalar: 1
+      scalar: 3.5
+      minScalar: 1.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -13706,39 +13959,39 @@ ParticleSystem:
         m_RotationOrder: 4
     startColor:
       serializedVersion: 2
-      minMaxState: 4
+      minMaxState: 1
       minColor: {r: 1, g: 1, b: 1, a: 1}
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 0.3529412}
-        key2: {r: 0.29063633, g: 0.24870603, b: 0.674, a: 1}
-        key3: {r: 0.692, g: 0.21980712, b: 0.188916, a: 1}
-        key4: {r: 1, g: 1, b: 1, a: 1}
-        key5: {r: 0, g: 0, b: 0, a: 1}
-        key6: {r: 0, g: 0, b: 0, a: 1}
-        key7: {r: 0, g: 0, b: 0, a: 1}
+        key0: {r: 0.9, g: 0.95, b: 1, a: 1}
+        key1: {r: 1, g: 0.97, b: 0.9, a: 1}
+        key2: {r: 1, g: 1, b: 1, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 56667
-        ctime2: 61477
-        ctime3: 65535
-        ctime4: 65535
+        ctime1: 32768
+        ctime2: 65535
+        ctime3: 0
+        ctime4: 0
         ctime5: 0
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 29111
-        atime2: 56516
-        atime3: 56516
-        atime4: 56516
-        atime5: 56516
-        atime6: 56516
-        atime7: 56516
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
         m_Mode: 0
         m_ColorSpace: -1
-        m_NumColorKeys: 4
-        m_NumAlphaKeys: 3
+        m_NumColorKeys: 3
+        m_NumAlphaKeys: 2
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -13772,8 +14025,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 15
-      minScalar: 5
+      scalar: 9
+      minScalar: 3
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -14089,7 +14342,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 2000
+    maxNumParticles: 2500
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -14355,7 +14608,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2000
+      scalar: 0
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -14794,33 +15047,33 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 1, g: 1, b: 1, a: 0}
-        key3: {r: 0, g: 0, b: 0, a: 0}
+        key1: {r: 1, g: 1, b: 1, a: 0.85}
+        key2: {r: 0, g: 0, b: 0, a: 1}
+        key3: {r: 0, g: 0, b: 0, a: 0.75}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 32768
-        ctime2: 65535
+        ctime1: 65535
+        ctime2: 0
         ctime3: 0
         ctime4: 0
         ctime5: 0
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 32768
-        atime2: 65535
-        atime3: 65535
+        atime1: 16384
+        atime2: 32768
+        atime3: 49151
         atime4: 65535
         atime5: 0
         atime6: 0
         atime7: 0
         m_Mode: 0
         m_ColorSpace: -1
-        m_NumColorKeys: 3
-        m_NumAlphaKeys: 3
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 5
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -18267,7 +18520,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1fac0d44a48707e48bcef8c5d2d951f6, type: 2}
+  - {fileID: 2100000, guid: 7c09dc920c88c1f4c9f48bce8bff23c9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -18436,7 +18689,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7086751755514151284}
-  - component: {fileID: 6295431274705235114}
   m_Layer: 0
   m_Name: Lights
   m_TagString: Untagged
@@ -18461,197 +18713,6 @@ Transform:
   - {fileID: 2733526109365388899}
   m_Father: {fileID: 3163653030322530664}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6295431274705235114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7900325735906622759}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b428e8d684001ad4aa68c02e4f7a3f37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 7506777137564465163}
-  _lights:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _lightsOnTime: 17
-  _lightsOffTime: 6.1
-  _lightFlickerCount: 1
-  _lightRandomness: 600
-  _lightColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.8, b: 0.4, a: 1}
-    key1: {r: 1, g: 0.858, b: 0.574, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65109
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  _emissiveRenderers: []
-  _emissivesOnTime: 17
-  _emissivesOffTime: 6
-  _emissiveFlickerCount: 0
-  _emissiveRandomness: 2713
-  _emissiveColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.3160377, b: 0.3895213, a: 1}
-    key1: {r: 1, g: 0.6586509, b: 0.18396229, a: 1}
-    key2: {r: 0.3254717, g: 1, b: 0.36871076, a: 0}
-    key3: {r: 0.3160377, g: 0.55448323, b: 1, a: 0}
-    key4: {r: 1, g: 0.96936494, b: 0.28773582, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 16228
-    ctime2: 33704
-    ctime3: 49931
-    ctime4: 65535
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 5
-    m_NumAlphaKeys: 2
-  _emissionBrightness: 1
 --- !u!1 &7979801148631696003
 GameObject:
   m_ObjectHideFlags: 0
@@ -18940,7 +19001,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -19209,7 +19270,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -19559,7 +19620,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeSmoothDynamic
         m_Mode: 1
@@ -19931,7 +19992,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -20337,7 +20398,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -20470,7 +20531,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7506777137564465163}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeInstant
         m_Mode: 1

@@ -106,3 +106,16 @@ InitTestScene*.unity*
 /Characters
 /Assets/Scenes/Landscape_Main/Landscape_LightingData.asset
 /Assets/Scenes/Landscape_Main/Landscape_LightingData.asset.meta
+
+# Third-party proprietary assets
+/Assets/MagicaCloth2/
+/Assets/MagicaCloth2.meta
+
+# Temporary and local developer scratch files
+/.vscode/
+/AgentScripts/
+/My project/
+/Screenshots/
+/*.txt
+/*.ps1
+

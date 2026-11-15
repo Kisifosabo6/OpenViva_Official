@@ -898,8 +898,6 @@ MonoBehaviour:
   setting: 1
   mode: 0
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &250966022616898198
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,7 +2034,6 @@ GameObject:
   - component: {fileID: 8123183460592868362}
   - component: {fileID: 2453205987846920475}
   - component: {fileID: 11740401000099542}
-  - component: {fileID: 7033120316168783427}
   m_Layer: 5
   m_Name: Map
   m_TagString: Untagged
@@ -2171,101 +2168,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &7033120316168783427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 502506562158558031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950906
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950906
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 5470046533608443390}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950907
-          - rid: 9146333096703950908
-          - rid: 9146333096703950909
-          - rid: 9146333096703950910
-    - rid: 9146333096703950907
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950908
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950909
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950910
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -76.75
-        - localeIdentifier:
-            m_Code: ja
-          value: -87.14285
-        - localeIdentifier:
-            m_Code: ru
-          value: -76.75
-        - localeIdentifier:
-            m_Code: tr
-          value: -76.75
 --- !u!1 &535180346969681379
 GameObject:
   m_ObjectHideFlags: 0
@@ -2325,7 +2227,6 @@ GameObject:
   - component: {fileID: 715313928832910984}
   - component: {fileID: 4747196667287912245}
   - component: {fileID: 8926748550530149040}
-  - component: {fileID: 851026825208039096}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -2394,70 +2295,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 'Movement:'
---- !u!114 &851026825208039096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 551129281729133650}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755578
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755578
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 8926748550530149040}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755579
-          - rid: 6944366223613755580
-          - rid: 6944366223613755581
-        m_UpdateType: 0
-    - rid: 6944366223613755579
-      type: {class: LocalizedStringProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_Localized:
-          m_TableReference:
-            m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-          m_TableEntryReference:
-            m_KeyId: 17422732731699200
-            m_Key: 
-          m_FallbackState: 0
-          m_WaitForCompletion: 0
-          m_LocalVariables: []
-        m_PropertyPath: m_Text
-    - rid: 6944366223613755580
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 6944366223613755581
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 21
 --- !u!1 &683612639050782131
 GameObject:
   m_ObjectHideFlags: 0
@@ -3079,8 +2916,6 @@ GameObject:
   - component: {fileID: 3721210169418592730}
   - component: {fileID: 7204696282428824120}
   - component: {fileID: 6101486158899672315}
-  - component: {fileID: 2133486861283974638}
-  - component: {fileID: 1296793425290528471}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -3149,103 +2984,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Back
---- !u!114 &2133486861283974638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797229761301195732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859320
-  - rid: 7406036111831859323
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859320
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 6101486158899672315}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859321
-          - rid: 7406036111831859322
-        m_UpdateType: 0
-    - rid: 7406036111831859321
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 22
-    - rid: 7406036111831859322
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 7406036111831859323
-      type: {class: TrackedLocalizeStringEvent, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 1296793425290528471}
-        m_TrackedProperties:
-          items: []
---- !u!114 &1296793425290528471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797229761301195732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_StringReference:
-    m_TableReference:
-      m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-    m_TableEntryReference:
-      m_KeyId: 17384839422234624
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  m_FormatArguments: []
-  m_UpdateString:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6101486158899672315}
-        m_TargetAssemblyTypeName: UnityEngine.UI.Text, UnityEngine.UI
-        m_MethodName: set_text
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
-  references:
-    version: 2
-    RefIds: []
 --- !u!1 &821161697441937764
 GameObject:
   m_ObjectHideFlags: 0
@@ -4158,7 +3896,6 @@ GameObject:
   - component: {fileID: 566908124633537044}
   - component: {fileID: 1669310813572515703}
   - component: {fileID: 6441154865957332283}
-  - component: {fileID: 1398862827848184241}
   m_Layer: 5
   m_Name: Trackpad
   m_TagString: Untagged
@@ -4280,41 +4017,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1398862827848184241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1163654247650052417}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366341201330258
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366341201330258
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 617633475537923763}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366341201330259
-    - rid: 6944366341201330259
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 160
-        - localeIdentifier:
-            m_Code: ru
-          value: 330
 --- !u!1 &1182997115239862119
 GameObject:
   m_ObjectHideFlags: 0
@@ -5970,7 +5672,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7928233620830083415}
   - component: {fileID: 2551963619682170518}
-  - component: {fileID: 9029358041451593683}
   m_Layer: 5
   m_Name: Buttons
   m_TagString: Untagged
@@ -6027,77 +5728,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &9029358041451593683
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646489520344527063}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859302
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859302
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 7928233620830083415}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859303
-          - rid: 7406036111831859304
-          - rid: 7406036111831859305
-          - rid: 7406036111831859306
-    - rid: 7406036111831859303
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859304
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859305
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 200
-    - rid: 7406036111831859306
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -160
 --- !u!1 &1663022758199243981
 GameObject:
   m_ObjectHideFlags: 0
@@ -8565,8 +8195,6 @@ GameObject:
   - component: {fileID: 2755432806498284605}
   - component: {fileID: 7302377156826760285}
   - component: {fileID: 7816906233608078115}
-  - component: {fileID: 2287177186825331918}
-  - component: {fileID: 4179633688841007306}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -8635,122 +8263,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Calibrate Hands
---- !u!114 &2287177186825331918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2270767635823011199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859312
-  - rid: 7406036111831859316
-  - rid: 7406036111831859317
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859312
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 7816906233608078115}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859313
-          - rid: 7406036111831859319
-        m_UpdateType: 0
-    - rid: 7406036111831859313
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 7406036111831859316
-      type: {class: TrackedLocalizeStringEvent, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 4179633688841007306}
-        m_TrackedProperties:
-          items: []
-    - rid: 7406036111831859317
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2755432806498284605}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859318
-    - rid: 7406036111831859318
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 228.23
-        - localeIdentifier:
-            m_Code: ru
-          value: 273.99
-    - rid: 7406036111831859319
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 24
---- !u!114 &4179633688841007306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2270767635823011199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_StringReference:
-    m_TableReference:
-      m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-    m_TableEntryReference:
-      m_KeyId: 19948088801972224
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  m_FormatArguments: []
-  m_UpdateString:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7816906233608078115}
-        m_TargetAssemblyTypeName: UnityEngine.UI.Text, UnityEngine.UI
-        m_MethodName: set_text
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
-  references:
-    version: 2
-    RefIds: []
 --- !u!1 &2357930637570455117
 GameObject:
   m_ObjectHideFlags: 0
@@ -9244,7 +8756,6 @@ GameObject:
   - component: {fileID: 2307305582159548614}
   - component: {fileID: 5741127001101856491}
   - component: {fileID: 9117905301373997799}
-  - component: {fileID: 3688304421300088556}
   m_Layer: 5
   m_Name: Switch to VR
   m_TagString: Untagged
@@ -9366,41 +8877,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3688304421300088556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2525466510468092575}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755554
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755554
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2717025016349404027}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755555
-    - rid: 6944366223613755555
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 160
-        - localeIdentifier:
-            m_Code: ru
-          value: 260
 --- !u!1 &2529326485726139857
 GameObject:
   m_ObjectHideFlags: 0
@@ -10489,7 +9965,6 @@ GameObject:
   - component: {fileID: 1079455467738377394}
   - component: {fileID: 8492085143543545780}
   - component: {fileID: 3896501661601402449}
-  - component: {fileID: 7244222063426487279}
   m_Layer: 5
   m_Name: Checklist
   m_TagString: Untagged
@@ -10612,101 +10087,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7244222063426487279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2692738851352646115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950901
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950901
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2082368000472168566}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950902
-          - rid: 9146333096703950903
-          - rid: 9146333096703950904
-          - rid: 9146333096703950905
-    - rid: 9146333096703950902
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950903
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950904
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950905
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -35.375
-        - localeIdentifier:
-            m_Code: ja
-          value: -40.571426
-        - localeIdentifier:
-            m_Code: ru
-          value: -35.375
-        - localeIdentifier:
-            m_Code: tr
-          value: -35.375
 --- !u!1 &2701401808520717373
 GameObject:
   m_ObjectHideFlags: 0
@@ -13549,7 +12929,6 @@ GameObject:
   - component: {fileID: 8994230468927089556}
   - component: {fileID: 6679904940864801538}
   - component: {fileID: 2187170524382430228}
-  - component: {fileID: 4261816918063929365}
   m_Layer: 5
   m_Name: Options
   m_TagString: Untagged
@@ -13684,101 +13063,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &4261816918063929365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3474912571034059242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950916
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950916
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 6113920565547302757}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950917
-          - rid: 9146333096703950918
-          - rid: 9146333096703950919
-          - rid: 9146333096703950920
-    - rid: 9146333096703950917
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950918
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950919
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950920
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -159.5
-        - localeIdentifier:
-            m_Code: ja
-          value: -180.2857
-        - localeIdentifier:
-            m_Code: ru
-          value: -159.5
-        - localeIdentifier:
-            m_Code: tr
-          value: -159.5
 --- !u!1 &3501238199065975282
 GameObject:
   m_ObjectHideFlags: 0
@@ -14233,7 +13517,6 @@ GameObject:
   - component: {fileID: 7100883514291562503}
   - component: {fileID: 2124885720674179335}
   - component: {fileID: 3465576905893163841}
-  - component: {fileID: 6117529121558733416}
   m_Layer: 5
   m_Name: Problems
   m_TagString: Untagged
@@ -14356,89 +13639,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6117529121558733416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3577233200793800929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859236
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859236
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 1212922831049595420}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859237
-          - rid: 7406036111831859293
-          - rid: 7406036111831859294
-          - rid: 7406036111831859295
-          - rid: 7406036111831859296
-    - rid: 7406036111831859237
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 144
-        - localeIdentifier:
-            m_Code: ru
-          value: 155.3
-    - rid: 7406036111831859293
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859294
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859295
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 200
-    - rid: 7406036111831859296
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -80
 --- !u!1 &3588582679399880222
 GameObject:
   m_ObjectHideFlags: 0
@@ -15800,7 +15000,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2554154118228361042}
   - component: {fileID: 3751821881315541441}
-  - component: {fileID: 8487691706083663248}
   m_Layer: 5
   m_Name: Resolution Container
   m_TagString: Untagged
@@ -15839,22 +15038,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3763560561725805889}
   m_CullTransparentMesh: 0
---- !u!114 &8487691706083663248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3763560561725805889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 1890746431023621577}
-  plusButton: {fileID: 3575910011047158663}
-  valueText: {fileID: 2909444715024216028}
-  setting: 2
 --- !u!1 &3767806826489362481
 GameObject:
   m_ObjectHideFlags: 0
@@ -17214,7 +16397,6 @@ GameObject:
   - component: {fileID: 2723337006247349307}
   - component: {fileID: 6373762209601573439}
   - component: {fileID: 4526110428615133122}
-  - component: {fileID: 3382485070250779147}
   m_Layer: 5
   m_Name: Controls
   m_TagString: Untagged
@@ -17349,101 +16531,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &3382485070250779147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3967047222116295645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950911
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950911
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2872819829429818841}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950912
-          - rid: 9146333096703950913
-          - rid: 9146333096703950914
-          - rid: 9146333096703950915
-    - rid: 9146333096703950912
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950913
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950914
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950915
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -118.125
-        - localeIdentifier:
-            m_Code: ja
-          value: -133.71428
-        - localeIdentifier:
-            m_Code: ru
-          value: -118.125
-        - localeIdentifier:
-            m_Code: tr
-          value: -118.125
 --- !u!1 &3981857785233015270
 GameObject:
   m_ObjectHideFlags: 0
@@ -17594,8 +16681,6 @@ MonoBehaviour:
   setting: 3
   mode: 1
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &3986427788552346798
 GameObject:
   m_ObjectHideFlags: 0
@@ -18016,7 +17101,6 @@ GameObject:
   - component: {fileID: 1980507307023456458}
   - component: {fileID: 5023813571118689327}
   - component: {fileID: 2788265101438582978}
-  - component: {fileID: 4233333593517416597}
   m_Layer: 5
   m_Name: Switch to Keyboard
   m_TagString: Untagged
@@ -18138,41 +17222,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4233333593517416597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4104428158403271918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755574
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755574
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 4133833781272548981}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755575
-    - rid: 6944366223613755575
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 188.35
-        - localeIdentifier:
-            m_Code: ru
-          value: 290
 --- !u!1 &4111937554582861338
 GameObject:
   m_ObjectHideFlags: 0
@@ -20163,7 +19212,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3055548689157929921}
   - component: {fileID: 1316739216433783943}
-  - component: {fileID: 5762184286262753202}
   m_Layer: 5
   m_Name: Reflection Container
   m_TagString: Untagged
@@ -20202,22 +19250,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4514290491040072579}
   m_CullTransparentMesh: 0
---- !u!114 &5762184286262753202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4514290491040072579}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 126285864002773374}
-  plusButton: {fileID: 4090047317331451699}
-  valueText: {fileID: 1665584371557795007}
-  setting: 1
 --- !u!1 &4593465775432174385
 GameObject:
   m_ObjectHideFlags: 0
@@ -20505,8 +19537,6 @@ MonoBehaviour:
   setting: 0
   mode: 0
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &4689954095128473331
 GameObject:
   m_ObjectHideFlags: 0
@@ -20776,7 +19806,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2091760564050432709}
   - component: {fileID: 7766541361847958207}
-  - component: {fileID: 2224568757415331561}
   m_Layer: 5
   m_Name: Lod Distance Container
   m_TagString: Untagged
@@ -20815,22 +19844,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4736274401306520843}
   m_CullTransparentMesh: 0
---- !u!114 &2224568757415331561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4736274401306520843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 986886294715490234}
-  plusButton: {fileID: 4226249708559231534}
-  valueText: {fileID: 1365971295878848645}
-  setting: 3
 --- !u!1 &4777801051563530205
 GameObject:
   m_ObjectHideFlags: 0
@@ -21668,7 +20681,6 @@ GameObject:
   - component: {fileID: 8620050471466937893}
   - component: {fileID: 7921701471443116513}
   - component: {fileID: 2147116762386156107}
-  - component: {fileID: 6368751007173589704}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -21737,70 +20749,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 'Device:'
---- !u!114 &6368751007173589704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4942162381239807823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755567
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755567
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2147116762386156107}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755568
-          - rid: 6944366223613755569
-          - rid: 6944366223613755570
-        m_UpdateType: 0
-    - rid: 6944366223613755568
-      type: {class: LocalizedStringProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_Localized:
-          m_TableReference:
-            m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-          m_TableEntryReference:
-            m_KeyId: 17417359597588480
-            m_Key: 
-          m_FallbackState: 0
-          m_WaitForCompletion: 0
-          m_LocalVariables: []
-        m_PropertyPath: m_Text
-    - rid: 6944366223613755569
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 6944366223613755570
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 21
 --- !u!1 &4982958112708292699
 GameObject:
   m_ObjectHideFlags: 0
@@ -22435,7 +21383,6 @@ GameObject:
   - component: {fileID: 99432994309712274}
   - component: {fileID: 1584918707013137165}
   - component: {fileID: 4181534980353450243}
-  - component: {fileID: 887781148053551388}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -22504,82 +21451,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Calibrate Hands
---- !u!114 &887781148053551388
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5037288802811626307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366341201330240
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366341201330240
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 4181534980353450243}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366341201330241
-          - rid: 6944366341201330242
-          - rid: 6944366341201330243
-          - rid: 6944366341201330244
-        m_UpdateType: 0
-    - rid: 6944366341201330241
-      type: {class: LocalizedStringProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_Localized:
-          m_TableReference:
-            m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-          m_TableEntryReference:
-            m_KeyId: 19948088801972224
-            m_Key: 
-          m_FallbackState: 0
-          m_WaitForCompletion: 0
-          m_LocalVariables: []
-        m_PropertyPath: m_Text
-    - rid: 6944366341201330242
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 18
-    - rid: 6944366341201330243
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_MinSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 2
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 6944366341201330244
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
 --- !u!1 &5081870748506861439
 GameObject:
   m_ObjectHideFlags: 0
@@ -23005,7 +21876,6 @@ GameObject:
   - component: {fileID: 3899794173841077078}
   - component: {fileID: 4273210424635882814}
   - component: {fileID: 7090324435461688923}
-  - component: {fileID: 6168634401328296142}
   m_Layer: 5
   m_Name: Graphics
   m_TagString: Untagged
@@ -23140,101 +22010,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &6168634401328296142
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5143440343495996626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950916
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950916
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 5773319423841282624}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950917
-          - rid: 9146333096703950918
-          - rid: 9146333096703950919
-          - rid: 9146333096703950920
-    - rid: 9146333096703950917
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950918
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950919
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950920
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -200.875
-        - localeIdentifier:
-            m_Code: ja
-          value: -180.2857
-        - localeIdentifier:
-            m_Code: ru
-          value: -200.875
-        - localeIdentifier:
-            m_Code: tr
-          value: -200.875
 --- !u!1 &5149301178211480544
 GameObject:
   m_ObjectHideFlags: 0
@@ -23279,7 +22054,6 @@ GameObject:
   - component: {fileID: 564384514233837109}
   - component: {fileID: 6408661163068863739}
   - component: {fileID: 2427551537783434574}
-  - component: {fileID: 5925573532680491883}
   m_Layer: 5
   m_Name: Clothing
   m_TagString: Untagged
@@ -23401,77 +22175,6 @@ MonoBehaviour:
           m_StringArgument: Clothing
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5925573532680491883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188843582475344030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859255
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859255
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 5045482050501565727}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859256
-          - rid: 7406036111831859257
-          - rid: 7406036111831859258
-          - rid: 7406036111831859259
-    - rid: 7406036111831859256
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859257
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859258
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 100
-    - rid: 7406036111831859259
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -76
 --- !u!1 &5203636648430194583
 GameObject:
   m_ObjectHideFlags: 0
@@ -23562,7 +22265,6 @@ GameObject:
   - component: {fileID: 6840581635154715201}
   - component: {fileID: 2518036871564912008}
   - component: {fileID: 2861250860920307170}
-  - component: {fileID: 3952792452888189629}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -23631,70 +22333,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Switch to Keyboard
---- !u!114 &3952792452888189629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5228617258016081394}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755571
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755571
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2861250860920307170}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755572
-          - rid: 6944366223613755573
-          - rid: 6944366223613755577
-        m_UpdateType: 0
-    - rid: 6944366223613755572
-      type: {class: LocalizedStringProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_Localized:
-          m_TableReference:
-            m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-          m_TableEntryReference:
-            m_KeyId: 17421506854080512
-            m_Key: 
-          m_FallbackState: 0
-          m_WaitForCompletion: 0
-          m_LocalVariables: []
-        m_PropertyPath: m_Text
-    - rid: 6944366223613755573
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 17
-    - rid: 6944366223613755577
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
 --- !u!1 &5230232172212124380
 GameObject:
   m_ObjectHideFlags: 0
@@ -24401,7 +23039,6 @@ GameObject:
   - component: {fileID: 5540607528370277716}
   - component: {fileID: 5055135877581607955}
   - component: {fileID: 5698536534456551250}
-  - component: {fileID: 5629199877576974250}
   m_Layer: 5
   m_Name: Cooking
   m_TagString: Untagged
@@ -24523,77 +23160,6 @@ MonoBehaviour:
           m_StringArgument: Cooking
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5629199877576974250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5280199129683986489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859265
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859265
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 30057090556570018}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859266
-          - rid: 7406036111831859267
-          - rid: 7406036111831859268
-          - rid: 7406036111831859269
-    - rid: 7406036111831859266
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859267
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859268
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 100
-    - rid: 7406036111831859269
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -156
 --- !u!1 &5285765155008442260
 GameObject:
   m_ObjectHideFlags: 0
@@ -25345,7 +23911,6 @@ GameObject:
   - component: {fileID: 8768798030573779805}
   - component: {fileID: 8321749452056311408}
   - component: {fileID: 5648768566702541783}
-  - component: {fileID: 2955253933106308397}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -25414,82 +23979,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Back
---- !u!114 &2955253933106308397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5406569348729144651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755584
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755584
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 5648768566702541783}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755585
-          - rid: 6944366223613755586
-          - rid: 6944366223613755587
-          - rid: 6944366223613755588
-        m_UpdateType: 0
-    - rid: 6944366223613755585
-      type: {class: LocalizedStringProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_Localized:
-          m_TableReference:
-            m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-          m_TableEntryReference:
-            m_KeyId: 17384839422234624
-            m_Key: 
-          m_FallbackState: 0
-          m_WaitForCompletion: 0
-          m_LocalVariables: []
-        m_PropertyPath: m_Text
-    - rid: 6944366223613755586
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 6944366223613755587
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 24
-        - localeIdentifier:
-            m_Code: ru
-          value: 18
-    - rid: 6944366223613755588
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_MinSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 2
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
 --- !u!1 &5474017395632903847
 GameObject:
   m_ObjectHideFlags: 0
@@ -26848,7 +25337,6 @@ GameObject:
   - component: {fileID: 6531515709104971442}
   - component: {fileID: 272019976111740042}
   - component: {fileID: 7061308247690865843}
-  - component: {fileID: 7608088944496280105}
   m_Layer: 5
   m_Name: Help
   m_TagString: Untagged
@@ -26995,101 +25483,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7608088944496280105
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5724859708119769658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950921
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950921
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2906970377236512093}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950922
-          - rid: 9146333096703950923
-          - rid: 9146333096703950924
-          - rid: 9146333096703950925
-    - rid: 9146333096703950922
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950923
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950924
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950925
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -242.25
-        - localeIdentifier:
-            m_Code: ja
-          value: -226.85713
-        - localeIdentifier:
-            m_Code: ru
-          value: -242.25
-        - localeIdentifier:
-            m_Code: tr
-          value: -242.25
 --- !u!1 &5782340838870621101
 GameObject:
   m_ObjectHideFlags: 0
@@ -27618,8 +26011,6 @@ MonoBehaviour:
   setting: 4
   mode: 1
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &5845118590783767863
 GameObject:
   m_ObjectHideFlags: 0
@@ -28562,7 +26953,6 @@ GameObject:
   - component: {fileID: 883298129475460344}
   - component: {fileID: 8491586545441214633}
   - component: {fileID: 1768752588556734958}
-  - component: {fileID: 2085553640749568787}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -28631,68 +27021,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Using Trackpad
---- !u!114 &2085553640749568787
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5972966320040581602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366341201330260
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366341201330260
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 1768752588556734958}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366341201330261
-          - rid: 6944366341201330262
-          - rid: 6944366341201330263
-        m_UpdateType: 0
-    - rid: 6944366341201330261
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 6944366341201330262
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_FontSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 20
-        - localeIdentifier:
-            m_Code: ru
-          value: 18
-    - rid: 6944366341201330263
-      type: {class: IntTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_MinSize
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 2
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
 --- !u!1 &5982686985603333031
 GameObject:
   m_ObjectHideFlags: 0
@@ -28935,7 +27263,6 @@ GameObject:
   - component: {fileID: 756617650499968503}
   - component: {fileID: 1861994791107647108}
   - component: {fileID: 4273466288428067977}
-  - component: {fileID: 3546708733573606680}
   m_Layer: 5
   m_Name: Close
   m_TagString: Untagged
@@ -29057,101 +27384,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3546708733573606680
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6049155988388938371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 9146333096703950926
-  references:
-    version: 2
-    RefIds:
-    - rid: 9146333096703950926
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 6749352594431066442}
-        m_TrackedProperties:
-          items:
-          - rid: 9146333096703950927
-          - rid: 9146333096703950928
-          - rid: 9146333096703950929
-          - rid: 9146333096703950930
-    - rid: 9146333096703950927
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950928
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: ja
-          value: 1
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-        - localeIdentifier:
-            m_Code: tr
-          value: 1
-    - rid: 9146333096703950929
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 125
-        - localeIdentifier:
-            m_Code: ja
-          value: 125
-        - localeIdentifier:
-            m_Code: ru
-          value: 125
-        - localeIdentifier:
-            m_Code: tr
-          value: 125
-    - rid: 9146333096703950930
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -283.625
-        - localeIdentifier:
-            m_Code: ja
-          value: -273.42856
-        - localeIdentifier:
-            m_Code: ru
-          value: -283.625
-        - localeIdentifier:
-            m_Code: tr
-          value: -283.625
 --- !u!1 &6072073756575206576
 GameObject:
   m_ObjectHideFlags: 0
@@ -30549,7 +28781,6 @@ GameObject:
   - component: {fileID: 1889579550842974888}
   - component: {fileID: 6261395826755743092}
   - component: {fileID: 5772781317941064092}
-  - component: {fileID: 2081868255847440067}
   m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
@@ -30695,77 +28926,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &2081868255847440067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6253929723940645072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859307
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859307
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 8967937677163323259}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859308
-          - rid: 7406036111831859309
-          - rid: 7406036111831859310
-          - rid: 7406036111831859311
-    - rid: 7406036111831859308
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859309
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859310
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 200
-    - rid: 7406036111831859311
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -488
 --- !u!1 &6266987159942214692
 GameObject:
   m_ObjectHideFlags: 0
@@ -31051,7 +29211,6 @@ GameObject:
   - component: {fileID: 6108968456213430332}
   - component: {fileID: 5378428163581596768}
   - component: {fileID: 4884056440308622800}
-  - component: {fileID: 5286118827389174670}
   m_Layer: 5
   m_Name: beginnerFriendlyKeyboard
   m_TagString: Untagged
@@ -31116,47 +29275,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5286118827389174670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6301856579662239999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755582
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755582
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 4884056440308622800}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755583
-        m_UpdateType: 0
-    - rid: 6944366223613755583
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_Sprite
-        m_TypeString: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 21300000, guid: 530e9f9ccf16e1b499de73fb880a4715, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 21300000, guid: 19fc7852967f1a0459c3a3d30974a57e, type: 3}
-        - localeIdentifier:
-            m_Code: tr
-          value: {fileID: 21300000, guid: e7f965aaf5fac134791552184c5d9491, type: 3}
 --- !u!1 &6349002904600553349
 GameObject:
   m_ObjectHideFlags: 0
@@ -31256,7 +29374,6 @@ GameObject:
   - component: {fileID: 6613120725368884777}
   - component: {fileID: 6575401011215402486}
   - component: {fileID: 6243809929764796279}
-  - component: {fileID: 1410472275501691966}
   m_Layer: 5
   m_Name: Play_Tutorial
   m_TagString: Untagged
@@ -31378,89 +29495,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1410472275501691966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6349066388718919842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859229
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859229
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 4612511727512208874}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859230
-          - rid: 7406036111831859289
-          - rid: 7406036111831859290
-          - rid: 7406036111831859291
-          - rid: 7406036111831859292
-    - rid: 7406036111831859230
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 144
-        - localeIdentifier:
-            m_Code: ru
-          value: 220.9
-    - rid: 7406036111831859289
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859290
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859291
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 200
-    - rid: 7406036111831859292
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -40
 --- !u!1 &6365461481736002492
 GameObject:
   m_ObjectHideFlags: 0
@@ -32691,7 +30725,6 @@ GameObject:
   - component: {fileID: 1197043902381538037}
   - component: {fileID: 3825912825155117393}
   - component: {fileID: 5915918642839138317}
-  - component: {fileID: 2134013509071241969}
   m_Layer: 5
   m_Name: icon
   m_TagString: Untagged
@@ -32756,74 +30789,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2134013509071241969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6558774058809557705}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944365950684627083
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944365950684627083
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 1197043902381538037}
-        m_TrackedProperties:
-          items:
-          - rid: 6944365950684627084
-          - rid: 6944365950684627085
-          - rid: 6944365950684627086
-    - rid: 6944365950684627084
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -90.6
-        - localeIdentifier:
-            m_Code: ru
-          value: -121.6
-        - localeIdentifier:
-            m_Code: tr
-          value: -98.5
-    - rid: 6944365950684627085
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 0
-        - localeIdentifier:
-            m_Code: tr
-          value: 0
-    - rid: 6944365950684627086
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_LocalPosition.z
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 0
-        - localeIdentifier:
-            m_Code: tr
-          value: 0
 --- !u!1 &6569485924497816319
 GameObject:
   m_ObjectHideFlags: 0
@@ -33334,7 +31299,6 @@ GameObject:
   - component: {fileID: 6290860974802415344}
   - component: {fileID: 7208885153127256926}
   - component: {fileID: 22224260475996815}
-  - component: {fileID: 7165304513044828014}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -33399,65 +31363,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7165304513044828014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6650627745733440697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859232
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859232
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 6290860974802415344}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859233
-          - rid: 7406036111831859234
-          - rid: 7406036111831859235
-    - rid: 7406036111831859233
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_LocalPosition.z
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 0
-    - rid: 7406036111831859234
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: -105.5
-        - localeIdentifier:
-            m_Code: ru
-          value: -109.9
-    - rid: 7406036111831859235
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 0
 --- !u!1 &6659393057904382979
 GameObject:
   m_ObjectHideFlags: 0
@@ -33740,7 +31645,6 @@ GameObject:
   - component: {fileID: 679280713316859311}
   - component: {fileID: 7532990754463959270}
   - component: {fileID: 7205643084880897248}
-  - component: {fileID: 6403103425126031398}
   m_Layer: 5
   m_Name: CalibrateHands
   m_TagString: Untagged
@@ -33862,41 +31766,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6403103425126031398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6734878034686396615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366341201330245
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366341201330245
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 5778571552312299585}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366341201330246
-    - rid: 6944366341201330246
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 160
-        - localeIdentifier:
-            m_Code: ru
-          value: 220
 --- !u!1 &6737752934286982461
 GameObject:
   m_ObjectHideFlags: 0
@@ -34173,6 +32042,7 @@ MonoBehaviour:
   _closeClipLength: 1.2
   leftPages: []
   rightPages: []
+  _audioController: {fileID: 0}
 --- !u!114 &8822562253464970885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35869,7 +33739,6 @@ GameObject:
   - component: {fileID: 3872512505277679695}
   - component: {fileID: 6913727533376249326}
   - component: {fileID: 9129198694055511486}
-  - component: {fileID: 4028921024137143469}
   m_Layer: 5
   m_Name: Card_Games
   m_TagString: Untagged
@@ -35991,77 +33860,6 @@ MonoBehaviour:
           m_StringArgument: CardGame
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4028921024137143469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7077663701864232948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859250
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859250
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 5604556874841947076}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859251
-          - rid: 7406036111831859252
-          - rid: 7406036111831859253
-          - rid: 7406036111831859254
-    - rid: 7406036111831859251
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859252
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859253
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 100
-    - rid: 7406036111831859254
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -36
 --- !u!1 &7175846296497269258
 GameObject:
   m_ObjectHideFlags: 0
@@ -36759,7 +34557,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4052924404804802511}
   - component: {fileID: 7354908592027059659}
-  - component: {fileID: 4592552550944783556}
   m_Layer: 5
   m_Name: FPS Limit Container
   m_TagString: Untagged
@@ -36798,22 +34595,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7276522256539492066}
   m_CullTransparentMesh: 1
---- !u!114 &4592552550944783556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7276522256539492066}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 8408753339978229916}
-  plusButton: {fileID: 6726454697801233393}
-  valueText: {fileID: 7645321420872166164}
-  setting: 0
 --- !u!1 &7282636963757619400
 GameObject:
   m_ObjectHideFlags: 0
@@ -37107,7 +34888,6 @@ GameObject:
   - component: {fileID: 777486007306529330}
   - component: {fileID: 9161947901350510247}
   - component: {fileID: 2723348478355013554}
-  - component: {fileID: 5386083644535909823}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -37176,70 +34956,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Controls (VR)
---- !u!114 &5386083644535909823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7301245088533717858}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944366223613755563
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944366223613755563
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 2723348478355013554}
-        m_TrackedProperties:
-          items:
-          - rid: 6944366223613755564
-          - rid: 6944366223613755565
-          - rid: 6944366223613755566
-        m_UpdateType: 0
-    - rid: 6944366223613755564
-      type: {class: LocalizedStringProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_Localized:
-          m_TableReference:
-            m_TableCollectionName: GUID:efbe9bc29dd59eb42a59df4f42677fd4
-          m_TableEntryReference:
-            m_KeyId: 17412391020875776
-            m_Key: 
-          m_FallbackState: 0
-          m_WaitForCompletion: 0
-          m_LocalVariables: []
-        m_PropertyPath: m_Text
-    - rid: 6944366223613755565
-      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_Font
-        m_TypeString: UnityEngine.Font, UnityEngine.TextRenderingModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: {fileID: 12800000, guid: 3cd3c0eff46a0d3ad8682dfeb1ee4fac, type: 3}
-        - localeIdentifier:
-            m_Code: ru
-          value: {fileID: 12800000, guid: 3a90ca7629c19b7448d63871ddb6f491, type: 3}
-    - rid: 6944366223613755566
-      type: {class: EnumTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_FontData.m_HorizontalOverflow
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
 --- !u!1 &7314980559765578962
 GameObject:
   m_ObjectHideFlags: 0
@@ -38016,7 +35732,6 @@ GameObject:
   - component: {fileID: 1119521758382113145}
   - component: {fileID: 732664454811659801}
   - component: {fileID: 6768351268024005971}
-  - component: {fileID: 7513825953892661650}
   m_Layer: 5
   m_Name: Bathing
   m_TagString: Untagged
@@ -38138,77 +35853,6 @@ MonoBehaviour:
           m_StringArgument: Bathing
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7513825953892661650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478123390381519035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 7406036111831859260
-  references:
-    version: 2
-    RefIds:
-    - rid: 7406036111831859260
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 7844734969885288275}
-        m_TrackedProperties:
-          items:
-          - rid: 7406036111831859261
-          - rid: 7406036111831859262
-          - rid: 7406036111831859263
-          - rid: 7406036111831859264
-    - rid: 7406036111831859261
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859262
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 1
-    - rid: 7406036111831859263
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: 100
-    - rid: 7406036111831859264
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchoredPosition.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 0
-        - localeIdentifier:
-            m_Code: ru
-          value: -116
 --- !u!1 &7490360903824372947
 GameObject:
   m_ObjectHideFlags: 0
@@ -44860,7 +42504,6 @@ GameObject:
   - component: {fileID: 8482654474794600846}
   - component: {fileID: 5808977552818366758}
   - component: {fileID: 2409655102368965589}
-  - component: {fileID: 5357788995912195328}
   m_Layer: 5
   m_Name: Save And Quit
   m_TagString: Untagged
@@ -44983,44 +42626,6 @@ MonoBehaviour:
           m_StringArgument: clickCloseMenu
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5357788995912195328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9034139685056775055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6944365950684627078
-  references:
-    version: 2
-    RefIds:
-    - rid: 6944365950684627078
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 8105457053865500420}
-        m_TrackedProperties:
-          items:
-          - rid: 6944365950684627079
-    - rid: 6944365950684627079
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 135.4
-        - localeIdentifier:
-            m_Code: ru
-          value: 200
-        - localeIdentifier:
-            m_Code: tr
-          value: 150
 --- !u!1 &9044712131783886668
 GameObject:
   m_ObjectHideFlags: 0

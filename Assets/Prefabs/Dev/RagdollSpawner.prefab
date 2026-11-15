@@ -53,14 +53,14 @@ MonoBehaviour:
   spawnLocation: {fileID: 0}
   animationControllerName: {fileID: 9100000, guid: 1857307f2327dcc4abc2b1b4c40da69e, type: 2}
   extraFeaturesList:
-  - {fileID: 11400000, guid: fec516eb5421cbb4aa744a2e99ff15ef, type: 2}
+  - {fileID: 0}
   listContentObject: {fileID: 0}
   characterItemPrefab: {fileID: 954070384135345011, guid: 039910b2af2e0fe4a8e8bc47acc3b50d, type: 3}
   agentSpeed: 1.5
   agentRadius: 0.3
   agentHeight: 1.4
   stoppingDistance: 1
-  characterPrefab: {fileID: 3605110169217932567, guid: 868adafc5137cbc4082485d64c6244d0, type: 3}
+  characterPrefab: {fileID: 2238066804886852430, guid: 19f28e7155d0d6242bad4bb59e721ef6, type: 3}
   _physicsAttacher: {fileID: 0}
   _characterReader: {fileID: 0}
   loadedCharacters: []

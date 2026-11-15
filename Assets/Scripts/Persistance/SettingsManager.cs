@@ -126,7 +126,11 @@ public class SettingsManager : MonoBehaviour
 
     private void OnApplicationPause(bool paused) { if (paused) FlushSave(); }
     private void OnApplicationQuit() => FlushSave();
-    private void OnDestroy() { if (Instance == this) FlushSave(); }
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (Instance == this) FlushSave();
+    }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {

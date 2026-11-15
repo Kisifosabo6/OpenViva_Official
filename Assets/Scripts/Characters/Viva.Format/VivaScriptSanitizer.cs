@@ -7,6 +7,13 @@ public static class VivaScriptSanitizer
     private static HashSet<string> _allowedScripts = new();
     private static bool _initialized = false;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        _allowedScripts = new();
+        _initialized = false;
+    }
+
     public static void InitializeAllowedScripts()
     {
         if (_initialized) return;

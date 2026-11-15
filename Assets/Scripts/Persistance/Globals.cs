@@ -20,4 +20,16 @@ public static class Globals
 
     public static void RaiseBookOpened() => OnBookOpened?.Invoke();
     public static void RaiseFollowCalled() => OnFollowCalled?.Invoke();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        isMenuOpen = false;
+        allowMenuOpen = true;
+        handleMovement = true;
+        handleKBLook = true;
+        isDesktopMode = true;
+        OnBookOpened = null;
+        OnFollowCalled = null;
+    }
 }

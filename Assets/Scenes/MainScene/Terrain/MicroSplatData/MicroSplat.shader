@@ -34,8 +34,6 @@ Shader "Terrain 0 0"
       // for Unity 2020.3 bug
       _MainTex("Unity Bug", 2D) = "white" {}
 
-      _TerrainHeightmapTexture("", 2D) = "black" {}
-      _TerrainNormalmapTexture("", 2D) = "bump" {}
       _HybridHeightBlendDistance("Hybrid Blend Distance", Float) = 300
       [NoScaleOffset]_NoiseUV ("Noise UV texture", 2D) = "grey" {}
       _NoiseUVParams("Noise UV Params", Vector) = (1, 1, 0, 0)

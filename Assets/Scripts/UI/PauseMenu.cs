@@ -1,12 +1,23 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
-    [Header("Offsets")]
-    [SerializeField] private Vector3 positionOffset = new(0, -1f, 0f);
+    [Header("Book Orientation (Desktop)")]
+    [Tooltip("If true, positions book closer to camera at scaled size so hands do not obstruct button raycasts.")]
+    [SerializeField] private bool useCloserPlacement = true;
+    [SerializeField] private Vector3 closerDesktopCameraOffset = new(0f, -0.353f, 0.442f);
+    [SerializeField] private Vector3 closerDesktopCameraEuler = new(18f, 180f, 0f);
+    [SerializeField] private float closerDesktopScale = 0.2625f;
+
+    [Header("Legacy Handle Orientation")]
     [SerializeField] private Vector3 rotationOffset = new(45f, 180f, 0f);
+    [SerializeField] private Vector3 desktopPositionOffset = new(0f, -0.85f, 0f);
+    [SerializeField] private float desktopScale = 0.75f;
     [SerializeField] private GameObject menuHandleKB;
     [SerializeField] private GameObject menuHandleVR;
 
@@ -15,6 +26,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject bookMesh;
     [SerializeField] private GameObject LeftPage;
     [SerializeField] private GameObject RightPage;
+    [SerializeField] private Transform pageBoneL;
+    [SerializeField] private Transform pageBoneR;
 
     [Header("Animation Settings")]
     [SerializeField] private Animator bookAnimator;
@@ -29,14 +42,10 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private float _openClipLength = 0.6f;
     [SerializeField] private float _closeClipLength = 1.2f;
 
-    // --- Fields ---
     [SerializeField] private List<GameObject> leftPages = new();
     [SerializeField] private List<GameObject> rightPages = new();
 
     private Player _player;
-
-    private Vector3 targetPosition;
-    private Quaternion targetRotation;
 
     [SerializeField] private BookSFXController _audioController;
 
@@ -49,6 +58,8 @@ public class PauseMenu : MonoBehaviour
             bookAnimator = foundAnimator;
         }
 
+        EnsurePagesAttached();
+
         rootPage.SetActive(false);
         bookMesh.SetActive(false);
         LeftPage.SetActive(false);
@@ -58,9 +69,10 @@ public class PauseMenu : MonoBehaviour
         rightPages = GetDirectChildren(RightPage);
 
         AssignInputs();
+        EnsureInputModuleActive();
+        ConfigurePageEventCameras();
     }
 
-    #region Input Methods
     private void AssignInputs()
     {
         _player.Controls.Viva.Pause.performed += ctx => TogglePauseMenu();
@@ -68,7 +80,10 @@ public class PauseMenu : MonoBehaviour
 
     public void TogglePauseMenu()
     {
-        if (!Globals.allowMenuOpen) { return; }
+        if (!Globals.allowMenuOpen)
+        {
+            return;
+        }
 
         if (!Globals.isMenuOpen)
         {
@@ -80,12 +95,13 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    void OnBeginPauseInput()
+    private void OnBeginPauseInput()
     {
         StartOpenSequence();
-
         OrientPauseMenuToPlayer();
         Globals.isMenuOpen = true;
+        EnsureInputModuleActive();
+        ConfigurePageEventCameras();
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -97,10 +113,135 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    void OnExitPauseInput()
+    private Camera GetActiveEventCamera()
+    {
+        if (Globals.isDesktopMode)
+        {
+            if (menuHandleKB != null)
+            {
+                var cam = menuHandleKB.GetComponentInParent<Camera>();
+                if (cam != null && cam.isActiveAndEnabled) return cam;
+            }
+
+            var desktopCamGo = GameObject.Find("Main Camera KB");
+            if (desktopCamGo != null)
+            {
+                var cam = desktopCamGo.GetComponent<Camera>();
+                if (cam != null && cam.isActiveAndEnabled) return cam;
+            }
+        }
+        else
+        {
+            if (menuHandleVR != null)
+            {
+                var cam = menuHandleVR.GetComponentInParent<Camera>();
+                if (cam != null && cam.isActiveAndEnabled) return cam;
+            }
+
+            var vrCamGo = GameObject.Find("Player_Objects/Player/PlayerVR/Camera Offset/Main Camera");
+            if (vrCamGo != null)
+            {
+                var cam = vrCamGo.GetComponent<Camera>();
+                if (cam != null && cam.isActiveAndEnabled) return cam;
+            }
+        }
+
+        if (_player != null)
+        {
+            var cams = _player.GetComponentsInChildren<Camera>(false);
+            foreach (var cam in cams)
+            {
+                if (cam.isActiveAndEnabled && cam.name != "NoPostCamVR" && cam.name != "NoPostCamDesktop")
+                {
+                    return cam;
+                }
+            }
+        }
+
+        foreach (var c in Camera.allCameras)
+        {
+            if (c.isActiveAndEnabled && c.CompareTag("MainCamera"))
+            {
+                return c;
+            }
+        }
+
+        return Camera.main;
+    }
+
+    private void ConfigurePageEventCameras()
+    {
+        Camera cam = GetActiveEventCamera();
+        if (cam == null) return;
+
+        void ApplyToCanvases(GameObject go)
+        {
+            if (go == null) return;
+            foreach (var canvas in go.GetComponentsInChildren<Canvas>(true))
+            {
+                if (canvas.renderMode == RenderMode.WorldSpace)
+                {
+                    canvas.worldCamera = cam;
+                }
+            }
+            foreach (var raycaster in go.GetComponentsInChildren<GraphicRaycaster>(true))
+            {
+                raycaster.ignoreReversedGraphics = false;
+                raycaster.blockingObjects = GraphicRaycaster.BlockingObjects.None;
+            }
+        }
+
+        ApplyToCanvases(gameObject);
+        if (rootPage != null && rootPage.transform.parent != transform) ApplyToCanvases(rootPage);
+        if (LeftPage != null && LeftPage.transform.parent != transform) ApplyToCanvases(LeftPage);
+        if (RightPage != null && RightPage.transform.parent != transform) ApplyToCanvases(RightPage);
+    }
+
+    private void EnsureInputModuleActive()
+    {
+        var es = EventSystem.current != null ? EventSystem.current : FindFirstObjectByType<EventSystem>();
+        if (es == null) return;
+        EventSystem.current = es;
+
+        if (Globals.isDesktopMode)
+        {
+            var ism = es.GetComponent<InputSystemUIInputModule>();
+            if (ism == null)
+            {
+                ism = es.gameObject.AddComponent<InputSystemUIInputModule>();
+            }
+            if (!ism.enabled)
+            {
+                ism.enabled = true;
+            }
+
+            var sim = es.GetComponent<StandaloneInputModule>();
+            if (sim != null && sim.enabled)
+            {
+                sim.enabled = false;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if (Globals.isMenuOpen && Globals.isDesktopMode)
+        {
+            EnsureInputModuleActive();
+            if (LeftPage != null && LeftPage.activeSelf)
+            {
+                var c = LeftPage.GetComponent<Canvas>();
+                if (c != null && c.worldCamera == null)
+                {
+                    ConfigurePageEventCameras();
+                }
+            }
+        }
+    }
+
+    private void OnExitPauseInput()
     {
         StartCloseSequence();
-
         Globals.isMenuOpen = false;
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -112,9 +253,7 @@ public class PauseMenu : MonoBehaviour
             PlayerManager.Instance.VRRightInteractor.enableFarCasting = false;
         }
     }
-    #endregion
 
-    #region Animation Coroutines
     public void StartOpenSequence()
     {
         StopAllCoroutines();
@@ -129,90 +268,132 @@ public class PauseMenu : MonoBehaviour
 
     private IEnumerator OpenSequenceRoutine()
     {
-        // 0. Disable all pages first to prevent showing multiple
         if (rootPage != null && LeftPage != null && RightPage != null)
         {
             StartCoroutine(leftPages.DeactivateListAsync(batchSize: 3));
             StartCoroutine(rightPages.DeactivateListAsync(batchSize: 3));
-
             LeftPage.SetActive(false);
             RightPage.SetActive(false);
         }
 
-        // 1. Activate the book mesh
-        if (bookMesh != null) bookMesh.SetActive(true);
-        else Debug.LogWarning("bookMesh reference is null!", this);
+        if (bookMesh != null)
+        {
+            bookMesh.SetActive(true);
+        }
 
-        // 2. Play the open animation and audio
         PlayBookAnimation(openAnimationStateName);
         _audioController.BookOpened();
 
-        // 3. Wait for it
         yield return new WaitForSeconds(_openClipLength + extraWaitSeconds);
 
-        // 4. Enable the root page
         if (rootPage != null && LeftPage != null && RightPage != null)
         {
             LeftPage.SetActive(true);
             RightPage.SetActive(true);
-
             rootPage.SetActive(true);
-
-            // TODO: REMOVE THIS TEMPORARY FIX
-            Transform firstChild = RightPage.transform.GetChild(0);
-            if (firstChild != null)
-            {
-                firstChild.gameObject.SetActive(true);
-            }
+            ConfigurePageEventCameras();
         }
-        else Debug.LogWarning("rootPage reference is null!", this);
 
-        // 5. Tell everyone the book has been opened
         Globals.RaiseBookOpened();
     }
 
     private IEnumerator CloseSequenceRoutine()
     {
-        // 1. Hide pages first
         if (rootPage != null && LeftPage != null && RightPage != null)
         {
             StartCoroutine(leftPages.DeactivateListAsync(batchSize: 3));
             StartCoroutine(rightPages.DeactivateListAsync(batchSize: 3));
-
             LeftPage.SetActive(false);
             RightPage.SetActive(false);
         }
-        else Debug.LogWarning("rootPage reference is null!", this);
 
-        // 2. Play close animation and audio
         PlayBookAnimation(closeAnimationStateName);
         _audioController.BookClosed();
 
-        // 3. Wait for it
         yield return new WaitForSeconds(_closeClipLength + extraWaitSeconds);
 
-        // 4. Hide mesh (optional – comment out if you want to keep it visible)
-        if (bookMesh != null) bookMesh.SetActive(false);
-    }
-    #endregion
-
-    #region Helper Methods
-    void OrientPauseMenuToPlayer()
-    {
-        if (menuHandleKB.activeSelf)
+        if (bookMesh != null)
         {
-            menuHandleKB.transform.GetPositionAndRotation(out targetPosition, out targetRotation);
+            bookMesh.SetActive(false);
+        }
+    }
+
+    private void EnsurePagesAttached()
+    {
+        if (LeftPage != null)
+        {
+            if (LeftPage.transform.parent != transform)
+            {
+                LeftPage.transform.SetParent(transform, false);
+            }
+            var rtL = LeftPage.GetComponent<RectTransform>();
+            if (rtL != null)
+            {
+                rtL.localPosition = new Vector3(0.244f, 1.215f, 0.11f);
+                rtL.localRotation = Quaternion.Euler(25f, 173.2f, -2.2f);
+                rtL.localScale = Vector3.one * 0.001f;
+                rtL.sizeDelta = new Vector2(460f, 545f);
+            }
+        }
+
+        if (RightPage != null)
+        {
+            if (RightPage.transform.parent != transform)
+            {
+                RightPage.transform.SetParent(transform, false);
+            }
+            var rtR = RightPage.GetComponent<RectTransform>();
+            if (rtR != null)
+            {
+                rtR.localPosition = new Vector3(-0.221f, 1.215f, 0.11f);
+                rtR.localRotation = Quaternion.Euler(25f, 186.863f, 3f);
+                rtR.localScale = Vector3.one * 0.001f;
+                rtR.sizeDelta = new Vector2(460f, 545f);
+            }
+        }
+    }
+
+    private void OrientPauseMenuToPlayer()
+    {
+        EnsurePagesAttached();
+
+        Vector3 targetPosition;
+        Quaternion targetRotation;
+
+        if (Globals.isDesktopMode)
+        {
+            Camera cam = GetActiveEventCamera();
+            if (useCloserPlacement && cam != null)
+            {
+                targetPosition = cam.transform.TransformPoint(closerDesktopCameraOffset);
+                targetRotation = cam.transform.rotation * Quaternion.Euler(closerDesktopCameraEuler);
+                transform.localScale = Vector3.one * closerDesktopScale;
+            }
+            else if (menuHandleKB != null && menuHandleKB.activeSelf)
+            {
+                menuHandleKB.transform.GetPositionAndRotation(out targetPosition, out targetRotation);
+                targetRotation *= Quaternion.Euler(rotationOffset);
+                targetPosition += targetRotation * desktopPositionOffset;
+                transform.localScale = Vector3.one * desktopScale;
+            }
+            else
+            {
+                transform.GetPositionAndRotation(out targetPosition, out targetRotation);
+                transform.localScale = Vector3.one * desktopScale;
+            }
         }
         else
         {
-            menuHandleVR.transform.GetPositionAndRotation(out targetPosition, out targetRotation);
+            if (menuHandleVR != null)
+            {
+                menuHandleVR.transform.GetPositionAndRotation(out targetPosition, out targetRotation);
+            }
+            else
+            {
+                transform.GetPositionAndRotation(out targetPosition, out targetRotation);
+            }
+            transform.localScale = Vector3.one;
         }
-
-        // Apply rotation offset FIRST (order matters!)
-        targetRotation *= Quaternion.Euler(rotationOffset);
-
-        // Apply position offset in the rotated space (so "forward" respects the new rotation)
-        targetPosition += targetRotation * positionOffset;
 
         transform.SetPositionAndRotation(targetPosition, targetRotation);
     }
@@ -223,27 +404,24 @@ public class PauseMenu : MonoBehaviour
         {
             bookAnimator.CrossFade(name, 0f);
         }
-        else
-        {
-            Debug.LogError("Cannot play animation: Animator missing or state name empty.", this);
-        }
     }
 
-    List<GameObject> GetDirectChildren(GameObject parent)
+    private List<GameObject> GetDirectChildren(GameObject parent)
     {
-        List<GameObject> children = new List<GameObject>();
+        List<GameObject> children = new();
 
-        if (parent == null) return children;
+        if (parent == null)
+        {
+            return children;
+        }
 
         for (int i = 0; i < parent.transform.childCount; i++)
         {
-            Transform childTransform = parent.transform.GetChild(i);
-            children.Add(childTransform.gameObject);
+            children.Add(parent.transform.GetChild(i).gameObject);
         }
 
         return children;
     }
-    #endregion
 
     public void OnQuitGame()
     {

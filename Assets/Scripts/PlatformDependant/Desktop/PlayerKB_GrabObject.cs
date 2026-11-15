@@ -37,6 +37,7 @@ public class PlayerKB_GrabObject : MonoBehaviour
         {
             if (_isGrabbedInLeft == value) return;
             _isGrabbedInLeft = value;
+            if (value && !_didOnce) { _didOnce = true; OnGrabbed(); }
             OnGrabbedLeft?.Invoke(value);
         }
     }
@@ -49,6 +50,7 @@ public class PlayerKB_GrabObject : MonoBehaviour
         {
             if (_isGrabbedInRight == value) { return; }
             _isGrabbedInRight = value;
+            if (value && !_didOnce) { _didOnce = true; OnGrabbed(); }
             OnGrabbedRight?.Invoke(value);
         }
     }
@@ -198,13 +200,17 @@ public class PlayerKB_GrabObject : MonoBehaviour
 
     protected virtual void TriggerEntered(Collider collider, string hint)
     {
+        // When PlayerKB_GrabController is handling desktop interactions, it is the sole authority
+        // for grab detection, hints, and highlighting.
+        if (FindFirstObjectByType<PlayerKB_GrabController>() != null) return;
+
         if (collider == _playerLeftCollider || collider == _playerRightCollider)
         {
             _playerInRange = true;
             if (_outline != null && GetIsGrabbed() == 0) { _outline.enabled = true; }
             if (!_hintIsShowing && !_isGrabbedInLeft && !_isGrabbedInRight)
             {
-                _hud.CreateHint(hint);
+                if (_hud != null) _hud.CreateHint(hint);
                 _hintIsShowing = true;
             }
         }
@@ -217,11 +223,13 @@ public class PlayerKB_GrabObject : MonoBehaviour
 
     protected virtual void TriggerExited(Collider collider, string hint)
     {
+        if (FindFirstObjectByType<PlayerKB_GrabController>() != null) return;
+
         if (collider == _playerLeftCollider || collider == _playerRightCollider)
         {
             _playerInRange = false;
             if (_outline != null) { _outline.enabled = false; }
-            _hud.ClearHint(hint);
+            if (_hud != null) _hud.ClearHint(hint);
             _hintIsShowing = false;
         }
     }
@@ -308,15 +316,32 @@ public class PlayerKB_GrabObject : MonoBehaviour
         _isOpen = isOpen;
     }
 
+    private System.Action<UnityEngine.InputSystem.InputAction.CallbackContext> _leftGrabAction;
+    private System.Action<UnityEngine.InputSystem.InputAction.CallbackContext> _rightGrabAction;
+
     protected virtual void AssignInputs()
     {
-        _player.Controls.Viva.DesktopLeftGrab.performed += context => GrabLeft();
-        _player.Controls.Viva.DesktopRightGrab.performed += context => GrabRight();
+        // When PlayerKB_GrabController is handling desktop interactions, it is the sole authority
+        // for input-driven grabs. Avoid binding duplicate inputs that cause grabbing multiple objects at once.
+        if (FindFirstObjectByType<PlayerKB_GrabController>() != null) return;
+
+        if (_player != null && _player.Controls != null)
+        {
+            _leftGrabAction = context => GrabLeft();
+            _rightGrabAction = context => GrabRight();
+            _player.Controls.Viva.DesktopLeftGrab.performed += _leftGrabAction;
+            _player.Controls.Viva.DesktopRightGrab.performed += _rightGrabAction;
+        }
     }
 
     private void OnDestroy()
     {
         IsActive = false;
+        if (_player != null && _player.Controls != null)
+        {
+            if (_leftGrabAction != null) _player.Controls.Viva.DesktopLeftGrab.performed -= _leftGrabAction;
+            if (_rightGrabAction != null) _player.Controls.Viva.DesktopRightGrab.performed -= _rightGrabAction;
+        }
     }
 }
 #endif

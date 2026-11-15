@@ -222,7 +222,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: a6f7721b33a7f9a4cbd6378ad16ab66f, type: 3}
 --- !u!4 &1049610 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: a6f7721b33a7f9a4cbd6378ad16ab66f, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: a6f7721b33a7f9a4cbd6378ad16ab66f, type: 3}
   m_PrefabInstance: {fileID: 1049609}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1058235
@@ -2265,7 +2265,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: dc11db3212b64e94dae16147f9187e1f, type: 3}
 --- !u!4 &23410276 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 2510368229489765450, guid: dc11db3212b64e94dae16147f9187e1f, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1034922842029518310, guid: dc11db3212b64e94dae16147f9187e1f, type: 3}
   m_PrefabInstance: {fileID: 23410275}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &23738075
@@ -15381,7 +15381,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &77917165 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 77917164}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &77963414
@@ -17208,7 +17208,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &97567144 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 97567143}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &97936111
@@ -17393,6 +17393,71 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &101966774
+Light:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101966771}
+  m_Enabled: 1
+  serializedVersion: 12
+  m_Type: 2
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize2D: {x: 0.5, y: 0.5}
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!1001 &102793570
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29382,7 +29447,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &124288498 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 124288497}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &127120293
@@ -30228,7 +30293,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
 --- !u!4 &136453101 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7929895045562898418, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7500075711049600015, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
   m_PrefabInstance: {fileID: 136453100}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &137642097
@@ -32400,7 +32465,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &172641474 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 172641473}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &173525172 stripped
@@ -54329,7 +54394,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &325134045 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 325134044}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &325940748
@@ -70822,7 +70887,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &475091445 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 475091444}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &477500462 stripped
@@ -71574,7 +71639,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &489669930 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 489669929}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &490892829
@@ -74275,6 +74340,71 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!108 &526850315
+Light:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526850312}
+  m_Enabled: 1
+  serializedVersion: 12
+  m_Type: 2
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize2D: {x: 0.5, y: 0.5}
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!1001 &526870429
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -82732,7 +82862,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &570548069 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 190013404435463264, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 570548068}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &571018157 stripped
@@ -101653,7 +101783,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &635303122 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 635303121}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &635629389
@@ -102857,7 +102987,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &647187953 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 647187952}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &649957565
@@ -109343,7 +109473,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9feae628fa439694c8a8a2fc5536fc54, type: 3}
 --- !u!4 &670939970 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 8922390753562250581, guid: 9feae628fa439694c8a8a2fc5536fc54, type: 3}
+  m_CorrespondingSourceObject: {fileID: 897016156857107114, guid: 9feae628fa439694c8a8a2fc5536fc54, type: 3}
   m_PrefabInstance: {fileID: 670939969}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &671017616
@@ -111119,7 +111249,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &692480303 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 692480302}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &694278682
@@ -113673,7 +113803,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &720751498 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 720751497}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &722536472
@@ -138519,7 +138649,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &924173705 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 924173704}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &924999786
@@ -139627,7 +139757,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &936525774 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 936525773}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &938405793
@@ -146816,7 +146946,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &969432695 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 969432694}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &970544118
@@ -156595,7 +156725,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1038746830 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1038746829}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1039535311
@@ -158100,7 +158230,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1063892257 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1063892256}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1064067444
@@ -161956,7 +162086,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &1117223599 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 1117223598}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1118348340
@@ -164380,7 +164510,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1151147278 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1151147277}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1151322583 stripped
@@ -167633,7 +167763,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &1182167077 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 1182167076}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1182945151
@@ -175985,7 +176115,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
 --- !u!4 &1222751492 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7929895045562898418, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2488970358636597059, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
   m_PrefabInstance: {fileID: 1222751491}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1224251330 stripped
@@ -198540,7 +198670,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1411460280 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1411460279}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1411749146
@@ -199155,7 +199285,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1414487294}
   - component: {fileID: 1414487293}
-  - component: {fileID: 1414487292}
   - component: {fileID: 1414487291}
   - component: {fileID: 1414487290}
   m_Layer: 0
@@ -199222,33 +199351,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414487289}
   m_Mesh: {fileID: 974444947}
---- !u!114 &1414487292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414487289}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c21ba189070ecb24287301b1bacb34eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  splineContainer: {fileID: 1414487293}
-  meshFilter: {fileID: 1414487291}
-  lengthSegments: 168
-  widthSegments: 4
-  width: 2
-  tileLength: 1
-  verticalOffset: 0.01
-  collisionTracingLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  material: {fileID: 0}
-  raycastHeight: 50
-  raycastDistance: 100
-  initialTerrainOffset: 0.02
-  mirrorUV: 0
 --- !u!114 &1414487293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211282,7 +211384,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &1499798386 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 1499798385}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1500235175 stripped
@@ -211911,7 +212013,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &1506812702 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2573019465650319002, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 1506812701}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1508385683
@@ -212564,7 +212666,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1515269213 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1515269212}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1515574626
@@ -220302,7 +220404,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
 --- !u!4 &1546346412 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7929895045562898418, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2488970358636597059, guid: d288599f013e9e24d82fd9ba1cf7fe65, type: 3}
   m_PrefabInstance: {fileID: 1546346411}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1547295445
@@ -221632,7 +221734,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: a6f7721b33a7f9a4cbd6378ad16ab66f, type: 3}
 --- !u!4 &1556883613 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: a6f7721b33a7f9a4cbd6378ad16ab66f, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: a6f7721b33a7f9a4cbd6378ad16ab66f, type: 3}
   m_PrefabInstance: {fileID: 1556883612}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1557844371
@@ -253297,7 +253399,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: ad9bbd16abf69bb46ab47e6f3b2df68f, type: 3}
 --- !u!4 &1711366232 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 1919948677677701900, guid: ad9bbd16abf69bb46ab47e6f3b2df68f, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1703434333991156173, guid: ad9bbd16abf69bb46ab47e6f3b2df68f, type: 3}
   m_PrefabInstance: {fileID: 1711366231}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1712107960
@@ -256191,7 +256293,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1748250483 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1748250482}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1748699910
@@ -270060,7 +270162,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1851251843 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1851251842}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1852391051
@@ -270655,7 +270757,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1857467484 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1857467483}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1859257154
@@ -279343,7 +279445,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &1963343293 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 190013404435463264, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 1963343292}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1963817291 stripped
@@ -280092,7 +280194,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &1973916438 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300261282158514591, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 1973916437}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1975973506
@@ -280766,7 +280868,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1989474574}
   - component: {fileID: 1989474573}
-  - component: {fileID: 1989474572}
   m_Layer: 0
   m_Name: BambooGrove_WoodenPath
   m_TagString: Untagged
@@ -280774,19 +280875,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &1989474572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1989474571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6c4bc518a2c60a46a9ca50f27fda3b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  heightMultiplier: 0.02
 --- !u!205 &1989474573
 LODGroup:
   m_ObjectHideFlags: 0
@@ -297350,7 +297438,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &2069073989 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 2069073988}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2069094548
@@ -303617,7 +303705,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2087343527}
   - component: {fileID: 2087343526}
-  - component: {fileID: 2087343525}
   m_Layer: 0
   m_Name: CobblestonePath
   m_TagString: Untagged
@@ -303625,19 +303712,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2087343525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2087343524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6c4bc518a2c60a46a9ca50f27fda3b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  heightMultiplier: 0.02
 --- !u!205 &2087343526
 LODGroup:
   m_ObjectHideFlags: 0
@@ -309769,7 +309843,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
 --- !u!4 &2101460224 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 6603312324385533886, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
+  m_CorrespondingSourceObject: {fileID: 190013404435463264, guid: 9868643dcb038fa42ba6a20b15f5dffb, type: 3}
   m_PrefabInstance: {fileID: 2101460223}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2102312368 stripped
@@ -316377,7 +316451,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
 --- !u!4 &2126890893 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7067877790687248624, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1401169078631793190, guid: 658f7ea2f7f365c408408fbff99e18d4, type: 3}
   m_PrefabInstance: {fileID: 2126890892}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2127590402
@@ -323130,7 +323204,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -323878,7 +323952,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -324037,7 +324111,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -324637,7 +324711,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7890788546395865176}
-  - component: {fileID: 9036024040005793266}
   m_Layer: 0
   m_Name: Lights_Moon
   m_TagString: Untagged
@@ -325245,7 +325318,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -325528,26 +325601,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 400540369839119929}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!114 &1377429928538764543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3427044931231704089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 508bb3f117d2d954e9680b62bef9456e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enableCommunication: 1
-  _communicationRange: 50
-  _communicationTarget: {fileID: 0}
-  _beaconLight: {fileID: 0}
-  _thrusterParticles: {fileID: 0}
-  _satelliteRenderer: {fileID: 4495672827073757367}
-  _audioSource: {fileID: 0}
-  _communicationSound: {fileID: 0}
 --- !u!222 &1381185128380312035
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -325932,7 +325985,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -330941,7 +330994,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -333498,7 +333551,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: StartTime
         m_Mode: 1
@@ -333595,7 +333648,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1587695619228772641}
-  - component: {fileID: 8305185158483216830}
   - component: {fileID: 5796184793651454306}
   m_Layer: 0
   m_Name: BambooGrove_River
@@ -333856,7 +333908,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -333962,7 +334014,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: set_GameMinutesPerSecond
         m_Mode: 0
@@ -339630,7 +339682,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -339686,7 +339738,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -339965,6 +340017,8 @@ MonoBehaviour:
   RightHandOccupied: 0
   VRLeftHaptics: {fileID: 0}
   VRRightHaptics: {fileID: 0}
+  VRLeftInteractor: {fileID: 0}
+  VRRightInteractor: {fileID: 0}
 --- !u!1 &2848741036219698242
 GameObject:
   m_ObjectHideFlags: 0
@@ -340027,7 +340081,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -340375,33 +340429,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8025969821534211400}
   m_CullTransparentMesh: 1
---- !u!114 &3026039649328639384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7938689353291169046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32c332415ce01e3419059d8cd0a7bf85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 5205005425264302831}
-  _orbitPivot: {fileID: 1179472936918254500}
-  _orbitalPeriodDays: 20
-  _orbitRadius: 816
-  _orbitalInclination: 112.7
-  _orbitalRotation: 41
-  _orbitalOffset: 285
-  _eccentricity: 0
-  _lockForwardRotation: 0
-  _faceMovementDirection: 0
-  _faceOrbitCenter: 0
-  _noParallax: 1
-  _targetCamera: {fileID: 0}
-  _showOrbitPath: 1
-  _orbitPathColor: {r: 0, g: 1, b: 0.93225074, a: 1}
 --- !u!114 &3026767271184669055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340446,7 +340473,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeInstant
         m_Mode: 1
@@ -340587,7 +340614,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -340871,7 +340898,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: StopTime
         m_Mode: 1
@@ -340916,7 +340943,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7388823884970837129}
-  - component: {fileID: 5205005425264302831}
   m_Layer: 0
   m_Name: DNS_Controller
   m_TagString: Untagged
@@ -341099,7 +341125,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeSmoothBackwards
         m_Mode: 1
@@ -341280,8 +341306,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3157780221767008463}
-  - component: {fileID: 4187538983319833889}
-  - component: {fileID: 1377429928538764543}
   m_Layer: 0
   m_Name: Satellite
   m_TagString: Untagged
@@ -341728,7 +341752,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -341883,7 +341907,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -342311,7 +342335,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -347372,33 +347396,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &4187538983319833889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3427044931231704089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32c332415ce01e3419059d8cd0a7bf85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 5205005425264302831}
-  _orbitPivot: {fileID: 1179472936918254500}
-  _orbitalPeriodDays: 5
-  _orbitRadius: 679
-  _orbitalInclination: 117.4
-  _orbitalRotation: 0
-  _orbitalOffset: 233
-  _eccentricity: 0
-  _lockForwardRotation: 1
-  _faceMovementDirection: 1
-  _faceOrbitCenter: 0
-  _noParallax: 0
-  _targetCamera: {fileID: 0}
-  _showOrbitPath: 1
-  _orbitPathColor: {r: 0.20445704, g: 1, b: 0, a: 1}
 --- !u!1 &4193293162726448602
 GameObject:
   m_ObjectHideFlags: 0
@@ -348101,7 +348098,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -348364,7 +348361,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -349353,75 +349350,6 @@ RectTransform:
   m_AnchoredPosition: {x: 77.74909, y: -15}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5205005425264302831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3174964757334592837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a113bd25482be49b536f48e523739a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _liveUpdateProfile: 0
-  _startTimeOfDay: 9
-  _customTimeOfDay: 6
-  _gameMinutesPerSecond: 1
-  _resetMode: 0
-  _resetSpeed: 1
-  _sunLight: {fileID: 8174723004777398950}
-  _rotationPivot: {fileID: 5235564523527335674}
-  _eastWestRotation: 220
-  _sceneCamera: {fileID: 4385031975610287448}
-  _useSunDisk: 0
-  _sunShadowResolution: -1
-  _seasonalProfile: {fileID: 11400000, guid: 4cb845551617df641b7a025a2c25f851, type: 2}
-  _daysPerYear: 80
-  _currentDayOfYear: 1
-  _skyboxMode: 2
-  _proceduralSkyboxMaterial: {fileID: 2100000, guid: 782f66f1de9bd174887ecc812a60fcbd, type: 2}
-  _singleCubemapMaterial: {fileID: 0}
-  _cubemapBlendMaterial: {fileID: 2100000, guid: 2ebc84f6a3cf209459f7f0473bd77b9e, type: 2}
-  _customSkyboxMaterial: {fileID: 0}
-  _driveCustomProperties: 0
-  _propTexDay: _TexDay
-  _propTexNight: _TexNight
-  _propBlend: _Blend
-  _propExposure: _Exposure
-  _propRotation: _Rotation
-  _supportCubemapRotation: 1
-  _skyboxRotationMultiplier: 1
-  _skyboxRotationOffset: 0
-  _skyTintColorSpace: 0
-  _shadowSmoothSpeed: 3
-  _shadowBiasSmooth: 6
-  _invertBlendRotation: 1
-  _useAdvancedBlend: 0
-  _advancedBlendWasAutofilled: 0
-  _advancedBlend:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _celestialBodiesContainer: {fileID: 5422732647100166788}
-  _starsGameObject: {fileID: 5462543582983191094}
-  _useMoon: 1
-  _moonGameObject: {fileID: 1354070683054437204}
-  _moonRotationPivot: {fileID: 4257420932407925015}
-  _noParallax: 1
-  _moonOrbitalDays: 27
-  _lunarPhaseDays: 8
-  _moonOrbitRadius: 2500
-  _moonOrbitAxis: 23
-  _moonOrbitalInclination: 0
-  _enableFogControl: 1
-  _waterRenderer: {fileID: 0}
-  _waterColorProperty: _Color_Deep
-  _timeText: {fileID: 1949388749368656252}
-  _dateText: {fileID: 7430410209127593437}
 --- !u!224 &5221759752461678074
 RectTransform:
   m_ObjectHideFlags: 0
@@ -350719,7 +350647,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4778242236420563856}
-  - component: {fileID: 8596060727509323342}
   m_Layer: 0
   m_Name: Lights
   m_TagString: Untagged
@@ -350941,7 +350868,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -351427,7 +351354,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -351548,7 +351475,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeSmoothDynamic
         m_Mode: 1
@@ -351604,7 +351531,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -352109,7 +352036,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -352211,7 +352138,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -352637,7 +352564,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -353114,7 +353041,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -354815,7 +354742,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothBackwards
         m_Mode: 4
@@ -355504,7 +355431,6 @@ GameObject:
   - component: {fileID: 6748264911212868195}
   - component: {fileID: 1661368705561225}
   - component: {fileID: 138779521825315162}
-  - component: {fileID: 3026039649328639384}
   m_Layer: 0
   m_Name: FamousThing
   m_TagString: Untagged
@@ -360694,13 +360620,15 @@ MonoBehaviour:
   _playerController: {fileID: 7946801269259844082}
   _XRInputActionMananger: {fileID: 5310610610373575903}
   _XRInteractionManager: {fileID: 2939172478738186030}
+  _cameraTPD: {fileID: 0}
   _teleportStablizedOrigin: {fileID: 3958884689365128404}
   _VRLocomotion: {fileID: 3108674215471748460}
   _leftWristVRObjects: {fileID: 0}
   _rightWristVRObjects: {fileID: 0}
-  _camera: {fileID: 7858189308898785719}
+  _mainCamera: {fileID: 0}
   _leftWrist: {fileID: 7922984825346131692}
   _rightWrist: {fileID: 2926058298003530441}
+  _eventSystem: {fileID: 0}
   _VRActive: 0
 --- !u!114 &8203331556024822356
 MonoBehaviour:
@@ -360973,214 +360901,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2432114878227488457, guid: 9b4e84c97515f2341a906b802bb0125b, type: 3}
   m_PrefabInstance: {fileID: 5386055838223597267}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8305185158483216830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2202288262315856450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dce77aa98c116a140a42bc0ac746222b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  splineContainer: {fileID: 5796184793651454306}
-  meshFilter: {fileID: 99258461893253072}
-  tileLength: 1.5
-  prevtTileLength: 0
-  widthSegments: 8
-  prevWidthSegments: 0
-  width: 19.5
-  prevWidth: 0
-  terrainLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  material: {fileID: 2100000, guid: 2355913cb63cc994ca21a0cd5e198e1a, type: 2}
-  prevMaterial: {fileID: 0}
-  traceForTerrain: 1
-  prevTraceForTerrain: 0
-  prevVertCols:
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &8310503575725119785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361225,7 +360945,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -366240,7 +365960,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothForwards
         m_Mode: 4
@@ -366296,7 +366016,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -366573,90 +366293,6 @@ MonoBehaviour:
   m_ManipulationRotateSpeed: 180
   m_ManipulationRotateReferenceFrame: {fileID: 0}
   m_EnableDebugLines: 0
---- !u!114 &8596060727509323342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5599402284544335811}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b428e8d684001ad4aa68c02e4f7a3f37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 5205005425264302831}
-  _lights: []
-  _lightsOnTime: 17
-  _lightsOffTime: 6.1
-  _lightFlickerCount: 1
-  _lightRandomness: 600
-  _lightColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.8, b: 0.4, a: 1}
-    key1: {r: 1, g: 0.858, b: 0.574, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65109
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  _emissiveRenderers: []
-  _emissivesOnTime: 17
-  _emissivesOffTime: 6
-  _emissiveFlickerCount: 0
-  _emissiveRandomness: 2713
-  _emissiveColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.3160377, b: 0.3895213, a: 1}
-    key1: {r: 1, g: 0.6586509, b: 0.18396229, a: 1}
-    key2: {r: 0.3254717, g: 1, b: 0.36871076, a: 0}
-    key3: {r: 0.3160377, g: 0.55448323, b: 1, a: 0}
-    key4: {r: 1, g: 0.96936494, b: 0.28773582, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 16228
-    ctime2: 33704
-    ctime3: 49931
-    ctime4: 65535
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 5
-    m_NumAlphaKeys: 2
-  _emissionBrightness: 1
 --- !u!114 &8626351248625464207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367082,7 +366718,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToStartTimeSmoothForwards
         m_Mode: 1
@@ -367495,7 +367131,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -367551,7 +367187,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -367662,7 +367298,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeInstant
         m_Mode: 4
@@ -367718,7 +367354,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4
@@ -368002,90 +367638,6 @@ RectTransform:
   m_AnchoredPosition: {x: 77.74909, y: -15}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &9036024040005793266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937997023683770568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b428e8d684001ad4aa68c02e4f7a3f37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dayNightCycle: {fileID: 5205005425264302831}
-  _lights: []
-  _lightsOnTime: 17
-  _lightsOffTime: 6
-  _lightFlickerCount: 1
-  _lightRandomness: 600
-  _lightColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: 0
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  _emissiveRenderers: []
-  _emissivesOnTime: 17
-  _emissivesOffTime: 6
-  _emissiveFlickerCount: 0
-  _emissiveRandomness: 2713
-  _emissiveColorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 0.3160377, b: 0.3895213, a: 1}
-    key1: {r: 1, g: 0.6586509, b: 0.18396229, a: 1}
-    key2: {r: 0.3254717, g: 1, b: 0.36871076, a: 0}
-    key3: {r: 0.3160377, g: 0.55448323, b: 1, a: 0}
-    key4: {r: 1, g: 0.96936494, b: 0.28773582, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 16228
-    ctime2: 33704
-    ctime3: 49931
-    ctime4: 65535
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 5
-    m_NumAlphaKeys: 2
-  _emissionBrightness: 1
 --- !u!114 &9040583030530950878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368130,7 +367682,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5205005425264302831}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: itsmakingthings_daynightcycle.DayNightCycle, Assembly-CSharp
         m_MethodName: SetToCustomTimeSmoothDynamic
         m_Mode: 4

@@ -317,7 +317,11 @@ public class PlanarReflectionVolume : MonoBehaviour
 
         if (_reflectionCamera.WorldToViewportPoint(reflectionTarget.transform.position).z < 100000)
         {
-            UniversalRenderPipeline.RenderSingleCamera(context, _reflectionCamera);
+            var request = new UniversalRenderPipeline.SingleCameraRequest
+            {
+                destination = _reflectionTexture
+            };
+            RenderPipeline.SubmitRenderRequest(_reflectionCamera, request);
         }
 
         data.Restore();

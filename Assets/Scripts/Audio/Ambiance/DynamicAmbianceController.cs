@@ -9,6 +9,12 @@ public class DynamicAmbianceController : MonoBehaviour
 {
     public static DynamicAmbianceController Instance;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        Instance = null;
+    }
+
     [SerializeField] AudioMixerGroup _dynamicSFXGroup;
     private const string EXPOSED_PARAM_NAME = "DynamicAmbVolume";
 

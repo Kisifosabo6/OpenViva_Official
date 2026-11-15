@@ -759,7 +759,7 @@ SkinnedMeshRenderer:
   m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: -6091485654483175560, guid: 2e60f2348f88a2543b9ae149a3452e30, type: 3}
   m_Bones:
@@ -829,14 +829,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4012671587326610480}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.6946583, z: -0, w: 0.71933985}
-  m_LocalPosition: {x: 0.050000973, y: -0.20000458, z: 0.5289892}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7067423259830336338}
   - {fileID: 9191360378219226243}
-  m_Father: {fileID: 3173200985445524769}
+  m_Father: {fileID: 2506150752507773196}
   m_LocalEulerAnglesHint: {x: 0, y: -88, z: 0}
 --- !u!1 &4849311150904717472
 GameObject:
@@ -1181,7 +1181,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3969339698989648849}
   - {fileID: 7020730992770013796}
   m_Father: {fileID: 2506150752507773196}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1612,6 +1611,7 @@ GameObject:
   - component: {fileID: 7947032390745959534}
   - component: {fileID: 3720371476776749308}
   - component: {fileID: 3680349409495641241}
+  - component: {fileID: 1222255149236627724}
   m_Layer: 0
   m_Name: PlayerKB
   m_TagString: Player
@@ -1634,6 +1634,7 @@ Transform:
   m_Children:
   - {fileID: 7164467789329905354}
   - {fileID: 3173200985445524769}
+  - {fileID: 3969339698989648849}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7947032390745959534
@@ -1657,6 +1658,7 @@ MonoBehaviour:
   edgeRaycastLength: 0.26
   edgePushForce: 1
   _mouseSensitivity: 1
+  _updateTimeDelta: 1
   lookSmoothing: 0.05
   <JumpHeight>k__BackingField: 1
   _gravity: -9.81
@@ -1688,7 +1690,8 @@ MonoBehaviour:
   _characterController: {fileID: 3680349409495641241}
   _playerPrefab: {fileID: 4012671587326610480}
   _map: {fileID: 0}
-  _player: {fileID: 8713138953595759279}
+  _handsPhysicsController: {fileID: 1222255149236627724}
+  IsBagOpen: 0
 --- !u!143 &3680349409495641241
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1714,6 +1717,44 @@ CharacterController:
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.78, z: 0}
+--- !u!114 &1222255149236627724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8713138953595759279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2040f51a1d4bd446a838ab53d163b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHandsPhysicsController
+  _cameraTransform: {fileID: 3173200985445524769}
+  _playerArmature: {fileID: 9191360378219226243}
+  _leftWrist: {fileID: 1013450749199155755}
+  _rightWrist: {fileID: 8857824710722339895}
+  _characterController: {fileID: 3680349409495641241}
+  _playerPrefab: {fileID: 4012671587326610480}
+  _skinnedMeshRenderer: {fileID: 8939322195393388060}
+  _handDistance: 0.5
+  _minHandDistance: 0.35
+  _maxHandDistance: 0.85
+  _armatureRotationOffset: {x: -90, y: 0, z: 0}
+  _posSpring: 64
+  _rotSpring: 128
+  _teleportSqrDistance: 0.75
+  _mass: 8
+  _linearDamping: 45
+  _angularDamping: 35
+  _maxAngularVelocity: 64
+  _maxDepenetrationVelocity: 0.001
+  _colliderSize: {x: 0.06, y: 0.11, z: 0.03}
+  _colliderCenter: {x: 0, y: 0.105, z: -0.005}
+  _useOpenViva021WristPose: 1
+  _leftRigidBody: {fileID: 0}
+  _rightRigidBody: {fileID: 0}
+  _leftCollider: {fileID: 0}
+  _rightCollider: {fileID: 0}
 --- !u!1 &9009918983081804879
 GameObject:
   m_ObjectHideFlags: 0
@@ -1771,7 +1812,7 @@ Transform:
   m_GameObject: {fileID: 9181439154855158629}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23344536, y: 0, z: 0, w: 0.97236997}
-  m_LocalPosition: {x: -0.0000001937151, y: -0.19999695, z: 1.0000142}
+  m_LocalPosition: {x: -0.0000001937151, y: -0.19999695, z: 1.00014}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

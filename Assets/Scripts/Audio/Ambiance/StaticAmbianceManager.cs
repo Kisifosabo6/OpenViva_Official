@@ -6,6 +6,12 @@ public class StaticAmbianceManager : MonoBehaviour
 {
     public static StaticAmbianceManager Instance;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        Instance = null;
+    }
+
     private List<StaticAmbianceCollection> _ambianceCollections;
     private float[] _playPoints;
     private float _time = 0;

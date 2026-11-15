@@ -7005,7 +7005,7 @@ Camera:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
-  m_FOVAxisMode: 0
+  m_FOVAxisMode: 1
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
@@ -7035,7 +7035,7 @@ Camera:
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
-  m_TargetEye: 3
+  m_TargetEye: 0
   m_HDR: 1
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
@@ -7761,16 +7761,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ebcda83390f1854381e4be79953c7ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player_Manager
-  _changeInputType: {fileID: 6289251762265918995, guid: e11ac0d8fbe15c14f99019496ae95a6c, type: 3}
-  _playerKB: {fileID: 6035623113748730353}
-  _playerVR: {fileID: 5865423148677863148}
   _handSkin: {fileID: 5899278428300482943}
   _leftHandKB: {fileID: 4898988522826338508}
   _rightHandKB: {fileID: 4360877546320563217}
-  AnimationKB: {fileID: 5227702063050436759}
-  AnimationVR: {fileID: 4607818494391237548}
   LeftHandOccupied: 0
   RightHandOccupied: 0
+  VRLeftHaptics: {fileID: 0}
+  VRRightHaptics: {fileID: 0}
+  VRLeftInteractor: {fileID: 0}
+  VRRightInteractor: {fileID: 0}
 --- !u!1 &4360877546320563217
 GameObject:
   m_ObjectHideFlags: 0
@@ -11559,7 +11558,7 @@ Camera:
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
-  m_TargetEye: 3
+  m_TargetEye: 0
   m_HDR: 1
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0

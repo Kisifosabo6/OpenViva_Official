@@ -522,7 +522,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6643292032252768021}
   - component: {fileID: 3652859979551989705}
-  - component: {fileID: 7365867322979740120}
   m_Layer: 7
   m_Name: Resolution Container
   m_TagString: Untagged
@@ -561,22 +560,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1274340366581598801}
   m_CullTransparentMesh: 0
---- !u!114 &7365867322979740120
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1274340366581598801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 8257432180375855775}
-  plusButton: {fileID: 4753000274371228862}
-  valueText: {fileID: 7824281528332893454}
-  setting: 2
 --- !u!1 &1353531294710320161
 GameObject:
   m_ObjectHideFlags: 0
@@ -1130,8 +1113,6 @@ MonoBehaviour:
   setting: 0
   mode: 0
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &1648935188478355810
 GameObject:
   m_ObjectHideFlags: 0
@@ -1729,8 +1710,7 @@ MonoBehaviour:
     qualityLevel: 3
     resolutionScale: 100
     resolutionIndex: 0
-    reflectionDistance: 100
-    lodDistance: 200
+    lodBias: 1
     antiAliasing: 3
     shadowLevel: 3
     targetFramerate: 90
@@ -1746,11 +1726,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9fa850a7c16e86f4e9120adecb80c482, type: 2}
   - {fileID: 11400000, guid: 32057d9a59cc4064a9d60c5f74606254, type: 2}
   customAssetTemplate: {fileID: 11400000, guid: a826ec4f74c48444ab77fdc5ed6d7b1e, type: 2}
-  _audioMixer: {fileID: 24100000, guid: b0fb938c0102c7f45858aa76cf10e36e, type: 2}
+  audioMixer: {fileID: 0}
+  mainLightTag: MainLight
   OnSettingsChanged:
     m_PersistentCalls:
       m_Calls: []
-  mainLightTag: MainLight
 --- !u!1 &2947217858506409569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1988,7 +1968,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1141498392016407799}
   - component: {fileID: 4234664246926200508}
-  - component: {fileID: 8188465657936349718}
   m_Layer: 7
   m_Name: Reflection Container
   m_TagString: Untagged
@@ -2027,22 +2006,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3146004092371305277}
   m_CullTransparentMesh: 0
---- !u!114 &8188465657936349718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3146004092371305277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 8022707988707391342}
-  plusButton: {fileID: 2654001597655289542}
-  valueText: {fileID: 6345994794211487953}
-  setting: 1
 --- !u!1 &3419720538695603269
 GameObject:
   m_ObjectHideFlags: 0
@@ -2737,8 +2700,6 @@ MonoBehaviour:
   setting: 1
   mode: 0
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &4554935528333912489
 GameObject:
   m_ObjectHideFlags: 0
@@ -3101,8 +3062,6 @@ MonoBehaviour:
   setting: 3
   mode: 1
   displayText: {fileID: 0}
-  cycleTexts: []
-  suffix: 
 --- !u!1 &5076699977162262058
 GameObject:
   m_ObjectHideFlags: 0
@@ -4813,7 +4772,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5970105859617309245}
   - component: {fileID: 8484252978948387335}
-  - component: {fileID: 36537601512964806}
   m_Layer: 7
   m_Name: FPS Limit Container
   m_TagString: Untagged
@@ -4852,22 +4810,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7889241286102502972}
   m_CullTransparentMesh: 1
---- !u!114 &36537601512964806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7889241286102502972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4d0a3f7be785f42821dd774bfd19f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minusButton: {fileID: 588222821706916974}
-  plusButton: {fileID: 1060676215281238179}
-  valueText: {fileID: 8137206231330297492}
-  setting: 0
 --- !u!1 &9034748254184003463
 GameObject:
   m_ObjectHideFlags: 0
@@ -5225,7 +5167,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 5590177363877428010}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3471213535732636723, guid: bcbad7af1893107419ae6ee38315e018, type: 3}
+    - {fileID: 8289936201659423505, guid: bcbad7af1893107419ae6ee38315e018, type: 3}
+    - {fileID: 1707358336146716218, guid: bcbad7af1893107419ae6ee38315e018, type: 3}
     m_RemovedGameObjects:
     - {fileID: 7383250622504970235, guid: bcbad7af1893107419ae6ee38315e018, type: 3}
     m_AddedGameObjects:

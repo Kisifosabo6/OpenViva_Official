@@ -1613,11 +1613,12 @@ MonoBehaviour:
   _playerController: {fileID: 8313880024233911054}
   _XRInputActionMananger: {fileID: 6096594361700212259}
   _XRInteractionManager: {fileID: 3882782101157553618}
+  _cameraTPD: {fileID: 0}
   _teleportStablizedOrigin: {fileID: 3159460774320131624}
   _VRLocomotion: {fileID: 3894587600071724944}
   _leftWristVRObjects: {fileID: 4084252906814200047}
   _rightWristVRObjects: {fileID: 2423431203651480577}
-  _camera: {fileID: 8081012412789662539}
+  _mainCamera: {fileID: 0}
   _leftWrist: {fileID: 8132507841553996816}
   _rightWrist: {fileID: 3869457357643921461}
   _eventSystem: {fileID: 0}

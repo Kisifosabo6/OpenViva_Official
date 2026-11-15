@@ -6,6 +6,12 @@ public class ObjectPool : MonoBehaviour
 {
     public static ObjectPool instance;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        instance = null;
+    }
+
     [Header("Pool Settings")]
     [Tooltip("Size of a pool for each initizalied pool")]
     [SerializeField] private int poolSize = 20;
