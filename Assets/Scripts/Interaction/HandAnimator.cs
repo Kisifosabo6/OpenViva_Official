@@ -70,6 +70,26 @@ public class HandAnimator : MonoBehaviour
     float[] currentFingerCurls = new float[5];
     float[] targetFingerCurls = new float[5];
 
+    [Header("Wall Contact Flattening")]
+    [Tooltip("How much fingers flatten against a wall (0=normal, 1=fully flat against surface)")]
+    [Range(0f, 1f)]
+    public float wallContactAmount = 0f;
+    float currentWallContact = 0f;
+    public float wallFlattenSpeed = 10f;
+    [Tooltip("Thumb 1 pitch uncurl angle in degrees (Blender X -0.15 rad = -8.6 deg)")]
+    public float thumb1Pitch = -8.6f;
+    [Tooltip("Thumb 1 spread/abduction angle in degrees (Blender Z 0.25 rad = 14.3 deg)")]
+    public float thumb1Spread = 14.3f;
+    [Tooltip("Thumb 3 tip flatten angle in degrees (Blender X -0.1 rad = -5.7 deg)")]
+    public float thumb3Pitch = -5.7f;
+
+    [Header("Idle Life / Organic Breathing")]
+    [Tooltip("Enable subtle organic breathing & micro-motion when idle (feels alive without importing incompatible FBX clips)")]
+    public bool enableIdleLife = true;
+    public float idleBreathSpeed = 1.6f;
+    [Tooltip("Subtle curl variation (0.05 = ~4.5 degrees gentle breathing flexion)")]
+    public float idleBreathAmount = 0.06f;
+
     void Awake()
     {
         if (wrist == null)
@@ -113,6 +133,9 @@ public class HandAnimator : MonoBehaviour
         {
             currentFingerCurls[i] = Mathf.MoveTowards(currentFingerCurls[i], targetFingerCurls[i], poseBlendSpeed * Time.deltaTime);
         }
+
+        // Smooth blend wall contact flattening
+        currentWallContact = Mathf.MoveTowards(currentWallContact, wallContactAmount, wallFlattenSpeed * Time.deltaTime);
     }
 
     void LateUpdate()
@@ -134,10 +157,23 @@ public class HandAnimator : MonoBehaviour
             return;
         }
 
-        // Apply smoothed curl to each finger's 3 joints
-        for (int f = 0; f < 5; f++)
+        bool hasGesture = currentGesture != Gesture.None;
+        bool hasVrInput = currentGrip > 0.01f || currentTrigger > 0.01f;
+        bool hasWallContact = currentWallContact > 0.005f;
+
+        // Apply programmatic finger curls (VR inputs, gestures, or organic idle breathing)
+        if (hasGesture || hasVrInput || enableIdleLife)
         {
-            ApplyFingerCurl(f, currentFingerCurls[f]);
+            for (int f = 0; f < 5; f++)
+            {
+                ApplyFingerCurl(f, currentFingerCurls[f]);
+            }
+        }
+
+        // When contacting a wall, extend & flatten fingers against the wall plane
+        if (hasWallContact)
+        {
+            ApplyWallFlatten(currentWallContact);
         }
     }
 
@@ -153,6 +189,12 @@ public class HandAnimator : MonoBehaviour
     public void SetTrigger(float value)
     {
         targetTrigger = Mathf.Clamp01(value);
+    }
+
+    /// <summary>Set wall contact amount (0=normal, 1=fully flat against wall).</summary>
+    public void SetWallContact(float amount)
+    {
+        wallContactAmount = Mathf.Clamp01(amount);
     }
 
     /// <summary>Play the appropriate hold animation for a grabbed item.</summary>
@@ -221,14 +263,36 @@ public class HandAnimator : MonoBehaviour
 
     #region Finger Curling
 
-    /// <summary>Set target finger curls based on VR grip/trigger.</summary>
+    /// <summary>Set target finger curls based on VR grip/trigger or organic idle breathing.</summary>
     void EvaluateGripTriggerTargets()
     {
-        targetFingerCurls[0] = currentGrip * 0.7f;
-        targetFingerCurls[1] = currentTrigger;
-        targetFingerCurls[2] = currentGrip;
-        targetFingerCurls[3] = currentGrip;
-        targetFingerCurls[4] = currentGrip;
+        if (currentGrip > 0.01f || currentTrigger > 0.01f)
+        {
+            targetFingerCurls[0] = currentGrip * 0.7f;
+            targetFingerCurls[1] = currentTrigger;
+            targetFingerCurls[2] = currentGrip;
+            targetFingerCurls[3] = currentGrip;
+            targetFingerCurls[4] = currentGrip;
+        }
+        else if (enableIdleLife)
+        {
+            // Organic alive breathing & micro-motion for idle hands
+            float t = Time.time * idleBreathSpeed + (isLeftHand ? 0.7f : 0f);
+            float[] phaseOffsets = { 0.0f, 0.25f, 0.45f, 0.65f, 0.85f };
+
+            for (int f = 0; f < 5; f++)
+            {
+                float wave = Mathf.Sin(t + phaseOffsets[f]);
+                targetFingerCurls[f] = Mathf.Clamp01(0.02f + (wave * 0.5f + 0.5f) * idleBreathAmount);
+            }
+        }
+        else
+        {
+            for (int f = 0; f < 5; f++)
+            {
+                targetFingerCurls[f] = 0f;
+            }
+        }
     }
 
     /// <summary>Set target finger curls based on active gesture.</summary>
@@ -333,6 +397,41 @@ public class HandAnimator : MonoBehaviour
             Quaternion curled = rest * Quaternion.Euler(maxAngle * jointScale, 0f, 0f);
 
             fingerBones[boneIndex].localRotation = Quaternion.Slerp(rest, curled, curl);
+        }
+    }
+
+    /// <summary>Flatten and extend fingers against a wall surface to prevent clipping (matching Blender reference pose).</summary>
+    void ApplyWallFlatten(float weight)
+    {
+        // 1. Index, Middle, Ring, Pinky (fingers 1 to 4):
+        // In Blender, 0,0,0 rotation corresponds to the flat rest pose.
+        // Slerp from current curl towards the flat rest pose!
+        for (int f = 1; f < 5; f++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                int boneIndex = f * 3 + j;
+                if (boneIndex >= fingerBones.Length || fingerBones[boneIndex] == null) continue;
+
+                fingerBones[boneIndex].localRotation = Quaternion.Slerp(fingerBones[boneIndex].localRotation, restPose[boneIndex], weight);
+            }
+        }
+
+        // 2. Thumb (finger 0) with user's exact Blender reference pose:
+        // thumb1_l: X -0.15 rad (-8.6 deg), Z +0.25 rad (+14.3 deg)
+        // thumb1_r: X -0.15 rad (-8.6 deg), Z -0.25 rad (-14.3 deg)
+        // thumb2: 0, 0, 0
+        // thumb3: X -0.1 rad (-5.7 deg)
+        if (fingerBones.Length >= 3 && fingerBones[0] != null && fingerBones[1] != null && fingerBones[2] != null)
+        {
+            float thumbZ = isLeftHand ? thumb1Spread : -thumb1Spread;
+            Quaternion flatThumb1 = restPose[0] * Quaternion.Euler(thumb1Pitch, 0f, thumbZ);
+            fingerBones[0].localRotation = Quaternion.Slerp(fingerBones[0].localRotation, flatThumb1, weight);
+
+            fingerBones[1].localRotation = Quaternion.Slerp(fingerBones[1].localRotation, restPose[1], weight);
+
+            Quaternion flatThumb3 = restPose[2] * Quaternion.Euler(thumb3Pitch, 0f, 0f);
+            fingerBones[2].localRotation = Quaternion.Slerp(fingerBones[2].localRotation, flatThumb3, weight);
         }
     }
 

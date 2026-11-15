@@ -91,6 +91,13 @@ public class DesktopHandDriver : MonoBehaviour
     [Tooltip("Maximum allowed distance between physics hand and target before snapping")]
     public float maxDriftDistance = 1.5f;
 
+    [Header("Pause Menu Transition")]
+    [Tooltip("Camera-local position offset applied to hands when pause menu is open to keep them out of view")]
+    public Vector3 pauseHandOffset = new Vector3(0f, -0.35f, -0.1f);
+    [Tooltip("Speed to lower/raise hands when entering/exiting pause menu")]
+    public float pauseTransitionSpeed = 8f;
+    private float currentPauseBlend = 0f;
+
     // Offsets & targets
     Vector3 leftCameraOffset;
     Vector3 rightCameraOffset;
@@ -238,6 +245,30 @@ public class DesktopHandDriver : MonoBehaviour
         if (hand == null || hand.HandRigidbody == null) return;
         hand.isKinematicallyDriven = false;
         hand.HandRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+        hand.HandRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        hand.HandRigidbody.mass = 6f;
+        hand.HandRigidbody.linearDamping = 4f;
+        hand.HandRigidbody.angularDamping = 25f;
+        hand.HandRigidbody.maxAngularVelocity = 64f;
+        hand.teleportThreshold = maxDriftDistance;
+
+        // Upgrade collider to elongated BoxCollider matching openviva021 (covering palm and fingers)
+        var sphere = hand.GetComponent<SphereCollider>();
+        var box = hand.GetComponent<BoxCollider>();
+        if (box == null)
+        {
+            if (sphere != null) Destroy(sphere);
+            box = hand.gameObject.AddComponent<BoxCollider>();
+        }
+        else if (sphere != null)
+        {
+            Destroy(sphere);
+        }
+        // Palm and fingers extend along local Y (15cm length, 6cm width, 4cm thickness)
+        box.size = new Vector3(0.06f, 0.15f, 0.04f);
+        box.center = new Vector3(0f, 0.075f, 0f);
+        box.isTrigger = false;
+        hand.handCollider = box;
     }
 
     HandGrabSystem CreatePhysicsHand(string name, bool isLeft, Vector3 localOffset, Quaternion localRot)
@@ -251,25 +282,27 @@ public class DesktopHandDriver : MonoBehaviour
         go.transform.rotation = spawnRot;
 
         var rb = go.AddComponent<Rigidbody>();
-        rb.mass = 5f;
+        rb.mass = 6f;
         rb.useGravity = false;
         rb.isKinematic = false;
-        rb.linearDamping = 0f;
-        rb.angularDamping = 0f;
+        rb.linearDamping = 4f;
+        rb.angularDamping = 25f;
         rb.maxAngularVelocity = 64f;
         rb.maxDepenetrationVelocity = 0.001f;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        var sphereCol = go.AddComponent<SphereCollider>();
-        sphereCol.radius = 0.08f;
-        sphereCol.isTrigger = false;
+        var boxCol = go.AddComponent<BoxCollider>();
+        boxCol.size = new Vector3(0.06f, 0.15f, 0.04f);
+        boxCol.center = new Vector3(0f, 0.075f, 0f);
+        boxCol.isTrigger = false;
 
         var grab = go.AddComponent<HandGrabSystem>();
         grab.isLeftHand = isLeft;
         grab.gripPoint = go.transform;
-        grab.handCollider = sphereCol;
+        grab.handCollider = boxCol;
         grab.isKinematicallyDriven = false;
+        grab.teleportThreshold = maxDriftDistance;
 
         return grab;
     }
@@ -302,7 +335,7 @@ public class DesktopHandDriver : MonoBehaviour
     void FixedUpdate()
     {
         if (!initialized || cameraTransform == null) return;
-        if (!Globals.isDesktopMode || Globals.isMenuOpen) return;
+        if (!Globals.isDesktopMode) return;
 
         // Keep offsets in sync with Inspector values for live tweaking
         leftCameraOffset = leftRestOffset;
@@ -310,9 +343,11 @@ public class DesktopHandDriver : MonoBehaviour
         leftRotOffset = Quaternion.Euler(leftRestEuler);
         rightRotOffset = Quaternion.Euler(rightRestEuler);
 
+        Vector3 activePauseOffset = pauseHandOffset * currentPauseBlend;
+
         // Keep targets updated in FixedUpdate and pass camera velocity for smooth physics tracking
-        UpdateHandTargetFixed(leftHandGrab, leftCameraOffset, leftRotOffset);
-        UpdateHandTargetFixed(rightHandGrab, rightCameraOffset, rightRotOffset);
+        UpdateHandTargetFixed(leftHandGrab, leftCameraOffset + activePauseOffset, leftRotOffset);
+        UpdateHandTargetFixed(rightHandGrab, rightCameraOffset + activePauseOffset, rightRotOffset);
     }
 
     void UpdateHandTargetFixed(HandGrabSystem hand, Vector3 camOffset, Quaternion rotOffset)
@@ -343,24 +378,40 @@ public class DesktopHandDriver : MonoBehaviour
     void LateUpdate()
     {
         if (!initialized || cameraTransform == null) return;
-        if (!Globals.isDesktopMode || Globals.isMenuOpen) return;
+        if (!Globals.isDesktopMode) return;
 
         float dt = Time.deltaTime;
         if (dt <= 0.00001f) return;
 
-        // 1. Calculate camera kinematics (velocity, acceleration, angular velocity)
-        UpdateCameraKinematics(dt);
+        // Smoothly blend hands between gameplay rest pose and lowered pause-menu pose
+        float targetPauseBlend = Globals.isMenuOpen ? 1f : 0f;
+        currentPauseBlend = Mathf.MoveTowards(currentPauseBlend, targetPauseBlend, pauseTransitionSpeed * dt);
 
-        // 2. Calculate dynamic camera-space offsets (inertia, sway, bobbing)
-        currentDynamicPosOffset = CalculateDynamicOffset(dt);
-        currentDynamicRotOffset = CalculateDynamicRotationOffset(dt);
+        if (Globals.isMenuOpen)
+        {
+            // Dampen dynamic sway, inertia, and reach extension smoothly to zero during pause
+            currentDynamicPosOffset = Vector3.Lerp(currentDynamicPosOffset, Vector3.zero, 12f * dt);
+            currentDynamicRotOffset = Quaternion.Slerp(currentDynamicRotOffset, Quaternion.identity, 12f * dt);
+            currentReach = Mathf.Lerp(currentReach, 0f, 12f * dt);
+        }
+        else
+        {
+            // 1. Calculate camera kinematics (velocity, acceleration, angular velocity)
+            UpdateCameraKinematics(dt);
 
-        // 3. Smooth reach extension from mouse scroll
-        currentReach = Mathf.Lerp(currentReach, targetReach, reachSmoothSpeed * dt);
+            // 2. Calculate dynamic camera-space offsets (inertia, sway, bobbing)
+            currentDynamicPosOffset = CalculateDynamicOffset(dt);
+            currentDynamicRotOffset = CalculateDynamicRotationOffset(dt);
+
+            // 3. Smooth reach extension from mouse scroll
+            currentReach = Mathf.Lerp(currentReach, targetReach, reachSmoothSpeed * dt);
+        }
+
+        Vector3 activePauseOffset = pauseHandOffset * currentPauseBlend;
 
         // 4. Update visual hands and synchronize with physics
-        UpdateHand(leftWristBone, leftHandGrab, leftCameraOffset, leftRotOffset, currentDynamicPosOffset, currentDynamicRotOffset);
-        UpdateHand(rightWristBone, rightHandGrab, rightCameraOffset, rightRotOffset, currentDynamicPosOffset, currentDynamicRotOffset);
+        UpdateHand(leftWristBone, leftHandGrab, leftCameraOffset + activePauseOffset, leftRotOffset, currentDynamicPosOffset, currentDynamicRotOffset);
+        UpdateHand(rightWristBone, rightHandGrab, rightCameraOffset + activePauseOffset, rightRotOffset, currentDynamicPosOffset, currentDynamicRotOffset);
     }
 
     void UpdateCameraKinematics(float dt)
@@ -537,7 +588,11 @@ public class DesktopHandDriver : MonoBehaviour
         Vector3 expectedPos = targetWorldPos;
 
         // 2. Obstacle / Wall avoidance from player shoulder towards target:
-        // Clamps target position in front of walls so it NEVER penetrates inside geometry!
+        // Clamps target position in front of walls and accounts for forward finger length so fingers NEVER clip!
+        Vector3 nearestHitNormal = Vector3.zero;
+        bool hitObstacle = false;
+        float hitWallPenetration = 0f;
+
         if (enableWallCollision)
         {
             Vector3 shoulderOrigin = cameraTransform.position;
@@ -549,12 +604,13 @@ public class DesktopHandDriver : MonoBehaviour
             if (targetDist > 0.02f)
             {
                 Vector3 rayDir = toTarget / targetDist;
-                float handRadius = 0.065f;
+                float handRadius = 0.055f;
+                float fingerForwardReach = 0.14f; // Finger length from wrist to fingertips
                 int layerMask = ~LayerMask.GetMask("Ignore Raycast");
 
-                var hits = Physics.SphereCastAll(shoulderOrigin, handRadius, rayDir, targetDist, layerMask, QueryTriggerInteraction.Ignore);
+                // Cast through the full reach of the hand including fingertips
+                var hits = Physics.SphereCastAll(shoulderOrigin, handRadius, rayDir, targetDist + fingerForwardReach, layerMask, QueryTriggerInteraction.Ignore);
                 float nearestHitDist = float.MaxValue;
-                bool hitObstacle = false;
 
                 if (hits != null && hits.Length > 0)
                 {
@@ -564,6 +620,7 @@ public class DesktopHandDriver : MonoBehaviour
                         if (h.distance < nearestHitDist)
                         {
                             nearestHitDist = h.distance;
+                            nearestHitNormal = h.normal;
                             hitObstacle = true;
                         }
                     }
@@ -571,7 +628,16 @@ public class DesktopHandDriver : MonoBehaviour
 
                 if (hitObstacle)
                 {
-                    float clampedDist = Mathf.Max(0.02f, nearestHitDist);
+                    // Calculate how much fingertips extend past the obstacle surface
+                    float reachAhead = (targetDist + fingerForwardReach) - nearestHitDist;
+                    hitWallPenetration = Mathf.Clamp01(reachAhead / fingerForwardReach);
+
+                    // When hand stands up against a wall, effective forward reach from wrist is palm thickness (~0.038m),
+                    // allowing the palm to physically touch the wall instead of floating in mid-air!
+                    float palmThickness = 0.038f;
+                    float effectiveReach = Mathf.Lerp(fingerForwardReach, palmThickness, hitWallPenetration);
+
+                    float clampedDist = Mathf.Max(0.04f, nearestHitDist - effectiveReach);
                     expectedPos = shoulderOrigin + rayDir * clampedDist;
                 }
             }
@@ -587,8 +653,9 @@ public class DesktopHandDriver : MonoBehaviour
         // 3. Measure physical deflection (how much PhysX has stopped the hand against an obstacle)
         float driftSqr = (physicsPos - expectedPos).sqrMagnitude;
 
-        // Only snap physics hand if it has separated by a massive distance in open air (e.g. game teleport)
-        if (driftSqr > 4.0f && cameraVelocity.sqrMagnitude > 25f)
+        // Distance snap trigger: If physics hand has separated by more than maxDriftDistance, snap it!
+        // Never gets stuck behind pillars, corners, or geometry when walking away!
+        if (driftSqr > maxDriftDistance * maxDriftDistance)
         {
             hand.transform.position = expectedPos;
             hand.transform.rotation = expectedRot;
@@ -603,16 +670,44 @@ public class DesktopHandDriver : MonoBehaviour
             driftSqr = 0f;
         }
 
-        // 4. Smooth visual placement:
-        // In open air: visual hand follows expectedPos (100% stable, zero shake, smooth acceleration & bobbing).
-        // At walls: expectedPos already stops at wall surface, and any secondary PhysX deflection blends seamlessly.
+        // 4. Smooth visual placement & wall-conforming rotation (standing up & angling):
         Vector3 finalPos = expectedPos;
         Quaternion finalRot = expectedRot;
+
+        // If touching a wall, tilt the hand to stand up along the surface (matching openviva021)
+        if (hitObstacle && nearestHitNormal.sqrMagnitude > 0.01f && hitWallPenetration > 0.01f)
+        {
+            // Calculate upright vector along the wall surface
+            Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, nearestHitNormal).normalized;
+            if (wallUp.sqrMagnitude < 0.01f)
+                wallUp = Vector3.ProjectOnPlane(cameraTransform.up, nearestHitNormal).normalized;
+
+            // Pitch tilt axis parallel to wall surface (horizontal contact tangent)
+            Vector3 tiltAxis = -Vector3.Cross(nearestHitNormal, wallUp).normalized;
+
+            if (tiltAxis.sqrMagnitude > 0.01f)
+            {
+                // Pitch fingers UP along the wall surface (up to 55 degrees)
+                // Natural pitch angle prevents over-rotating and never turns away horizontally
+                float tiltAngle = Mathf.Lerp(0f, 55f, hitWallPenetration);
+                Quaternion wallPitch = Quaternion.AngleAxis(tiltAngle, tiltAxis);
+                expectedRot = wallPitch * expectedRot;
+                finalRot = expectedRot;
+            }
+        }
 
         if (enableWallCollision && driftSqr > 0.0004f) // > 2cm deflection
         {
             float driftDist = Mathf.Sqrt(driftSqr);
             float blend = Mathf.Clamp01((driftDist - 0.02f) / 0.06f);
+
+            // If player pulls away beyond visual arm extension (e.g. 0.35m), fade blend so visual hand doesn't stretch
+            if (driftDist > 0.35f)
+            {
+                float fadeOut = Mathf.Clamp01((driftDist - 0.35f) / 0.25f);
+                blend *= (1f - fadeOut);
+            }
+
             finalPos = Vector3.Lerp(expectedPos, physicsPos, blend);
             finalRot = Quaternion.Slerp(expectedRot, hand.transform.rotation, blend);
         }
@@ -620,6 +715,13 @@ public class DesktopHandDriver : MonoBehaviour
         // 5. Set visual wrist bone directly
         bone.position = finalPos;
         bone.rotation = finalRot;
+
+        // Update finger flattening on HandAnimator to prevent clipping
+        var handAnim = bone.GetComponent<HandAnimator>() ?? bone.GetComponentInChildren<HandAnimator>();
+        if (handAnim != null)
+        {
+            handAnim.SetWallContact(hitWallPenetration);
+        }
 
         // Ensure child hand bone (hand_l/hand_r) stays locked at wrist origin
         for (int i = 0; i < bone.childCount; i++)

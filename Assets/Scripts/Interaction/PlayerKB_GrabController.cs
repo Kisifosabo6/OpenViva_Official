@@ -68,6 +68,12 @@ public class PlayerKB_GrabController : MonoBehaviour
     // Interaction cooldown
     float interactCooldown;
 
+    // Point gesture tracking on empty click
+    bool leftGrabHeld;
+    bool rightGrabHeld;
+    float leftPointDuration;
+    float rightPointDuration;
+
     void Awake()
     {
         Instance = this;
@@ -75,7 +81,9 @@ public class PlayerKB_GrabController : MonoBehaviour
 
         // Grab bindings
         playerInput.Viva.DesktopLeftGrab.performed += OnLeftGrab;
+        playerInput.Viva.DesktopLeftGrab.canceled += OnLeftGrabReleased;
         playerInput.Viva.DesktopRightGrab.performed += OnRightGrab;
+        playerInput.Viva.DesktopRightGrab.canceled += OnRightGrabReleased;
 
         // Interact (E key)
         playerInput.Viva.UniversalInteract.performed += OnInteract;
@@ -104,6 +112,17 @@ public class PlayerKB_GrabController : MonoBehaviour
     void Start()
     {
         SubscribeToHands();
+
+        // Fallback auto-find hand animators if not wired in inspector
+        if (leftHandAnimator == null || rightHandAnimator == null)
+        {
+            var anims = GetComponentsInChildren<HandAnimator>(true);
+            foreach (var a in anims)
+            {
+                if (a.isLeftHand && leftHandAnimator == null) leftHandAnimator = a;
+                else if (!a.isLeftHand && rightHandAnimator == null) rightHandAnimator = a;
+            }
+        }
     }
 
     void SubscribeToHands()
@@ -149,6 +168,25 @@ public class PlayerKB_GrabController : MonoBehaviour
         // Crosshair is disabled/hidden by default unless explicitly configured and enabled
         if (interactCooldown > 0f)
             interactCooldown -= Time.deltaTime;
+
+        // Auto-release point gesture after minimum duration if mouse button was released
+        if (leftPointDuration > 0f)
+        {
+            leftPointDuration -= Time.deltaTime;
+            if (leftPointDuration <= 0f && !leftGrabHeld && leftHandAnimator != null && leftHandAnimator.CurrentGesture == HandAnimator.Gesture.Point)
+            {
+                leftHandAnimator.ClearGesture();
+            }
+        }
+
+        if (rightPointDuration > 0f)
+        {
+            rightPointDuration -= Time.deltaTime;
+            if (rightPointDuration <= 0f && !rightGrabHeld && rightHandAnimator != null && rightHandAnimator.CurrentGesture == HandAnimator.Gesture.Point)
+            {
+                rightHandAnimator.ClearGesture();
+            }
+        }
 
         UpdateCameraHighlight();
     }
@@ -208,6 +246,55 @@ public class PlayerKB_GrabController : MonoBehaviour
         if (nearby != null && CanHandReachItem(hand, nearby, out _))
         {
             hand.GrabItem(nearby);
+            return;
+        }
+
+        // 3. No object to pick up or interact with -> Point with index finger!
+        TriggerPointGesture(hand == leftHand);
+    }
+
+    void OnLeftGrabReleased(InputAction.CallbackContext ctx)
+    {
+        leftGrabHeld = false;
+        if (leftPointDuration <= 0f && leftHandAnimator != null && leftHandAnimator.CurrentGesture == HandAnimator.Gesture.Point)
+        {
+            leftHandAnimator.ClearGesture();
+        }
+    }
+
+    void OnRightGrabReleased(InputAction.CallbackContext ctx)
+    {
+        rightGrabHeld = false;
+        if (rightPointDuration <= 0f && rightHandAnimator != null && rightHandAnimator.CurrentGesture == HandAnimator.Gesture.Point)
+        {
+            rightHandAnimator.ClearGesture();
+        }
+    }
+
+    void TriggerPointGesture(bool isLeft)
+    {
+        HandAnimator animator = isLeft ? leftHandAnimator : rightHandAnimator;
+        if (animator == null) return;
+
+        animator.PlayGesture(HandAnimator.Gesture.Point);
+        if (isLeft)
+        {
+            leftGrabHeld = true;
+            leftPointDuration = 0.35f;
+        }
+        else
+        {
+            rightGrabHeld = true;
+            rightPointDuration = 0.35f;
+        }
+
+        // Broadcast pointing to nearby NPCs / dolls
+        var colliders = Physics.OverlapSphere(transform.position, 8f);
+        foreach (var col in colliders)
+        {
+            var receiver = col.GetComponentInParent<IGestureReceiver>();
+            if (receiver != null)
+                receiver.OnPlayerGesture("point", transform);
         }
     }
 

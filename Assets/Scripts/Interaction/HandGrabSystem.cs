@@ -22,8 +22,8 @@ public class HandGrabSystem : MonoBehaviour
     public float positionForce = 64f;
     [Tooltip("Torque multiplier for hand chasing target rotation (old: 128)")]
     public float rotationForce = 128f;
-    [Tooltip("Distance threshold to teleport hand instead of force-chase (old: ~0.86)")]
-    public float teleportThreshold = 0.75f;
+    [Tooltip("Distance threshold to teleport hand instead of force-chase (meters, default: 1.5)")]
+    public float teleportThreshold = 1.5f;
 
     [Header("Detection")]
     public float grabRadius = 0.15f;
@@ -46,7 +46,16 @@ public class HandGrabSystem : MonoBehaviour
     // State
     public GrabbableItem HeldItem { get; private set; }
     public bool IsHolding => HeldItem != null;
-    public Rigidbody HandRigidbody { get; private set; }
+    private Rigidbody _handRigidbody;
+    public Rigidbody HandRigidbody
+    {
+        get
+        {
+            if (_handRigidbody == null) _handRigidbody = GetComponent<Rigidbody>();
+            return _handRigidbody;
+        }
+        private set => _handRigidbody = value;
+    }
 
     // Target transform that the hand chases (set by DesktopHandDriver or VR tracker)
     public Vector3 TargetPosition { get; set; }
@@ -101,11 +110,11 @@ public class HandGrabSystem : MonoBehaviour
             gripPoint = transform;
 
         // Old OpenViva hand Rigidbody setup
-        HandRigidbody.mass = 5f;
+        HandRigidbody.mass = 6f;
         HandRigidbody.useGravity = false;
         HandRigidbody.isKinematic = false;
-        HandRigidbody.linearDamping = 0f;
-        HandRigidbody.angularDamping = 0f;
+        HandRigidbody.linearDamping = 4f;
+        HandRigidbody.angularDamping = 25f;
         HandRigidbody.maxAngularVelocity = 64f;
         HandRigidbody.maxDepenetrationVelocity = 5.0f;
         HandRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
@@ -164,9 +173,9 @@ public class HandGrabSystem : MonoBehaviour
 
         Vector3 posDelta = TargetPosition - transform.position;
 
-        // Teleport safety net: ONLY snap if the camera/player actually teleported (velocity > 15 m/s)
-        // Never snap into walls when simply walking against geometry!
-        if (CameraVelocity.sqrMagnitude > 225f)
+        // Teleport safety net: snap if player teleported (velocity > 15 m/s) OR if separated by distance threshold
+        float snapDistSqr = teleportThreshold > 0f ? teleportThreshold * teleportThreshold : 2.25f;
+        if (posDelta.sqrMagnitude > snapDistSqr || CameraVelocity.sqrMagnitude > 225f)
         {
             HandRigidbody.position = TargetPosition;
             HandRigidbody.rotation = TargetRotation;
@@ -182,7 +191,7 @@ public class HandGrabSystem : MonoBehaviour
 
         HandRigidbody.linearVelocity = desiredVel;
 
-        // Rotation: compute angular velocity from rotation delta
+        // Rotation: spring torque chase allowing wall contact torque to physically rotate/tilt the hand (matching openviva021)
         Quaternion rotDelta = TargetRotation * Quaternion.Inverse(transform.rotation);
         rotDelta.ToAngleAxis(out float angle, out Vector3 axis);
         if (angle > 180f) angle -= 360f;
@@ -191,7 +200,8 @@ public class HandGrabSystem : MonoBehaviour
             HandRigidbody.angularVelocity = Vector3.zero;
             return;
         }
-        HandRigidbody.angularVelocity = axis.normalized * (angle * Mathf.Deg2Rad / dt);
+        Vector3 targetAngVel = axis.normalized * (angle * Mathf.Deg2Rad * 18f);
+        HandRigidbody.angularVelocity = Vector3.MoveTowards(HandRigidbody.angularVelocity, targetAngVel, rotationForce * dt);
     }
 
     #endregion
