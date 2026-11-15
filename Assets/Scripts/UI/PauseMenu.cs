@@ -58,7 +58,7 @@ public class PauseMenu : MonoBehaviour
             bookAnimator = foundAnimator;
         }
 
-        EnsurePagesAttached();
+        AttachPagesToBones();
 
         rootPage.SetActive(false);
         bookMesh.SetActive(false);
@@ -120,14 +120,14 @@ public class PauseMenu : MonoBehaviour
             if (menuHandleKB != null)
             {
                 var cam = menuHandleKB.GetComponentInParent<Camera>();
-                if (cam != null && cam.isActiveAndEnabled) return cam;
+                if (cam != null) return cam;
             }
 
             var desktopCamGo = GameObject.Find("Main Camera KB");
             if (desktopCamGo != null)
             {
                 var cam = desktopCamGo.GetComponent<Camera>();
-                if (cam != null && cam.isActiveAndEnabled) return cam;
+                if (cam != null) return cam;
             }
         }
         else
@@ -318,44 +318,37 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    private void EnsurePagesAttached()
+    private void AttachPagesToBones()
     {
-        if (LeftPage != null)
+        if (pageBoneL == null)
         {
-            if (LeftPage.transform.parent != transform)
-            {
-                LeftPage.transform.SetParent(transform, false);
-            }
-            var rtL = LeftPage.GetComponent<RectTransform>();
-            if (rtL != null)
-            {
-                rtL.localPosition = new Vector3(0.244f, 1.215f, 0.11f);
-                rtL.localRotation = Quaternion.Euler(25f, 173.2f, -2.2f);
-                rtL.localScale = Vector3.one * 0.001f;
-                rtL.sizeDelta = new Vector2(460f, 545f);
-            }
+            pageBoneL = transform.Find("pauseMenuBook/bookArmature/root/local/book_r/UI_l");
+        }
+        if (pageBoneR == null)
+        {
+            pageBoneR = transform.Find("pauseMenuBook/bookArmature/root/local/book_l/UI_r");
         }
 
-        if (RightPage != null)
+        if (LeftPage != null && pageBoneL != null && LeftPage.transform.parent != pageBoneL)
         {
-            if (RightPage.transform.parent != transform)
-            {
-                RightPage.transform.SetParent(transform, false);
-            }
-            var rtR = RightPage.GetComponent<RectTransform>();
-            if (rtR != null)
-            {
-                rtR.localPosition = new Vector3(-0.221f, 1.215f, 0.11f);
-                rtR.localRotation = Quaternion.Euler(25f, 186.863f, 3f);
-                rtR.localScale = Vector3.one * 0.001f;
-                rtR.sizeDelta = new Vector2(460f, 545f);
-            }
+            LeftPage.transform.SetParent(pageBoneL, false);
+            LeftPage.transform.localPosition = Vector3.zero;
+            LeftPage.transform.localEulerAngles = new Vector3(180f, 90f, 90f);
+            LeftPage.transform.localScale = Vector3.one * 0.001f;
+        }
+
+        if (RightPage != null && pageBoneR != null && RightPage.transform.parent != pageBoneR)
+        {
+            RightPage.transform.SetParent(pageBoneR, false);
+            RightPage.transform.localPosition = Vector3.zero;
+            RightPage.transform.localEulerAngles = new Vector3(0f, 90f, 90f);
+            RightPage.transform.localScale = Vector3.one * 0.001f;
         }
     }
 
     private void OrientPauseMenuToPlayer()
     {
-        EnsurePagesAttached();
+        AttachPagesToBones();
 
         Vector3 targetPosition;
         Quaternion targetRotation;
