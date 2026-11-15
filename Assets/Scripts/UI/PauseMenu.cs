@@ -1,3 +1,4 @@
+// OpenViva Fork: Refined PauseMenu page bone alignment, dynamic canvas raycaster registration, and desktop book camera offsets.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,10 +10,12 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("Book Orientation (Desktop)")]
     [Tooltip("If true, positions book closer to camera at scaled size so hands do not obstruct button raycasts.")]
-    [SerializeField] private bool useCloserPlacement = true;
-    [SerializeField] private Vector3 closerDesktopCameraOffset = new(0f, -0.353f, 0.442f);
-    [SerializeField] private Vector3 closerDesktopCameraEuler = new(18f, 180f, 0f);
+    [SerializeField] private bool useCloserPlacement = false;
+    [SerializeField] private Vector3 closerDesktopCameraOffset = new(0f, -0.30f, 0.442f);
+    [SerializeField] private Vector3 closerDesktopCameraEuler = new(0f, 180f, 0f);
     [SerializeField] private float closerDesktopScale = 0.2625f;
+    [SerializeField] private Vector3 leftPageLocalOffset = Vector3.zero;
+    [SerializeField] private Vector3 leftPageLocalEuler = new(180f, 90f, 90f);
 
     [Header("Legacy Handle Orientation")]
     [SerializeField] private Vector3 rotationOffset = new(45f, 180f, 0f);
@@ -332,8 +335,8 @@ public class PauseMenu : MonoBehaviour
         if (LeftPage != null && pageBoneL != null && LeftPage.transform.parent != pageBoneL)
         {
             LeftPage.transform.SetParent(pageBoneL, false);
-            LeftPage.transform.localPosition = Vector3.zero;
-            LeftPage.transform.localEulerAngles = new Vector3(180f, 90f, 90f);
+            LeftPage.transform.localPosition = leftPageLocalOffset;
+            LeftPage.transform.localEulerAngles = leftPageLocalEuler;
             LeftPage.transform.localScale = Vector3.one * 0.001f;
         }
 
