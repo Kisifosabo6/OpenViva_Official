@@ -107,6 +107,34 @@ InitTestScene*.unity*
 /Assets/Scenes/Landscape_Main/Landscape_LightingData.asset
 /Assets/Scenes/Landscape_Main/Landscape_LightingData.asset.meta
 
+# Character IP & Proprietary Assets (Shinobu / Character Models, Textures, Audio & Animations)
+*[Ss]hinobu*
+/Assets/Audio/voices/
+/Assets/Audio/voices.meta
+/Assets/Resources/Voices/
+/Assets/Resources/Voices.meta
+/Assets/Imported/Shinobu/
+/Assets/Imported/Shinobu.meta
+/Assets/Imported/Shinobu_041/
+/Assets/Imported/Shinobu_041.meta
+/Assets/Materials/Shinobu/
+/Assets/Materials/Shinobu.meta
+/Assets/Materials/effects/shinobu/
+/Assets/Materials/effects/shinobu.meta
+/Assets/Prefabs/Companion/
+/Assets/Prefabs/Companion.meta
+/Assets/Resources/Animations/shinobu/
+/Assets/Resources/Animations/shinobu.meta
+/Assets/Resources/Animations/LoliAC.controller*
+/Assets/Resources/Models/
+/Assets/Resources/Models.meta
+/Assets/Resources/Prefabs/
+/Assets/Resources/Prefabs.meta
+/Assets/Textures/models/
+/Assets/Textures/models.meta
+/Assets/Scenes/MainScene/Models/loli/
+/Assets/Scenes/MainScene/Models/loli.meta
+
 # Third-party proprietary assets
 /Assets/MagicaCloth2/
 /Assets/MagicaCloth2.meta
