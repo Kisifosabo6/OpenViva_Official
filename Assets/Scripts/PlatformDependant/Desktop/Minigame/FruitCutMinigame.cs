@@ -1,5 +1,5 @@
+// OpenViva Fork: Removed legacy nTools.PrefabPainter commercial namespace dependency.
 using MinigameUIController;
-using nTools.PrefabPainter;
 using System;
 using System.Collections;
 using UnityEngine;
