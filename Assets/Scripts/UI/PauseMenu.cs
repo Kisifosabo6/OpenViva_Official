@@ -192,9 +192,9 @@ public class PauseMenu : MonoBehaviour
         }
 
         ApplyToCanvases(gameObject);
-        if (rootPage != null && rootPage.transform.parent != transform) ApplyToCanvases(rootPage);
-        if (LeftPage != null && LeftPage.transform.parent != transform) ApplyToCanvases(LeftPage);
-        if (RightPage != null && RightPage.transform.parent != transform) ApplyToCanvases(RightPage);
+        if (rootPage != null) ApplyToCanvases(rootPage);
+        if (LeftPage != null) ApplyToCanvases(LeftPage);
+        if (RightPage != null) ApplyToCanvases(RightPage);
     }
 
     private void EnsureInputModuleActive()
