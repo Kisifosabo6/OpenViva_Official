@@ -100,8 +100,6 @@ This fork focuses on stabilizing the project for open-source development, removi
   * Configured binaural spatial listener settings for accurate 3D directional sound simulation.
 
 ### 5. Companion Prefab & Scene Hygiene
-* **`Assets/Resources/Prefabs/ShinobuCompanion.prefab`:**
-  * Corrected armature hierarchy bindings (neck, head, and secondary hair bones) and resolved missing skinned mesh renderer references.
 * **`Assets/Scenes/MainScene.unity` & `Landscape_Main.unity`:**
   * Cleaned up dangling scene components, sanitized missing script references, and synchronized environment lighting with the updated day-night cycle.
 
@@ -116,7 +114,7 @@ While this repository is freely distributed under the **MIT License**, the MIT l
 
 Because of this legal scope, **copyrighted character IP, meshes, models, and voice lines are intentionally omitted from this repository**:
 
-1. **Incompatible with Permissive Licensing:** Third-party character designs, likenesses, meshes, and voice clips (such as those inspired by or extracted from copyrighted franchises like *Monogatari* / *Shinobu*) are protected intellectual property. They cannot legally be re-licensed under an open-source permissive license such as MIT, nor can they be conveyed for commercial redistribution.
+1. **Incompatible with Permissive Licensing:** Third-party character designs, likenesses, meshes, and voice clips, such as those inspired by or extracted from copyrighted franchises are protected intellectual property. They cannot legally be re-licensed under an open-source permissive license such as MIT, nor can they be conveyed for commercial redistribution.
 2. **Preventing Downstream Legal Conflicts:** If copyrighted character assets were bundled directly into the MIT-licensed repository, downstream developers or creators utilizing the project under MIT terms could unknowingly face trademark and copyright infringement liabilities.
 3. **Framework-First Architecture:** OpenViva is designed as a modular character AI and interaction engine. The repository contains the core inverse kinematics, behavior state machines, shaders, and interaction mechanics. Developers and players are expected to provide their own original humanoid models (e.g., custom VRoid models, original Blender rigs) and voice packs.
 4. **Commercial Compliance Notice:** Anyone forking, adapting, or creating commercial products based on OpenViva is strictly responsible for providing 100% original, appropriately licensed, or royalty-free 3D character models, textures, animations, audio, and plugins.
