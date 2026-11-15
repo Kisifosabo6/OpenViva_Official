@@ -61,6 +61,51 @@ The following dependencies are third-party paid, proprietary, or subject to redi
   * *Type:* Legacy commercial editor tool leftovers.
   * *TODO: Fetching/building free replacements* (Unity native Polybrush, Terrain Tools, and open-source editor utilities).
 
+## Fork Enhancements & Detailed Changes (vs. Upstream `dev`)
+
+This fork focuses on stabilizing the project for open-source development, removing commercial asset dependencies, enhancing desktop interaction, and overhauling environmental immersion. Below is a module-by-module breakdown of key differences compared to upstream:
+
+### 1. UI & Desktop Player Interaction
+* **`Assets/Scripts/UI/PauseMenu.cs` & Book Prefabs:**
+  * **Dynamic Page Bone Binding:** Interactive UI page canvases (`LeftPage` / `RightPage`) are now dynamically parented directly to armature leaf bones (`book_r/UI_l` and `book_l/UI_r`) with configurable local offset vectors and Euler angles.
+  * **Desktop Camera Alignment:** Added desktop closer-placement options and automatic `GraphicRaycaster` initialization across all canvas pages to prevent hands from obstructing mouse raycasts.
+* **`Assets/Scripts/PlatformDependant/Desktop/PlayerKB_GrabObject.cs`:**
+  * Refined desktop item-grabbing mechanics, object rotation controls, and raycast hit detection for keyboard/mouse gameplay.
+* **`Assets/Scripts/Player/PlayerSwitchInputMode.cs`:**
+  * Stabilized hot-swapping between VR and Desktop input modes without resetting the player camera or breaking interactable references.
+
+### 2. Proprietary Asset Decoupling & Build Fixes
+* **`Assets/Scripts/Characters/Testing/PhysicsAttacher.cs`:**
+  * Decoupled runtime bone physics from the proprietary `MagicaCloth2` package. The system now checks for package presence and logs clean fallbacks, allowing the project to compile and run in pure open-source environments.
+* **`Assets/Scripts/PlatformDependant/Desktop/Minigame/FruitCutMinigame.cs`:**
+  * Stripped dead references to the commercial `nTools.PrefabPainter` editor tool.
+* **Cleanup of Commercial Leftovers:**
+  * Removed obsolete `PrefabPainterSettings` scripts and broken asset meta files that caused compiler errors on fresh clones.
+* **Compiler Warning Suppression (`Assets/csc.rsp` & `.editorconfig`):**
+  * Configured project-wide compiler rulesets to suppress non-critical domain reload warnings (`UDR0001` through `UDR0005`) from Unity Project Auditor.
+
+### 3. Rendering, Skybox & Day-Night Simulation
+* **`Assets/Scripts/World/DayNightCycle.cs` & `DaylightSensor.cs`:**
+  * Implemented smooth orbital calculations for celestial bodies (sun and moon) and multi-phase skybox blending across time transitions (`Dawn`, `Morning`, `Day`, `Afternoon`, `Dusk`, `Night`).
+* **Custom Shaders (`Assets/Shaders/Sky/StylizedMoon.shader`):**
+  * Added stylized celestial moon and star shaders with procedural phase shading.
+* **Water & Lighting Polish:**
+  * Tuned `PlanarReflection.cs` and `UWa-Template-Anime.mat` for stylized water reflections.
+  * Fine-tuned `QualitySettings.asset` with 4x MSAA anti-aliasing, optimized shadow normal bias (0.4), and vSync adjustments for smooth high-refresh VR/desktop playback.
+
+### 4. Audio & Ambiance
+* **`Assets/Scripts/Audio/Ambiance/DynamicAmbianceController.cs` & `StaticAmbianceManager.cs`:**
+  * Dynamic environmental sound mixing reacting to indoor/outdoor triggers and time-of-day transitions.
+* **Steam Audio Integration (`Assets/Plugins/SteamAudio/`):**
+  * Configured binaural spatial listener settings for accurate 3D directional sound simulation.
+
+### 5. Companion Prefab & Scene Hygiene
+* **`Assets/Resources/Prefabs/ShinobuCompanion.prefab`:**
+  * Corrected armature hierarchy bindings (neck, head, and secondary hair bones) and resolved missing skinned mesh renderer references.
+* **`Assets/Scenes/MainScene.unity` & `Landscape_Main.unity`:**
+  * Cleaned up dangling scene components, sanitized missing script references, and synchronized environment lighting with the updated day-night cycle.
+
+
 ## Licensing & Intellectual Property (IP)
 
 ### Source Code
