@@ -45,6 +45,22 @@ Recommended:
 - Blender (3D modeling)
 - Krita (2D art)
 
+### Third-Party & Restricted Dependencies
+The following dependencies are third-party paid, proprietary, or subject to redistribution restrictions (such as the Unity Asset Store EULA or character IP) that cannot be freely shared:
+
+* **Cloth & Dynamic Physics Simulation (Magica Cloth 2 / Dynamic Bone):**
+  * *Type:* Commercial Unity Asset Store package. Excluded from repository tracking.
+  * *TODO: Fetching/building free replacements* (e.g., native Unity Cloth or open-source job-based spring bone physics).
+* **Skybox Texture Pack (`Assets/Plugins/Fantasy Skybox FREE`):**
+  * *Type:* Unity Asset Store EULA asset (redistribution restricted even if free on store).
+  * *TODO: Fetching/building free replacements* (procedural day-night cycle shaders / CC0 public domain textures).
+* **Character IP, Meshes & Voice Lines (Shinobu / Monogatari):**
+  * *Type:* Legacy fan-game assets extracted from older Viva Project builds (`Assets/Imported/Shinobu`, character audio clips).
+  * *TODO: Fetching/building free replacements* (original community 3D character models, custom clothing cards, and open-source voice packs).
+* **Level & Prefab Painting Tooling (nTools / Prefab Painter):**
+  * *Type:* Legacy commercial editor tool leftovers.
+  * *TODO: Fetching/building free replacements* (Unity native Polybrush, Terrain Tools, and open-source editor utilities).
+
 ## Copyrights
 
 This repository is based on original Viva source code. Sir Hal shared
