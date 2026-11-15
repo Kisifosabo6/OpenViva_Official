@@ -76,6 +76,39 @@ public class PlayerController : MonoBehaviour
     private bool _isRunning = false;
     private bool _jumpQueued = false;
 
+    private void OnEnable()
+    {
+        _player = GetComponentInParent<Player>();
+        if (_player != null && _player.Controls != null)
+        {
+            _player.Controls.Viva.Enable();
+            AssignInputEvents();
+        }
+
+        // Sync rotations to current transform and camera to prevent camera snapping or freezing
+        _yRotation = transform.localEulerAngles.y;
+        if (_camera != null)
+        {
+            float pitch = _camera.localEulerAngles.x;
+            if (pitch > 180f) pitch -= 360f;
+            _xRotation = Mathf.Clamp(pitch, -90f, 90f);
+        }
+
+        moveInput = Vector2.zero;
+        lookInput = Vector2.zero;
+
+        if (!Globals.isMenuOpen)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        UnassignInputEvents();
+    }
+
     private void Start()
     {
         _player = GetComponentInParent<Player>();
@@ -346,22 +379,39 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnMovePerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => moveInput = ctx.ReadValue<Vector2>();
+    private void OnMoveCanceled(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => moveInput = Vector2.zero;
+    private void OnLookPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => lookInput = ctx.ReadValue<Vector2>();
+    private void OnLookCanceled(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => lookInput = Vector2.zero;
+    private void OnRunPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => HandleRun(true);
+    private void OnRunCanceled(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => HandleRun(false);
+    private void OnJumpPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx) => HandleJump();
+
     private void AssignInputEvents()
     {
-        // Move binding
-        _player.Controls.Viva.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        _player.Controls.Viva.Move.canceled += ctx => moveInput = Vector2.zero;
+        if (_player == null || _player.Controls == null) return;
+        UnassignInputEvents();
 
-        // Look binding
-        _player.Controls.Viva.Look.performed += ctx => lookInput = ctx.ReadValue<Vector2>();
-        _player.Controls.Viva.Look.canceled += ctx => lookInput = Vector2.zero;
+        _player.Controls.Viva.Move.performed += OnMovePerformed;
+        _player.Controls.Viva.Move.canceled += OnMoveCanceled;
+        _player.Controls.Viva.Look.performed += OnLookPerformed;
+        _player.Controls.Viva.Look.canceled += OnLookCanceled;
+        _player.Controls.Viva.Run.performed += OnRunPerformed;
+        _player.Controls.Viva.Run.canceled += OnRunCanceled;
+        _player.Controls.Viva.Jump.performed += OnJumpPerformed;
+    }
 
-        // Run binding
-        _player.Controls.Viva.Run.performed += ctx => HandleRun(true);
-        _player.Controls.Viva.Run.canceled += ctx => HandleRun(false);
+    private void UnassignInputEvents()
+    {
+        if (_player == null || _player.Controls == null) return;
 
-        // Jump binding
-        _player.Controls.Viva.Jump.performed += ctx => HandleJump();
+        _player.Controls.Viva.Move.performed -= OnMovePerformed;
+        _player.Controls.Viva.Move.canceled -= OnMoveCanceled;
+        _player.Controls.Viva.Look.performed -= OnLookPerformed;
+        _player.Controls.Viva.Look.canceled -= OnLookCanceled;
+        _player.Controls.Viva.Run.performed -= OnRunPerformed;
+        _player.Controls.Viva.Run.canceled -= OnRunCanceled;
+        _player.Controls.Viva.Jump.performed -= OnJumpPerformed;
     }
 
     #region Debug Commands

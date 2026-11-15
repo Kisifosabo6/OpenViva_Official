@@ -28,12 +28,23 @@ public class GrabbableItem : MonoBehaviour
         Pestle,
         Pot,
         Soap,
-        Towel
+        Towel,
+        Bread
     }
 
     [Header("Item Identity")]
     [Tooltip("Which hand animation pose to use when held")]
     public HoldPose holdPose = HoldPose.Default;
+    [Tooltip("Is this item held with a delicate pinch between thumb and index, rather than a closed fist?")]
+    public bool isPinchPose;
+
+    public bool IsPinchItem => isPinchPose ||
+                               holdPose == HoldPose.Peach ||
+                               holdPose == HoldPose.Strawberry ||
+                               holdPose == HoldPose.Blueberry ||
+                               holdPose == HoldPose.Egg ||
+                               holdPose == HoldPose.Soap ||
+                               holdPose == HoldPose.Towel;
 
     [Header("Hold Offsets (Left Hand)")]
     public Vector3 holdPositionLeft = Vector3.zero;
@@ -143,19 +154,68 @@ public class GrabbableItem : MonoBehaviour
 
     /// <summary>
     /// Returns the hold position for the given hand side.
+    /// Uses inspector-configured offsets if non-zero; otherwise falls back to ObjectHoldPositions calibrated values.
     /// </summary>
     public void GetHoldTransform(bool isLeftHand, out Vector3 pos, out Quaternion rot)
     {
         if (isLeftHand)
         {
-            pos = holdPositionLeft;
-            rot = Quaternion.Euler(holdRotationLeft);
+            if (holdPositionLeft != Vector3.zero || holdRotationLeft != Vector3.zero)
+            {
+                pos = holdPositionLeft;
+                rot = Quaternion.Euler(holdRotationLeft);
+                return;
+            }
         }
         else
         {
-            pos = holdPositionRight;
-            rot = Quaternion.Euler(holdRotationRight);
+            if (holdPositionRight != Vector3.zero || holdRotationRight != Vector3.zero)
+            {
+                pos = holdPositionRight;
+                rot = Quaternion.Euler(holdRotationRight);
+                return;
+            }
         }
+
+        int index = HoldPoseToIndex(holdPose);
+        if (index >= 0 && ObjectHoldPositions.Instance != null)
+        {
+            pos = isLeftHand ? ObjectHoldPositions.Instance.GetObjectPositionLeft(index) : ObjectHoldPositions.Instance.GetObjectPositionRight(index);
+            rot = isLeftHand ? ObjectHoldPositions.Instance.GetObjectRotationLeft(index) : ObjectHoldPositions.Instance.GetObjectRotationRight(index);
+            return;
+        }
+
+        pos = isLeftHand ? holdPositionLeft : holdPositionRight;
+        rot = isLeftHand ? Quaternion.Euler(holdRotationLeft) : Quaternion.Euler(holdRotationRight);
+    }
+
+    public static int HoldPoseToIndex(HoldPose pose)
+    {
+        return pose switch
+        {
+            HoldPose.Bag => 0,
+            HoldPose.RubberDucky => 1,
+            HoldPose.Peach => 2,
+            HoldPose.Strawberry => 3,
+            HoldPose.Cantaloupe => 4,
+            HoldPose.Blueberry => 5,
+            HoldPose.Wheat => 6,
+            HoldPose.Flashlight => 7,
+            HoldPose.Egg => 8,
+            HoldPose.FlourJar => 9,
+            HoldPose.Knife => 10,
+            HoldPose.Lantern => 11,
+            HoldPose.MilkCanister => 12,
+            HoldPose.MixingBowl => 13,
+            HoldPose.MixingSpoon => 14,
+            HoldPose.Mortar => 15,
+            HoldPose.Pestle => 16,
+            HoldPose.Pot => 17,
+            HoldPose.Soap => 18,
+            HoldPose.Towel => 19,
+            HoldPose.Bread => 20,
+            _ => -1
+        };
     }
 
     public bool IsHeld => heldByHand != null;

@@ -85,6 +85,8 @@ public class PlayerKB_GrabObject : MonoBehaviour
 
     protected virtual void GrabLeft()
     {
+        if (FindFirstObjectByType<PlayerKB_GrabController>() != null) return;
+
         // If the player is in range and the object is not already grabbed, grab it with the left hand
         if (!IsActive) { return; }
 
@@ -139,6 +141,8 @@ public class PlayerKB_GrabObject : MonoBehaviour
 
     protected virtual void GrabRight()
     {
+        if (FindFirstObjectByType<PlayerKB_GrabController>() != null) return;
+
         // If the player is in range and the object is not already grabbed, grab it with the right hand
         if (!IsActive) { return; }
 

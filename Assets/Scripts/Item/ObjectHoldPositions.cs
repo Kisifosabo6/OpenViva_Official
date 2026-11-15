@@ -3,15 +3,31 @@ using UnityEngine;
 public class ObjectHoldPositions : MonoBehaviour
 {
     // the position and rotation to set different items to when they are held in either hand
-    public static ObjectHoldPositions Instance { get; private set; }
+    private static ObjectHoldPositions _instance;
+    public static ObjectHoldPositions Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = Object.FindFirstObjectByType<ObjectHoldPositions>();
+                if (_instance == null)
+                {
+                    var go = new GameObject("ObjectHoldPositions");
+                    _instance = go.AddComponent<ObjectHoldPositions>();
+                }
+            }
+            return _instance;
+        }
+    }
 
     private void Awake()
     {
-        if (Instance == null)
+        if (_instance == null)
         {
-            Instance = this;
+            _instance = this;
         }
-        else
+        else if (_instance != this)
         {
             Destroy(this);
         }

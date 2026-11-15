@@ -27,7 +27,8 @@ public class HandAnimator : MonoBehaviour
         HeadpatScrub,
         Poke,
         ThumbsUp,
-        Fist
+        Fist,
+        Pinch
     }
 
     [Header("References")]
@@ -54,6 +55,7 @@ public class HandAnimator : MonoBehaviour
 
     // Hold state
     bool isHolding;
+    bool isPinchHold;
 
     // Gesture state
     Gesture currentGesture = Gesture.None;
@@ -118,8 +120,19 @@ public class HandAnimator : MonoBehaviour
         if (!hasRestPose || fingerBones == null || fingerBones.Length < 15) return;
         if (fingerBones[0] == null) return;
 
-        // When holding an item, the Animator's hold clip drives finger bones — don't override
-        if (isHolding) return;
+        // When holding a pinch item, code-drives the delicate pinch pose so fingers are not fully closed
+        if (isHolding)
+        {
+            if (isPinchHold)
+            {
+                ApplyFingerCurl(0, 0.45f); // thumb
+                ApplyFingerCurl(1, 0.50f); // index
+                ApplyFingerCurl(2, 0.25f); // middle (relaxed, not closed)
+                ApplyFingerCurl(3, 0.20f); // ring (relaxed, not closed)
+                ApplyFingerCurl(4, 0.15f); // pinky (relaxed, not closed)
+            }
+            return;
+        }
 
         // Apply smoothed curl to each finger's 3 joints
         for (int f = 0; f < 5; f++)
@@ -148,6 +161,7 @@ public class HandAnimator : MonoBehaviour
         if (item == null) { ClearHoldPose(); return; }
 
         isHolding = true;
+        isPinchHold = item.IsPinchItem;
 
         if (handAnimator != null)
         {
@@ -161,6 +175,7 @@ public class HandAnimator : MonoBehaviour
     public void ClearHoldPose()
     {
         isHolding = false;
+        isPinchHold = false;
         currentGesture = Gesture.None;
 
         if (handAnimator != null)
@@ -191,6 +206,16 @@ public class HandAnimator : MonoBehaviour
 
     /// <summary>Is the hand currently holding an item?</summary>
     public bool IsHolding => isHolding;
+
+    /// <summary>
+    /// Play a momentary pinch pose for a fraction of a second (e.g. for lighting/snuffing a candle),
+    /// then auto-release smoothly back to resting pose.
+    /// </summary>
+    public void PlayPinchMomentary(float duration = 0.35f)
+    {
+        if (isHolding) return;
+        PlayGesture(Gesture.Pinch, duration);
+    }
 
     #endregion
 
@@ -279,6 +304,15 @@ public class HandAnimator : MonoBehaviour
                 targetFingerCurls[2] = 1f;
                 targetFingerCurls[3] = 1f;
                 targetFingerCurls[4] = 1f;
+                break;
+
+            case Gesture.Pinch:
+                // Delicate pinch: thumb & index meet, middle/ring/pinky relaxed open
+                targetFingerCurls[0] = 0.45f;
+                targetFingerCurls[1] = 0.50f;
+                targetFingerCurls[2] = 0.25f;
+                targetFingerCurls[3] = 0.20f;
+                targetFingerCurls[4] = 0.15f;
                 break;
         }
     }

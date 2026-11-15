@@ -60,11 +60,14 @@ public class InventoryVR : MonoBehaviour
 
     private void OnDisable()
     {
-        _XRIButtonDownB.action.Disable();
-        _XRIButtonDownY.action.Disable();
-        _rightThumbstick.action.Disable();
-        _grabScript.OnGrabbedStateChanged -= ShowHints;
-        _grabScript.OnGrabbedStateChanged -= SwitchInputs;
+        _XRIButtonDownB?.action?.Disable();
+        _XRIButtonDownY?.action?.Disable();
+        _rightThumbstick?.action?.Disable();
+        if (_grabScript != null)
+        {
+            _grabScript.OnGrabbedStateChanged -= ShowHints;
+            _grabScript.OnGrabbedStateChanged -= SwitchInputs;
+        }
     }
 
     private void SwitchInputs(int handedness)

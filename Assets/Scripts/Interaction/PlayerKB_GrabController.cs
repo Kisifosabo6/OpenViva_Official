@@ -188,6 +188,13 @@ public class PlayerKB_GrabController : MonoBehaviour
     {
         if (hand == null || hand.IsHolding) return;
 
+        // If looking at an interactable (e.g. door handle, candle, faucet), clicking interacts with it
+        if (highlightedInteractable != null && highlightedInteractable.CanInteract)
+        {
+            highlightedInteractable.Interact(this.gameObject);
+            return;
+        }
+
         // 1. Try camera raycast target if THIS hand can physically reach it without wall obstruction
         var target = GetLookedAtGrabbable();
         if (target != null && CanHandReachItem(hand, target, out _))
@@ -257,9 +264,11 @@ public class PlayerKB_GrabController : MonoBehaviour
     public bool CanHandReachItem(HandGrabSystem hand, GrabbableItem item, out float distance)
     {
         distance = float.MaxValue;
-        if (hand == null || hand.gripPoint == null || item == null) return false;
+        if (hand == null || item == null) return false;
+        Transform grip = hand.visualGripPoint != null ? hand.visualGripPoint : hand.gripPoint;
+        if (grip == null) return false;
 
-        Vector3 handPos = hand.gripPoint.position;
+        Vector3 handPos = grip.position;
 
         var colliders = item.GetComponentsInChildren<Collider>();
         if (colliders != null && colliders.Length > 0)
@@ -362,6 +371,14 @@ public class PlayerKB_GrabController : MonoBehaviour
             if (hit.collider.CompareTag("Player") || hit.collider.GetComponentInParent<CharacterController>() != null)
                 return null;
 
+            // Never grab interactables (door handles, candles, faucets) as items
+            if (hit.collider.GetComponentInParent<IInteractable>() != null ||
+                hit.collider.GetComponentInParent<InteractDoorKB>() != null ||
+                hit.collider.GetComponentInParent<InteractFaucet>() != null)
+            {
+                return null;
+            }
+
             var item = HandGrabSystem.GetOrAddGrabbable(hit.collider.gameObject);
             if (item != null && item.canBePickedUp && !item.IsHeld)
                 return item;
@@ -416,6 +433,10 @@ public class PlayerKB_GrabController : MonoBehaviour
                     if (foundItem == null)
                     {
                         foundInteractable = hit.collider.GetComponentInParent<IInteractable>();
+                        if (foundInteractable == null && hit.collider.name.ToLower().Contains("candle"))
+                        {
+                            foundInteractable = hit.collider.GetComponentInParent<InteractCandle>() ?? hit.collider.gameObject.AddComponent<InteractCandle>();
+                        }
                     }
                 }
             }

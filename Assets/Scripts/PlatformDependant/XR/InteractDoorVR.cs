@@ -19,17 +19,19 @@ public class InteractDoorVR : InteractDoorKB
 
     protected override void OnTriggerEnter(Collider collider)
     {
-        if (!(collider == _playerLeftHand || collider == _playerRightHand)) {  return; }
+        if (!IsPlayer(collider)) { return; }
 
         base.OnTriggerEnter(collider);
-        FloatingCanvas.Instance.WarpToObject(gameObject.GetComponent<Collider>().bounds.center);
+        if (FloatingCanvas.Instance != null)
+            FloatingCanvas.Instance.WarpToObject(gameObject.GetComponent<Collider>().bounds.center);
     }
 
     protected override void OnTriggerExit(Collider collider)
     {
-        if (!(collider == _playerLeftHand || collider == _playerRightHand)) {  return; }
+        if (!IsPlayer(collider)) { return; }
 
         base.OnTriggerExit(collider);
-        FloatingCanvas.Instance.WarpToOrigin();
+        if (FloatingCanvas.Instance != null)
+            FloatingCanvas.Instance.WarpToOrigin();
     }
 }

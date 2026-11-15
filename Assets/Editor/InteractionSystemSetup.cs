@@ -211,7 +211,7 @@ public class InteractionSystemSetup : Editor
         rb.maxAngularVelocity = 64f;
         rb.maxDepenetrationVelocity = 0.001f;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.interpolation = RigidbodyInterpolation.None;
 
         var sphereCol = GetOrAdd<SphereCollider>(handGO);
         sphereCol.radius = 0.08f;
@@ -221,6 +221,7 @@ public class InteractionSystemSetup : Editor
         grab.isLeftHand = isLeft;
         grab.gripPoint = handGO.transform;
         grab.handCollider = sphereCol;
+        grab.isKinematicallyDriven = true;
 
         return grab;
     }

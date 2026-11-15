@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using UnityEngine.XR;
+using UnityEngine.XR.Management;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -71,14 +73,106 @@ public class PauseMenu : MonoBehaviour
         leftPages = GetDirectChildren(LeftPage);
         rightPages = GetDirectChildren(RightPage);
 
+        if (Globals.isDesktopMode)
+        {
+            EnsureXRDisabled();
+        }
+
+        SetupControlsMenuWiring();
         AssignInputs();
         EnsureInputModuleActive();
         ConfigurePageEventCameras();
     }
 
+    private void SetupControlsMenuWiring()
+    {
+        Transform buttons = null;
+        foreach (var b in GetComponentsInChildren<Transform>(true))
+        {
+            if (b.name == "buttons" && b.parent != null && b.parent.name == "root")
+            {
+                buttons = b;
+                break;
+            }
+        }
+
+        if (buttons != null)
+        {
+            var controlsBtnTrans = buttons.Find("Controls");
+            if (controlsBtnTrans != null)
+            {
+                controlsBtnTrans.gameObject.SetActive(true);
+                var btn = controlsBtnTrans.GetComponent<Button>();
+                if (btn != null)
+                {
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(OpenControlsMenu);
+                }
+            }
+        }
+
+        foreach (var t in GetComponentsInChildren<Transform>(true))
+        {
+            if ((t.name == "kbControls" || t.name == "vrControls") && t.parent != null && t.parent.name == "UI_Main")
+            {
+                var backBtnTrans = t.Find("Back");
+                if (backBtnTrans != null)
+                {
+                    var btn = backBtnTrans.GetComponent<Button>();
+                    if (btn != null)
+                    {
+                        btn.onClick.RemoveAllListeners();
+                        btn.onClick.AddListener(CloseControlsMenu);
+                    }
+                }
+            }
+
+            if (t.name == "kbControls" && t.parent != null && t.parent.name == "UI_Main")
+            {
+                var switchBtnTrans = t.Find("Switch to VR");
+                if (switchBtnTrans != null)
+                {
+                    var btn = switchBtnTrans.GetComponent<Button>();
+                    if (btn != null)
+                    {
+                        btn.onClick.RemoveAllListeners();
+                        btn.onClick.AddListener(clickSwitchControlScheme);
+                    }
+                }
+            }
+
+            if (t.name == "vrControls" && t.parent != null && t.parent.name == "UI_Main")
+            {
+                var switchBtnTrans = t.Find("Switch to Keyboard");
+                if (switchBtnTrans != null)
+                {
+                    var btn = switchBtnTrans.GetComponent<Button>();
+                    if (btn != null)
+                    {
+                        btn.onClick.RemoveAllListeners();
+                        btn.onClick.AddListener(clickSwitchControlScheme);
+                    }
+                }
+            }
+        }
+    }
+
     private void AssignInputs()
     {
-        _player.Controls.Viva.Pause.performed += ctx => TogglePauseMenu();
+        if (_player != null && _player.Controls != null)
+        {
+            _player.Controls.Viva.Pause.performed += ctx => TogglePauseMenu();
+            _player.Controls.Viva.ChangeInputType.performed += ctx => clickSwitchControlScheme();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_player != null && _player.Controls != null)
+        {
+            _player.Controls.Viva.Pause.performed -= ctx => TogglePauseMenu();
+            _player.Controls.Viva.ChangeInputType.performed -= ctx => clickSwitchControlScheme();
+        }
     }
 
     public void TogglePauseMenu()
@@ -228,6 +322,12 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
+        if (UnityEngine.InputSystem.Keyboard.current != null &&
+            UnityEngine.InputSystem.Keyboard.current.f1Key.wasPressedThisFrame)
+        {
+            clickSwitchControlScheme();
+        }
+
         if (Globals.isMenuOpen && Globals.isDesktopMode)
         {
             EnsureInputModuleActive();
@@ -422,5 +522,243 @@ public class PauseMenu : MonoBehaviour
     public void OnQuitGame()
     {
         Application.Quit();
+    }
+
+    public void OpenControlsMenu()
+    {
+        if (rootPage != null) rootPage.SetActive(false);
+
+        Transform uiMain = LeftPage != null ? (LeftPage.name == "UI_Main" ? LeftPage.transform : (LeftPage.transform.Find("UI_Main") ?? LeftPage.transform)) : null;
+        Transform uiDesc = RightPage != null ? (RightPage.name == "UI_Descriptions" ? RightPage.transform : (RightPage.transform.Find("UI_Descriptions") ?? RightPage.transform)) : null;
+
+        if (Globals.isDesktopMode)
+        {
+            if (uiMain != null)
+            {
+                var kb = uiMain.Find("kbControls");
+                if (kb != null) kb.gameObject.SetActive(true);
+                var vr = uiMain.Find("vrControls");
+                if (vr != null) vr.gameObject.SetActive(false);
+            }
+            if (uiDesc != null)
+            {
+                var kb = uiDesc.Find("kbControls");
+                if (kb != null) kb.gameObject.SetActive(true);
+                var vr = uiDesc.Find("vrControls");
+                if (vr != null) vr.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            if (uiMain != null)
+            {
+                var vr = uiMain.Find("vrControls");
+                if (vr != null) vr.gameObject.SetActive(true);
+                var kb = uiMain.Find("kbControls");
+                if (kb != null) kb.gameObject.SetActive(false);
+            }
+            if (uiDesc != null)
+            {
+                var vr = uiDesc.Find("vrControls");
+                if (vr != null) vr.gameObject.SetActive(true);
+                var kb = uiDesc.Find("kbControls");
+                if (kb != null) kb.gameObject.SetActive(false);
+            }
+        }
+
+        ConfigurePageEventCameras();
+    }
+
+    public void CloseControlsMenu()
+    {
+        Transform uiMain = LeftPage != null ? (LeftPage.name == "UI_Main" ? LeftPage.transform : (LeftPage.transform.Find("UI_Main") ?? LeftPage.transform)) : null;
+        Transform uiDesc = RightPage != null ? (RightPage.name == "UI_Descriptions" ? RightPage.transform : (RightPage.transform.Find("UI_Descriptions") ?? RightPage.transform)) : null;
+
+        if (uiMain != null)
+        {
+            var kb = uiMain.Find("kbControls");
+            if (kb != null) kb.gameObject.SetActive(false);
+            var vr = uiMain.Find("vrControls");
+            if (vr != null) vr.gameObject.SetActive(false);
+        }
+        if (uiDesc != null)
+        {
+            var kb = uiDesc.Find("kbControls");
+            if (kb != null) kb.gameObject.SetActive(false);
+            var vr = uiDesc.Find("vrControls");
+            if (vr != null) vr.gameObject.SetActive(false);
+        }
+
+        if (rootPage != null) rootPage.SetActive(true);
+        ConfigurePageEventCameras();
+    }
+
+    public void clickSwitchControlScheme()
+    {
+        if (Globals.isDesktopMode)
+        {
+            StartCoroutine(SwitchToVRRoutine());
+        }
+        else
+        {
+            StartCoroutine(SwitchToDesktopRoutine());
+        }
+    }
+
+    private IEnumerator SwitchToVRRoutine()
+    {
+        var manager = XRGeneralSettings.Instance != null ? XRGeneralSettings.Instance.Manager : null;
+        if (manager == null)
+        {
+            Debug.LogError("[PauseMenu] No XRManagerSettings found.");
+            yield break;
+        }
+
+        if (!manager.isInitializationComplete)
+        {
+            yield return manager.InitializeLoader();
+        }
+
+        if (manager.activeLoader == null)
+        {
+            Debug.LogError("[PauseMenu] Failed to initialize OpenXR. Ensure a VR headset is connected and active.");
+            yield break;
+        }
+
+        manager.StartSubsystems();
+#pragma warning disable CS0618
+        XRSettings.enabled = true;
+#pragma warning restore CS0618
+
+        yield return null;
+
+        var player = _player != null ? _player : FindFirstObjectByType<Player>();
+        if (player != null)
+        {
+            var kb = player.transform.Find("PlayerKB")?.gameObject;
+            var vr = player.transform.Find("PlayerVR")?.gameObject;
+            if (kb != null && vr != null)
+            {
+                vr.transform.position = kb.transform.position;
+                vr.transform.rotation = Quaternion.Euler(0, kb.transform.eulerAngles.y, 0);
+
+                var kbCam = kb.GetComponentInChildren<Camera>(true);
+                if (kbCam != null)
+                {
+                    kbCam.enabled = false;
+                    kbCam.tag = "Untagged";
+                    kbCam.stereoTargetEye = StereoTargetEyeMask.None;
+                }
+
+                var vrCam = vr.GetComponentInChildren<Camera>(true);
+                if (vrCam != null)
+                {
+                    vrCam.enabled = true;
+                    vrCam.tag = "MainCamera";
+                    vrCam.stereoTargetEye = StereoTargetEyeMask.Both;
+                }
+
+                kb.SetActive(false);
+                vr.SetActive(true);
+            }
+        }
+
+        Globals.isDesktopMode = false;
+
+        if (PlayerManager.Instance != null)
+        {
+            if (PlayerManager.Instance.VRLeftInteractor != null) PlayerManager.Instance.VRLeftInteractor.enableFarCasting = true;
+            if (PlayerManager.Instance.VRRightInteractor != null) PlayerManager.Instance.VRRightInteractor.enableFarCasting = true;
+        }
+
+        if (Globals.isMenuOpen)
+        {
+            OpenControlsMenu();
+            OrientPauseMenuToPlayer();
+            ConfigurePageEventCameras();
+        }
+    }
+
+    private IEnumerator SwitchToDesktopRoutine()
+    {
+        // 1. Stop OpenXR cleanly while VR camera is still alive
+        EnsureXRDisabled();
+
+        // 2. Wait a frame for Unity's rendering pipeline to release the XR display mirror
+        yield return null;
+
+        var player = _player != null ? _player : FindFirstObjectByType<Player>();
+        if (player != null)
+        {
+            var kb = player.transform.Find("PlayerKB")?.gameObject;
+            var vr = player.transform.Find("PlayerVR")?.gameObject;
+            if (kb != null && vr != null)
+            {
+                kb.transform.position = vr.transform.position;
+                kb.transform.rotation = Quaternion.Euler(0, vr.transform.eulerAngles.y, 0);
+
+                var vrCam = vr.GetComponentInChildren<Camera>(true);
+                if (vrCam != null)
+                {
+                    vrCam.enabled = false;
+                    vrCam.tag = "Untagged";
+                    vrCam.stereoTargetEye = StereoTargetEyeMask.None;
+                }
+
+                var kbCam = kb.GetComponentInChildren<Camera>(true);
+                if (kbCam != null)
+                {
+                    kbCam.enabled = true;
+                    kbCam.tag = "MainCamera";
+                    kbCam.stereoTargetEye = StereoTargetEyeMask.None;
+                }
+
+                vr.SetActive(false);
+                kb.SetActive(true);
+            }
+        }
+
+        Globals.isDesktopMode = true;
+        EnsureInputModuleActive();
+        Globals.handleMovement = true;
+        Globals.handleKBLook = true;
+
+        if (PlayerManager.Instance != null)
+        {
+            if (PlayerManager.Instance.VRLeftInteractor != null) PlayerManager.Instance.VRLeftInteractor.enableFarCasting = false;
+            if (PlayerManager.Instance.VRRightInteractor != null) PlayerManager.Instance.VRRightInteractor.enableFarCasting = false;
+        }
+
+        if (Globals.isMenuOpen)
+        {
+            OpenControlsMenu();
+            OrientPauseMenuToPlayer();
+            ConfigurePageEventCameras();
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        yield return null;
+    }
+
+    public static void EnsureXRDisabled()
+    {
+#pragma warning disable CS0618
+        if (XRSettings.enabled)
+        {
+            XRSettings.enabled = false;
+        }
+#pragma warning restore CS0618
+        var manager = XRGeneralSettings.Instance != null ? XRGeneralSettings.Instance.Manager : null;
+        if (manager != null && manager.isInitializationComplete)
+        {
+            manager.StopSubsystems();
+            manager.DeinitializeLoader();
+        }
     }
 }

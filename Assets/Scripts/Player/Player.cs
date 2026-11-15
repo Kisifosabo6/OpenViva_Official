@@ -2,12 +2,27 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // PS Viva player controls
-    public PlayerControls Controls {  get; private set; }
+    private PlayerControls _controls;
+    public PlayerControls Controls
+    {
+        get
+        {
+            if (_controls == null)
+            {
+                _controls = new PlayerControls();
+                _controls.Enable();
+            }
+            return _controls;
+        }
+        private set => _controls = value;
+    }
 
     private void Awake()
     {
-        Controls = new PlayerControls();
+        if (_controls == null)
+        {
+            _controls = new PlayerControls();
+        }
     }
 
     private void OnEnable()
@@ -17,6 +32,6 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
-        Controls.Disable();
+        _controls?.Disable();
     }
 }

@@ -209,7 +209,10 @@ public class DayNightCycle : MonoBehaviour
         UpdateSpeed();
         AutoFindReferences();
         InitializeDefaultCurves(false);
-        ApplyTimeVisuals();
+        if (Application.isPlaying)
+        {
+            ApplyTimeVisuals();
+        }
     }
 
     #endregion
@@ -591,7 +594,10 @@ public class DayNightCycle : MonoBehaviour
         UpdateDaylightSensors(isNightTime);
 
         // 8. Update Environment reflections/GI
-        DynamicGI.UpdateEnvironment();
+        if (Application.isPlaying)
+        {
+            DynamicGI.UpdateEnvironment();
+        }
     }
 
     private void UpdateSkyboxSmooth(float t)

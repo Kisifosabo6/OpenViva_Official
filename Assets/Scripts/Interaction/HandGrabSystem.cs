@@ -13,6 +13,8 @@ public class HandGrabSystem : MonoBehaviour
     [Header("Hand Setup")]
     public bool isLeftHand;
     public Transform gripPoint;
+    [Tooltip("Visual hand bone (hand_l / hand_r) where held items are visually parented")]
+    public Transform visualGripPoint;
     public Collider handCollider;
 
     [Header("Hand Physics (old values: mass=5, gravity=false)")]
@@ -50,9 +52,15 @@ public class HandGrabSystem : MonoBehaviour
     public Vector3 TargetPosition { get; set; }
     public Quaternion TargetRotation { get; set; }
 
+    // Camera velocity fed by DesktopHandDriver for smooth physics tracking without lagging
+    public Vector3 CameraVelocity { get; set; }
+
     // Frozen head-local position when holding item (desktop freeze-to-head)
     public Vector3? FrozenLocalPos;
     public Quaternion FrozenLocalRot;
+
+    [Tooltip("Whether this hand's Rigidbody position is driven directly (e.g. by DesktopHandDriver)")]
+    public bool isKinematicallyDriven = false;
 
     // Nearest item
     GrabbableItem nearestItem;
@@ -76,6 +84,9 @@ public class HandGrabSystem : MonoBehaviour
 
     // Held item layer management
     int originalItemLayer;
+    Vector3 originalItemScale = Vector3.one;
+    Vector3 heldLocalPos;
+    Quaternion heldLocalRot;
 
     // Player collider to ignore when holding items
     Collider playerCollider;
@@ -96,7 +107,7 @@ public class HandGrabSystem : MonoBehaviour
         HandRigidbody.linearDamping = 0f;
         HandRigidbody.angularDamping = 0f;
         HandRigidbody.maxAngularVelocity = 64f;
-        HandRigidbody.maxDepenetrationVelocity = 0.001f;
+        HandRigidbody.maxDepenetrationVelocity = 5.0f;
         HandRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         HandRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
 
@@ -122,6 +133,16 @@ public class HandGrabSystem : MonoBehaviour
             UpdateNearestItem();
     }
 
+    void LateUpdate()
+    {
+        // Keep held item rigidly locked at calibrated local position & rotation
+        if (IsHolding && HeldItem != null && visualGripPoint != null)
+        {
+            HeldItem.transform.localPosition = heldLocalPos;
+            HeldItem.transform.localRotation = heldLocalRot;
+        }
+    }
+
     #region Hand Physics Following (old: ApplyRigidBodyTransform)
 
     /// <summary>
@@ -134,22 +155,32 @@ public class HandGrabSystem : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         if (dt <= 0f) return;
 
-        float forceMult = IsHolding ? blendProgress : 1f;
+        if (isKinematicallyDriven)
+        {
+            HandRigidbody.MovePosition(TargetPosition);
+            HandRigidbody.MoveRotation(TargetRotation);
+            return;
+        }
+
         Vector3 posDelta = TargetPosition - transform.position;
 
-        // Teleport safety net — instant snap when too far (e.g. sprinting)
-        if (posDelta.sqrMagnitude > teleportThreshold * teleportThreshold)
+        // Teleport safety net: ONLY snap if the camera/player actually teleported (velocity > 15 m/s)
+        // Never snap into walls when simply walking against geometry!
+        if (CameraVelocity.sqrMagnitude > 225f)
         {
             HandRigidbody.position = TargetPosition;
             HandRigidbody.rotation = TargetRotation;
-            HandRigidbody.linearVelocity = Vector3.zero;
+            HandRigidbody.linearVelocity = CameraVelocity;
             HandRigidbody.angularVelocity = Vector3.zero;
             return;
         }
 
-        // Position: set velocity to reach target in one step
-        // No accumulation → no oscillation. Physics solver still resolves collisions.
-        HandRigidbody.linearVelocity = posDelta / dt * forceMult;
+        // Clamp maximum chase speed to 10 m/s to prevent violent penetration against walls
+        Vector3 desiredVel = CameraVelocity + (posDelta / dt);
+        if (desiredVel.sqrMagnitude > 100f)
+            desiredVel = desiredVel.normalized * 10f;
+
+        HandRigidbody.linearVelocity = desiredVel;
 
         // Rotation: compute angular velocity from rotation delta
         Quaternion rotDelta = TargetRotation * Quaternion.Inverse(transform.rotation);
@@ -160,7 +191,7 @@ public class HandGrabSystem : MonoBehaviour
             HandRigidbody.angularVelocity = Vector3.zero;
             return;
         }
-        HandRigidbody.angularVelocity = axis.normalized * (angle * Mathf.Deg2Rad / dt) * forceMult;
+        HandRigidbody.angularVelocity = axis.normalized * (angle * Mathf.Deg2Rad / dt);
     }
 
     #endregion
@@ -194,18 +225,54 @@ public class HandGrabSystem : MonoBehaviour
 
         // Save original layer and move to held items layer
         originalItemLayer = item.gameObject.layer;
+        originalItemScale = item.transform.localScale;
 
         // Ignore collision between held item and player capsule
         IgnorePlayerCollision(item, true);
 
-        // Snap item to grip point
+        // Auto-find visual hand bone (hand_l / hand_r) if not assigned
+        if (visualGripPoint == null)
+        {
+            string handBoneName = isLeftHand ? "hand_l" : "hand_r";
+            var handGo = GameObject.Find(handBoneName);
+            if (handGo != null) visualGripPoint = handGo.transform;
+        }
+
+        // Snap item to visual grip point if available, else gripPoint
+        Transform attachTarget = visualGripPoint != null ? visualGripPoint : gripPoint;
         item.GetHoldTransform(isLeftHand, out Vector3 localPos, out Quaternion localRot);
-        item.transform.SetParent(gripPoint);
+        item.transform.SetParent(attachTarget, false);
         item.transform.localPosition = localPos;
         item.transform.localRotation = localRot;
 
-        // Create physics joint (old: BeginRigidBodyGrab → RigidBodyBlend)
-        CreateGrabJoint(item);
+        heldLocalPos = localPos;
+        heldLocalRot = localRot;
+
+        // Ensure scale is not affected by parent bone lossyScale
+        Vector3 parentLossy = attachTarget.lossyScale;
+        if (parentLossy.x > 0.0001f && parentLossy.y > 0.0001f && parentLossy.z > 0.0001f)
+        {
+            item.transform.localScale = new Vector3(originalItemScale.x / parentLossy.x, originalItemScale.y / parentLossy.y, originalItemScale.z / parentLossy.z);
+        }
+
+        // When held in hand, disable collisions and make Rigidbody kinematic
+        // so it stays 100% rigidly locked in the player's palm without floating in air or trailing
+        if (item.rb != null)
+        {
+            item.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            item.rb.isKinematic = true;
+            item.rb.useGravity = false;
+            item.rb.detectCollisions = false;
+            item.rb.interpolation = RigidbodyInterpolation.None;
+            item.rb.linearVelocity = Vector3.zero;
+            item.rb.angularVelocity = Vector3.zero;
+        }
+
+        // Only create joint if not kinematic and no visual direct parent
+        if (visualGripPoint == null && item.rb != null && !item.rb.isKinematic)
+        {
+            CreateGrabJoint(item);
+        }
 
         // Start blend 0→1
         blendProgress = 0f;
@@ -234,6 +301,7 @@ public class HandGrabSystem : MonoBehaviour
         DestroyGrabJoint();
 
         item.transform.SetParent(null);
+        item.transform.localScale = originalItemScale;
 
         // Restore item layer
         item.gameObject.layer = originalItemLayer;
@@ -246,6 +314,9 @@ public class HandGrabSystem : MonoBehaviour
         Vector3 angularVel = Vector3.zero;
         if (applyThrow)
             GetAverageVelocity(out throwVel, out angularVel);
+
+        if (item.rb != null)
+            item.rb.detectCollisions = true;
 
         item.OnReleased(throwVel, angularVel);
 
@@ -360,13 +431,17 @@ public class HandGrabSystem : MonoBehaviour
     {
         if (playerCollider == null)
             FindPlayerCollider();
-        if (playerCollider == null) return;
 
         var cols = item.GetComponentsInChildren<Collider>();
         foreach (var col in cols)
         {
             if (col != null && col != handCollider)
-                Physics.IgnoreCollision(playerCollider, col, ignore);
+            {
+                if (playerCollider != null)
+                    Physics.IgnoreCollision(playerCollider, col, ignore);
+                if (handCollider != null)
+                    Physics.IgnoreCollision(handCollider, col, ignore);
+            }
         }
 
         if (ignore)
@@ -413,8 +488,10 @@ public class HandGrabSystem : MonoBehaviour
 
     public GrabbableItem FindBestGrabbable()
     {
+        Transform detectPoint = visualGripPoint != null ? visualGripPoint : gripPoint;
+
         // Raycast from hand
-        if (Physics.Raycast(gripPoint.position, -gripPoint.forward + gripPoint.up, out RaycastHit hit, grabRayDistance, grabLayerMask))
+        if (Physics.Raycast(detectPoint.position, -detectPoint.forward + detectPoint.up, out RaycastHit hit, grabRayDistance, grabLayerMask))
         {
             var item = GetOrAddGrabbable(hit.collider.gameObject);
             if (item != null && item.canBePickedUp && !item.IsHeld && HasLineOfSightTo(item))
@@ -422,7 +499,7 @@ public class HandGrabSystem : MonoBehaviour
         }
 
         // Overlap sphere fallback
-        var colliders = Physics.OverlapSphere(gripPoint.position, grabRadius, grabLayerMask);
+        var colliders = Physics.OverlapSphere(detectPoint.position, grabRadius, grabLayerMask);
         GrabbableItem closest = null;
         float closestDist = float.MaxValue;
 
@@ -433,13 +510,13 @@ public class HandGrabSystem : MonoBehaviour
 
             Vector3 closestPt;
             if (col is BoxCollider || col is SphereCollider || col is CapsuleCollider)
-                closestPt = col.ClosestPoint(gripPoint.position);
+                closestPt = col.ClosestPoint(detectPoint.position);
             else if (col is MeshCollider mc && mc.convex)
-                closestPt = mc.ClosestPoint(gripPoint.position);
+                closestPt = mc.ClosestPoint(detectPoint.position);
             else
-                closestPt = col.bounds.ClosestPoint(gripPoint.position);
+                closestPt = col.bounds.ClosestPoint(detectPoint.position);
 
-            float dist = Vector3.Distance(gripPoint.position, closestPt);
+            float dist = Vector3.Distance(detectPoint.position, closestPt);
             if (dist < closestDist)
             {
                 if (HasLineOfSightTo(item))
@@ -458,8 +535,9 @@ public class HandGrabSystem : MonoBehaviour
     /// </summary>
     public bool HasLineOfSightTo(GrabbableItem item)
     {
-        if (item == null || gripPoint == null) return false;
-        Vector3 handPos = gripPoint.position;
+        Transform detectPoint = visualGripPoint != null ? visualGripPoint : gripPoint;
+        if (item == null || detectPoint == null) return false;
+        Vector3 handPos = detectPoint.position;
         Vector3 targetPoint = item.transform.position;
         var col = item.GetComponentInChildren<Collider>();
         if (col != null && !col.isTrigger)
@@ -509,15 +587,35 @@ public class HandGrabSystem : MonoBehaviour
             return null;
         }
 
+        // Reject interactables (doors, candles, faucets) and environmental/furniture objects
+        if (target.GetComponentInParent<IInteractable>() != null ||
+            target.GetComponentInParent<InteractDoorKB>() != null ||
+            target.GetComponentInParent<InteractFaucet>() != null)
+        {
+            return null;
+        }
+
+        if (targetName.Contains("door") || targetName.Contains("handle") || targetName.Contains("table") ||
+            targetName.Contains("desk") || targetName.Contains("chair") || targetName.Contains("candle") ||
+            targetName.Contains("wardrobe") || targetName.Contains("cabinet") || targetName.Contains("bed") ||
+            targetName.Contains("wall") || targetName.Contains("floor") || targetName.Contains("roof") ||
+            targetName.Contains("ceiling") || targetName.Contains("stair") || targetName.Contains("window") ||
+            targetName.Contains("faucet") || targetName.Contains("sink"))
+        {
+            return null;
+        }
+
         var item = target.GetComponentInParent<GrabbableItem>();
         if (item != null) return item;
 
         var legacy = target.GetComponentInParent<PlayerKB_GrabObject>();
-        var rb = target.GetComponentInParent<Rigidbody>();
-        if (legacy == null && rb == null) return null;
+        if (legacy == null)
+        {
+            // Only items explicitly designated with GrabbableItem or PlayerKB_GrabObject can be grabbed!
+            return null;
+        }
 
-        // Double check the root object isn't the player
-        GameObject root = legacy != null ? legacy.gameObject : rb.gameObject;
+        GameObject root = legacy.gameObject;
         if (root.CompareTag("Player") || root.GetComponent<CharacterController>() != null)
             return null;
 
@@ -525,7 +623,7 @@ public class HandGrabSystem : MonoBehaviour
         if (item != null) return item;
 
         item = root.AddComponent<GrabbableItem>();
-        item.rb = rb != null ? rb : root.GetComponent<Rigidbody>();
+        item.rb = root.GetComponent<Rigidbody>();
         if (item.rb == null) item.rb = root.AddComponent<Rigidbody>();
 
         string nameLower = root.name.ToLower();
@@ -587,15 +685,16 @@ public class HandGrabSystem : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         if (dt <= 0f) return;
 
-        velocityHistory[velocityIndex] = (gripPoint.position - lastPosition) / dt;
+        Transform trackTransform = visualGripPoint != null ? visualGripPoint : gripPoint;
+        velocityHistory[velocityIndex] = (trackTransform.position - lastPosition) / dt;
 
-        Quaternion deltaRot = gripPoint.rotation * Quaternion.Inverse(lastRotation);
+        Quaternion deltaRot = trackTransform.rotation * Quaternion.Inverse(lastRotation);
         deltaRot.ToAngleAxis(out float angle, out Vector3 axis);
         if (angle > 180f) angle -= 360f;
         angularVelocityHistory[velocityIndex] = axis * (angle * Mathf.Deg2Rad / dt);
 
-        lastPosition = gripPoint.position;
-        lastRotation = gripPoint.rotation;
+        lastPosition = trackTransform.position;
+        lastRotation = trackTransform.rotation;
         velocityIndex = (velocityIndex + 1) % velocityFrameWindow;
     }
 
@@ -618,7 +717,7 @@ public class HandGrabSystem : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        var gp = gripPoint != null ? gripPoint : transform;
+        var gp = visualGripPoint != null ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
         Gizmos.color = IsHolding ? Color.green : Color.yellow;
         Gizmos.DrawWireSphere(gp.position, grabRadius);
         Gizmos.color = Color.cyan;
