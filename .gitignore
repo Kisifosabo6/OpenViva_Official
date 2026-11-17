@@ -109,6 +109,12 @@ InitTestScene*.unity*
 
 # Character IP & Proprietary Assets (Shinobu / Character Models, Textures, Audio & Animations)
 *[Ss]hinobu*
+*[Ll]oli*
+/Cards/
+/Cards.meta
+*.viva3d
+*.viva3d.meta
+application_generated_unity_*
 /Assets/Audio/voices/
 /Assets/Audio/voices.meta
 /Assets/Resources/Voices/
