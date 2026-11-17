@@ -13,7 +13,6 @@
     "com.unity.render-pipelines.universal": "17.3.0",
     "com.unity.shadergraph": "17.3.0",
     "com.unity.splines": "2.9.0",
-    "com.unity.springbone": "https://github.com/unity3d-jp/UnityChanSpringBone.git",
     "com.unity.terrain-tools": "5.3.3",
     "com.unity.timeline": "1.8.13",
     "com.unity.toonshader": "0.15.1-preview",
