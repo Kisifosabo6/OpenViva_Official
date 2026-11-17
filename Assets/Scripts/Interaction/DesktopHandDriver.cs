@@ -129,6 +129,44 @@ public class DesktopHandDriver : MonoBehaviour
     Vector3 currentDynamicPosOffset;
     Quaternion currentDynamicRotOffset = Quaternion.identity;
 
+    private static DesktopHandDriver _instance;
+    public static DesktopHandDriver Instance
+    {
+        get
+        {
+            if (_instance == null) _instance = Object.FindFirstObjectByType<DesktopHandDriver>();
+            return _instance;
+        }
+        private set => _instance = value;
+    }
+
+    private Transform leftPinnedTarget;
+    private Transform rightPinnedTarget;
+
+    public void SetPinnedTarget(HandGrabSystem hand, Transform target)
+    {
+        if (hand == leftHandGrab) leftPinnedTarget = target;
+        else if (hand == rightHandGrab) rightPinnedTarget = target;
+    }
+
+    public void ClearPinnedTarget(HandGrabSystem hand)
+    {
+        if (hand == leftHandGrab) leftPinnedTarget = null;
+        else if (hand == rightHandGrab) rightPinnedTarget = null;
+    }
+
+    public Transform GetPinnedTarget(HandGrabSystem hand)
+    {
+        if (hand == leftHandGrab) return leftPinnedTarget;
+        if (hand == rightHandGrab) return rightPinnedTarget;
+        return null;
+    }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
         InitializeDriver();
@@ -356,6 +394,21 @@ public class DesktopHandDriver : MonoBehaviour
 
         hand.CameraVelocity = cameraVelocity;
 
+        Transform pinned = (hand == leftHandGrab) ? leftPinnedTarget : rightPinnedTarget;
+        if (pinned != null)
+        {
+            // If pinned to a door handle, visual bone is pinned in UpdateHand,
+            // but physical hand must follow camera/player to pull the door joint!
+            if (pinned.GetComponentInParent<PhysicsDoorHandle>() == null)
+            {
+                Vector3 camPos = cameraTransform != null ? cameraTransform.position : transform.position;
+                Vector3 toCam = (camPos - pinned.position).normalized;
+                hand.TargetPosition = pinned.position + toCam * 0.08f;
+                hand.TargetRotation = cameraTransform != null ? cameraTransform.rotation * rotOffset : rotOffset;
+                return;
+            }
+        }
+
         if (hand.FrozenLocalPos.HasValue)
         {
             hand.TargetPosition = cameraTransform.TransformPoint(hand.FrozenLocalPos.Value + currentDynamicPosOffset);
@@ -567,6 +620,15 @@ public class DesktopHandDriver : MonoBehaviour
     void UpdateHand(Transform bone, HandGrabSystem hand, Vector3 camOffset, Quaternion rotOffset, Vector3 dynamicPosOffset, Quaternion dynamicRotOffset)
     {
         if (bone == null || hand == null || cameraTransform == null) return;
+
+        Transform pinned = (hand == leftHandGrab) ? leftPinnedTarget : rightPinnedTarget;
+        if (pinned != null)
+        {
+            Vector3 toCam = (cameraTransform.position - pinned.position).normalized;
+            bone.position = pinned.position + toCam * 0.08f;
+            bone.rotation = cameraTransform.rotation * rotOffset;
+            return;
+        }
 
         // 1. Calculate ideal camera-space target position and rotation
         Vector3 localPos;

@@ -453,6 +453,8 @@ public class HandAnimator : MonoBehaviour
         if (missingAny)
         {
             Transform searchRoot = wrist != null ? wrist : transform;
+
+            // 1. Try standard character armature convention (e.g. thumb1_l, index2_l)
             string suffix = isLeftHand ? "_l" : "_r";
             string[] fingers = new string[] { "thumb", "index", "middle", "ring", "pinky" };
             int idx = 0;
@@ -465,6 +467,38 @@ public class HandAnimator : MonoBehaviour
                     if (bone != null)
                         fingerBones[idx] = bone;
                     idx++;
+                }
+            }
+
+            // 2. Fallback to Unity XR / OpenXR controller armature convention (e.g. L_IndexProximal, L_ThumbDistal)
+            bool stillMissing = false;
+            for (int i = 0; i < 15; i++)
+            {
+                if (fingerBones[i] == null) { stillMissing = true; break; }
+            }
+
+            if (stillMissing)
+            {
+                string pfx = isLeftHand ? "L_" : "R_";
+                string[] xriFingers = new string[] { "Thumb", "Index", "Middle", "Ring", "Little" };
+                string[] stages = new string[] { "Proximal", "Intermediate", "Distal" };
+
+                int xriIdx = 0;
+                for (int f = 0; f < xriFingers.Length; f++)
+                {
+                    for (int s = 0; s < stages.Length; s++)
+                    {
+                        string bName = $"{pfx}{xriFingers[f]}{stages[s]}";
+                        if (xriFingers[f] == "Thumb")
+                        {
+                            if (s == 1) bName = $"{pfx}ThumbDistal";
+                            else if (s == 2) bName = $"{pfx}ThumbTip";
+                        }
+                        Transform bone = FindRecursive(searchRoot, bName);
+                        if (bone != null)
+                            fingerBones[xriIdx] = bone;
+                        xriIdx++;
+                    }
                 }
             }
         }
