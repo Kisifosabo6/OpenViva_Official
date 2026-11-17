@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Unity.Animations.SpringBones;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -8,23 +9,10 @@ using Viva.Interaction;
 
 namespace Viva.Dev
 {
-    [InitializeOnLoad]
     public static class CompanionPrefabBuilder
     {
         private const string PrefabSavePath = "Assets/Resources/Prefabs/ShinobuCompanion.prefab";
         private const string PrefabCompanionPath = "Assets/Prefabs/Companion/ShinobuCompanion.prefab";
-
-        static CompanionPrefabBuilder()
-        {
-            // Auto-check on editor compile
-            EditorApplication.delayCall += CheckAndBuildOnLoad;
-        }
-
-        private static void CheckAndBuildOnLoad()
-        {
-            // Always ensure the prefab is generated and up to date
-            BuildShinobuPrefab();
-        }
 
         [MenuItem("OpenViva/Place Shinobu in MainScene", false, 2)]
         public static void PlaceShinobuInMainScene()
@@ -187,6 +175,7 @@ namespace Viva.Dev
             Material matBody = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Body.mat");
             Material matLimbs = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Limbs.mat");
             Material matEyes = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Eyes.mat");
+            Material matCheeks = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Cheeks.mat");
             Material matHair = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Hair.mat");
             Material matShirt = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Shirt.mat");
             Material matSkirt = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Skirt.mat");
@@ -202,18 +191,18 @@ namespace Viva.Dev
                 rootBone
             );
 
-            // 2. Attach Head with blendshapes (Elements: 0:Head, 1:Head, 2:Eyes, 3:Head, 4:Eyes)
+            // 2. Attach Head with blendshapes (Elements: 0:Head, 1:Head, 2:Eyes, 3:Cheeks, 4:Eyes)
             AttachSubMesh(
                 instance,
                 "Assets/Resources/Models/loli/head.fbx",
-                new Material[] { matHead, matHead, matEyes, matHead, matEyes },
+                new Material[] { matHead, matHead, matEyes, matCheeks != null ? matCheeks : matHead, matEyes },
                 boneMap,
                 headBone,
                 (smr) => { companionAI.headSMR = smr; }
             );
 
-            // 3. Attach Hair directly under companion root
-            AttachHair(instance, matHair);
+            // 3. Attach Hair with bones bound under headBone and dynamic SpringBone physics
+            AttachHair(instance, matHair, headBone, boneMap);
 
             // 4. Attach Shirt
             AttachSubMesh(
@@ -368,7 +357,7 @@ namespace Viva.Dev
             return newSMR;
         }
 
-        private static void AttachHair(GameObject root, Material matHair)
+        private static void AttachHair(GameObject root, Material matHair, Transform headBone, Dictionary<string, Transform> boneMap)
         {
             string hairPath = "Assets/Resources/Models/loli/hair.fbx";
             GameObject hairAsset = AssetDatabase.LoadAssetAtPath<GameObject>(hairPath);
@@ -387,11 +376,205 @@ namespace Viva.Dev
             hairInstance.transform.localRotation = Quaternion.identity;
             hairInstance.transform.localScale = Vector3.one;
 
-            // Assign material to all renderers in hair
+            // Bind hairArmature under headBone so all hair bones follow head movements (turning, crouching, looking)
+            Transform hairArmature = hairInstance.transform.Find("hairArmature");
+            if (hairArmature != null && headBone != null)
+            {
+                hairArmature.SetParent(headBone, true);
+            }
+
+            // Assign material to all renderers in hair and ensure rootBone tracks headBone
             foreach (var smr in hairInstance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {
                 if (matHair != null) smr.sharedMaterial = matHair;
+                if (headBone != null) smr.rootBone = headBone;
             }
+
+            // Setup SpringBone physics chains and collision envelopes
+            SetupHairPhysics(root, hairInstance, hairArmature, boneMap);
+        }
+
+        private static void SetupHairPhysics(
+            GameObject root,
+            GameObject hairInstance,
+            Transform hairArmature,
+            Dictionary<string, Transform> boneMap)
+        {
+            if (hairArmature == null) return;
+
+            // 1. Setup colliders on character body to prevent hair clipping
+            SpringSphereCollider headCol = null;
+            SpringCapsuleCollider torsoCol = null;
+            SpringSphereCollider shoulderLCol = null;
+            SpringSphereCollider shoulderRCol = null;
+            SpringCapsuleCollider armLCol = null;
+            SpringCapsuleCollider armRCol = null;
+
+            // Head sphere collider (centered on skull)
+            if (boneMap != null && boneMap.TryGetValue("head", out Transform headT) && headT != null)
+            {
+                Transform colObj = headT.Find("Col_Head");
+                if (colObj == null)
+                {
+                    colObj = new GameObject("Col_Head").transform;
+                    colObj.SetParent(headT, false);
+                }
+                colObj.localPosition = new Vector3(0f, 0.08f, 0f);
+                headCol = colObj.GetComponent<SpringSphereCollider>() ?? colObj.gameObject.AddComponent<SpringSphereCollider>();
+                headCol.radius = 0.128f;
+            }
+
+            // Torso capsule collider (covers chest and upper back)
+            if (boneMap != null && boneMap.TryGetValue("spine3", out Transform spine3T) && spine3T != null)
+            {
+                Transform colObj = spine3T.Find("Col_Torso");
+                if (colObj == null)
+                {
+                    colObj = new GameObject("Col_Torso").transform;
+                    colObj.SetParent(spine3T, false);
+                }
+                colObj.localPosition = new Vector3(0f, 0.02f, -0.02f);
+                colObj.localRotation = Quaternion.identity;
+                torsoCol = colObj.GetComponent<SpringCapsuleCollider>() ?? colObj.gameObject.AddComponent<SpringCapsuleCollider>();
+                torsoCol.radius = 0.14f;
+                torsoCol.height = 0.20f;
+            }
+
+            // Left shoulder sphere collider
+            if (boneMap != null && boneMap.TryGetValue("shoulder_l", out Transform shoulderLT) && shoulderLT != null)
+            {
+                Transform colObj = shoulderLT.Find("Col_Shoulder_L");
+                if (colObj == null)
+                {
+                    colObj = new GameObject("Col_Shoulder_L").transform;
+                    colObj.SetParent(shoulderLT, false);
+                }
+                colObj.localPosition = new Vector3(0f, 0.04f, 0f);
+                shoulderLCol = colObj.GetComponent<SpringSphereCollider>() ?? colObj.gameObject.AddComponent<SpringSphereCollider>();
+                shoulderLCol.radius = 0.075f;
+            }
+
+            // Right shoulder sphere collider
+            if (boneMap != null && boneMap.TryGetValue("shoulder_r", out Transform shoulderRT) && shoulderRT != null)
+            {
+                Transform colObj = shoulderRT.Find("Col_Shoulder_R");
+                if (colObj == null)
+                {
+                    colObj = new GameObject("Col_Shoulder_R").transform;
+                    colObj.SetParent(shoulderRT, false);
+                }
+                colObj.localPosition = new Vector3(0f, 0.04f, 0f);
+                shoulderRCol = colObj.GetComponent<SpringSphereCollider>() ?? colObj.gameObject.AddComponent<SpringSphereCollider>();
+                shoulderRCol.radius = 0.075f;
+            }
+
+            // Left upper arm capsule collider
+            Transform armParentL = null;
+            if (boneMap != null)
+            {
+                if (boneMap.TryGetValue("armControl_l", out Transform acl) && acl != null) armParentL = acl;
+                else if (boneMap.TryGetValue("upperArm_l", out Transform ual) && ual != null) armParentL = ual;
+            }
+
+            if (armParentL != null)
+            {
+                Transform colObj = armParentL.Find("Col_UpperArm_L");
+                if (colObj == null)
+                {
+                    colObj = new GameObject("Col_UpperArm_L").transform;
+                    colObj.SetParent(armParentL, false);
+                }
+                colObj.localPosition = Vector3.zero;
+                colObj.localRotation = Quaternion.identity;
+                armLCol = colObj.GetComponent<SpringCapsuleCollider>() ?? colObj.gameObject.AddComponent<SpringCapsuleCollider>();
+                armLCol.radius = 0.06f;
+                armLCol.height = 0.18f;
+            }
+
+            // Right upper arm capsule collider
+            Transform armParentR = null;
+            if (boneMap != null)
+            {
+                if (boneMap.TryGetValue("armControl_r", out Transform acr) && acr != null) armParentR = acr;
+                else if (boneMap.TryGetValue("upperArm_r", out Transform uar) && uar != null) armParentR = uar;
+            }
+
+            if (armParentR != null)
+            {
+                Transform colObj = armParentR.Find("Col_UpperArm_R");
+                if (colObj == null)
+                {
+                    colObj = new GameObject("Col_UpperArm_R").transform;
+                    colObj.SetParent(armParentR, false);
+                }
+                colObj.localPosition = Vector3.zero;
+                colObj.localRotation = Quaternion.identity;
+                armRCol = colObj.GetComponent<SpringCapsuleCollider>() ?? colObj.gameObject.AddComponent<SpringCapsuleCollider>();
+                armRCol.radius = 0.06f;
+                armRCol.height = 0.18f;
+            }
+
+            // Build collider arrays
+            List<SpringSphereCollider> bangSphereCols = new List<SpringSphereCollider>();
+            if (headCol != null) bangSphereCols.Add(headCol);
+
+            List<SpringSphereCollider> hairSphereCols = new List<SpringSphereCollider>();
+            if (headCol != null) hairSphereCols.Add(headCol);
+            if (shoulderLCol != null) hairSphereCols.Add(shoulderLCol);
+            if (shoulderRCol != null) hairSphereCols.Add(shoulderRCol);
+
+            List<SpringCapsuleCollider> hairCapsuleCols = new List<SpringCapsuleCollider>();
+            if (torsoCol != null) hairCapsuleCols.Add(torsoCol);
+            if (armLCol != null) hairCapsuleCols.Add(armLCol);
+            if (armRCol != null) hairCapsuleCols.Add(armRCol);
+
+            // 2. Attach SpringBone components to hair strands
+            foreach (Transform t in hairArmature.GetComponentsInChildren<Transform>(true))
+            {
+                // Only hair strand bones with at least 1 child (leaves serve as tip positions)
+                if (t.childCount == 0) continue;
+
+                string boneName = t.name;
+                bool isBang = boneName.StartsWith("hairBang");
+                bool isLongOrMed = boneName.StartsWith("medHair") || boneName.StartsWith("longHair");
+
+                if (!isBang && !isLongOrMed) continue;
+
+                SpringBone sb = t.GetComponent<SpringBone>() ?? t.gameObject.AddComponent<SpringBone>();
+
+                if (isBang)
+                {
+                    sb.stiffnessForce = 400f;
+                    sb.dragForce = 0.4f;
+                    sb.springForce = new Vector3(0f, -0.0001f, 0f);
+                    sb.radius = 0.02f;
+                    sb.sphereColliders = bangSphereCols.ToArray();
+                    sb.capsuleColliders = new SpringCapsuleCollider[0];
+                    sb.panelColliders = new SpringPanelCollider[0];
+                }
+                else
+                {
+                    sb.stiffnessForce = 150f;
+                    sb.dragForce = 0.3f;
+                    sb.springForce = new Vector3(0f, -0.0005f, 0f);
+                    sb.radius = 0.025f;
+                    sb.sphereColliders = hairSphereCols.ToArray();
+                    sb.capsuleColliders = hairCapsuleCols.ToArray();
+                    sb.panelColliders = new SpringPanelCollider[0];
+                }
+            }
+
+            // 3. Add SpringManager on character root
+            SpringManager sm = root.GetComponent<SpringManager>() ?? root.AddComponent<SpringManager>();
+            sm.automaticUpdates = true;
+            sm.simulationFrameRate = 60;
+            sm.dynamicRatio = 1.0f;
+            sm.gravity = new Vector3(0f, -9.81f, 0f);
+            sm.bounce = 0.05f;
+            sm.friction = 0.8f;
+            sm.collideWithGround = false;
+            sm.enableCollision = true;
+            sm.FindSpringBones(true);
         }
 
         private static void AttachSkirt(
