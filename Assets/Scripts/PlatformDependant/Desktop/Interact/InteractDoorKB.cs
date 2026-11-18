@@ -43,16 +43,39 @@ public class InteractDoorKB : MonoBehaviour, IInteractable
 
     protected void FindPlayerHands()
     {
+        Transform searchRoot = _player != null ? _player.transform : null;
         if (_playerLeftHand == null)
         {
-            var hL = GameObject.Find("hand_l") ?? GameObject.Find("PhysicsHand_L");
+            Transform hL = searchRoot != null ? (FindChildRecursive(searchRoot, "PhysicsHand_L") ?? FindChildRecursive(searchRoot, "hand_l")) : null;
+            if (hL == null)
+            {
+                var go = GameObject.Find("PhysicsHand_L");
+                if (go != null) hL = go.transform;
+            }
             if (hL != null) _playerLeftHand = hL.GetComponentInChildren<Collider>();
         }
         if (_playerRightHand == null)
         {
-            var hR = GameObject.Find("hand_r") ?? GameObject.Find("PhysicsHand_R");
+            Transform hR = searchRoot != null ? (FindChildRecursive(searchRoot, "PhysicsHand_R") ?? FindChildRecursive(searchRoot, "hand_r")) : null;
+            if (hR == null)
+            {
+                var go = GameObject.Find("PhysicsHand_R");
+                if (go != null) hR = go.transform;
+            }
             if (hR != null) _playerRightHand = hR.GetComponentInChildren<Collider>();
         }
+    }
+
+    private static Transform FindChildRecursive(Transform parent, string childName)
+    {
+        if (parent == null) return null;
+        if (parent.name.Equals(childName, System.StringComparison.OrdinalIgnoreCase)) return parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var found = FindChildRecursive(parent.GetChild(i), childName);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     protected virtual void AssignInputs()

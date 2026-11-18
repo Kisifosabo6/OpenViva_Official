@@ -320,14 +320,10 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    private bool _isSwitchingControlScheme = false;
+
     private void Update()
     {
-        if (UnityEngine.InputSystem.Keyboard.current != null &&
-            UnityEngine.InputSystem.Keyboard.current.f1Key.wasPressedThisFrame)
-        {
-            clickSwitchControlScheme();
-        }
-
         if (Globals.isMenuOpen && Globals.isDesktopMode)
         {
             EnsureInputModuleActive();
@@ -595,6 +591,8 @@ public class PauseMenu : MonoBehaviour
 
     public void clickSwitchControlScheme()
     {
+        if (_isSwitchingControlScheme) return;
+
         if (Globals.isDesktopMode)
         {
             StartCoroutine(SwitchToVRRoutine());
@@ -607,10 +605,14 @@ public class PauseMenu : MonoBehaviour
 
     private IEnumerator SwitchToVRRoutine()
     {
+        if (_isSwitchingControlScheme) yield break;
+        _isSwitchingControlScheme = true;
+
         var manager = XRGeneralSettings.Instance != null ? XRGeneralSettings.Instance.Manager : null;
         if (manager == null)
         {
             Debug.LogError("[PauseMenu] No XRManagerSettings found.");
+            _isSwitchingControlScheme = false;
             yield break;
         }
 
@@ -622,6 +624,7 @@ public class PauseMenu : MonoBehaviour
         if (manager.activeLoader == null)
         {
             Debug.LogError("[PauseMenu] Failed to initialize OpenXR. Ensure a VR headset is connected and active.");
+            _isSwitchingControlScheme = false;
             yield break;
         }
 
@@ -630,19 +633,47 @@ public class PauseMenu : MonoBehaviour
         XRSettings.enabled = true;
 #pragma warning restore CS0618
 
+        var player = _player != null ? _player : FindFirstObjectByType<Player>();
+        Vector3 desktopCamPos = Vector3.zero;
+        Vector3 desktopCamForward = Vector3.forward;
+        Vector3 kbGroundPos = Vector3.zero;
+        float desktopYaw = 0f;
+
+        if (player != null)
+        {
+            var kb = player.transform.Find("PlayerKB")?.gameObject;
+            if (kb != null)
+            {
+                kbGroundPos = kb.transform.position;
+                var kbCam = kb.GetComponentInChildren<Camera>(true);
+                if (kbCam != null)
+                {
+                    desktopCamPos = kbCam.transform.position;
+                    desktopCamForward = kbCam.transform.forward;
+                }
+                else
+                {
+                    desktopCamPos = kb.transform.position + Vector3.up * 1.4f;
+                    desktopCamForward = kb.transform.forward;
+                }
+
+                Vector3 flatForward = Vector3.ProjectOnPlane(desktopCamForward, Vector3.up).normalized;
+                desktopYaw = flatForward.sqrMagnitude > 0.001f ? Quaternion.LookRotation(flatForward, Vector3.up).eulerAngles.y : kb.transform.eulerAngles.y;
+            }
+        }
+
+        // Wait a frame for OpenXR tracking subsystem to update initial HMD poses
         yield return null;
 
-        var player = _player != null ? _player : FindFirstObjectByType<Player>();
         if (player != null)
         {
             var kb = player.transform.Find("PlayerKB")?.gameObject;
             var vr = player.transform.Find("PlayerVR")?.gameObject;
             if (kb != null && vr != null)
             {
-                vr.transform.position = kb.transform.position;
-                vr.transform.rotation = Quaternion.Euler(0, kb.transform.eulerAngles.y, 0);
-
                 var kbCam = kb.GetComponentInChildren<Camera>(true);
+                var vrCam = vr.GetComponentInChildren<Camera>(true);
+
                 if (kbCam != null)
                 {
                     kbCam.enabled = false;
@@ -650,7 +681,6 @@ public class PauseMenu : MonoBehaviour
                     kbCam.stereoTargetEye = StereoTargetEyeMask.None;
                 }
 
-                var vrCam = vr.GetComponentInChildren<Camera>(true);
                 if (vrCam != null)
                 {
                     vrCam.enabled = true;
@@ -658,12 +688,71 @@ public class PauseMenu : MonoBehaviour
                     vrCam.stereoTargetEye = StereoTargetEyeMask.Both;
                 }
 
+                var kbCC = kb.GetComponent<CharacterController>();
+                if (kbCC != null) kbCC.enabled = false;
+
+                var vrCC = vr.GetComponent<CharacterController>();
+                if (vrCC != null) vrCC.enabled = false;
+
                 kb.SetActive(false);
                 vr.SetActive(true);
+
+                // Align VR origin so that the active VR camera matches the desktop camera position and forward yaw
+                if (vrCam != null)
+                {
+                    Vector3 hmdForward = vrCam.transform.forward;
+                    Vector3 flatHMDForward = Vector3.ProjectOnPlane(hmdForward, Vector3.up).normalized;
+                    if (flatHMDForward.sqrMagnitude > 0.001f)
+                    {
+                        float hmdYaw = Quaternion.LookRotation(flatHMDForward, Vector3.up).eulerAngles.y;
+                        float deltaYaw = desktopYaw - hmdYaw;
+                        vr.transform.rotation = Quaternion.Euler(0f, vr.transform.eulerAngles.y + deltaYaw, 0f);
+                    }
+                    else
+                    {
+                        vr.transform.rotation = Quaternion.Euler(0f, desktopYaw, 0f);
+                    }
+
+                    Vector3 camOffset = vrCam.transform.position - vr.transform.position;
+                    vr.transform.position = new Vector3(
+                        desktopCamPos.x - camOffset.x,
+                        kbGroundPos.y,
+                        desktopCamPos.z - camOffset.z
+                    );
+                }
+                else
+                {
+                    vr.transform.position = kbGroundPos;
+                    vr.transform.rotation = Quaternion.Euler(0f, desktopYaw, 0f);
+                }
+
+                // Update PlayerFollowObject constraint if present
+                var pfo = player.transform.Find("PlayerFollowObject");
+                if (pfo != null && pfo.TryGetComponent<UnityEngine.Animations.PositionConstraint>(out var constraint))
+                {
+                    constraint.constraintActive = false;
+                    for (int i = 0; i < constraint.sourceCount; i++)
+                    {
+                        constraint.RemoveSource(0);
+                    }
+                    var source = new UnityEngine.Animations.ConstraintSource { sourceTransform = vr.transform, weight = 1f };
+                    constraint.AddSource(source);
+                    constraint.constraintActive = true;
+                }
+
+                Physics.SyncTransforms();
+                if (vrCC != null) vrCC.enabled = true;
             }
         }
 
         Globals.isDesktopMode = false;
+
+        var companionAI = FindFirstObjectByType<CompanionAI>();
+        if (companionAI != null)
+        {
+            companionAI.UpdateTargetReference();
+            companionAI.EnsureMeshRenderersActiveAndUpdated();
+        }
 
         if (PlayerManager.Instance != null)
         {
@@ -677,26 +766,77 @@ public class PauseMenu : MonoBehaviour
             OrientPauseMenuToPlayer();
             ConfigurePageEventCameras();
         }
+
+        // Wait another frame for HMD tracking update and refine camera position if needed
+        yield return null;
+
+        if (player != null)
+        {
+            var vr = player.transform.Find("PlayerVR")?.gameObject;
+            if (vr != null && vr.activeInHierarchy)
+            {
+                var vrCam = vr.GetComponentInChildren<Camera>(true);
+                if (vrCam != null)
+                {
+                    var vrCC = vr.GetComponent<CharacterController>();
+                    if (vrCC != null) vrCC.enabled = false;
+
+                    Vector3 camOffset = vrCam.transform.position - vr.transform.position;
+                    Vector3 currentPos = vr.transform.position;
+                    vr.transform.position = new Vector3(
+                        desktopCamPos.x - camOffset.x,
+                        currentPos.y,
+                        desktopCamPos.z - camOffset.z
+                    );
+
+                    Physics.SyncTransforms();
+                    if (vrCC != null) vrCC.enabled = true;
+                }
+            }
+        }
+
+        _isSwitchingControlScheme = false;
     }
 
     private IEnumerator SwitchToDesktopRoutine()
     {
+        if (_isSwitchingControlScheme) yield break;
+        _isSwitchingControlScheme = true;
+
+        var player = _player != null ? _player : FindFirstObjectByType<Player>();
+        Vector3 vrHeadPos = Vector3.zero;
+        Vector3 vrHeadForward = Vector3.forward;
+        float vrFloorY = 0f;
+        bool hasVRPos = false;
+
+        if (player != null)
+        {
+            var vr = player.transform.Find("PlayerVR")?.gameObject;
+            if (vr != null && vr.activeInHierarchy)
+            {
+                var vrCam = vr.GetComponentInChildren<Camera>(true);
+                if (vrCam != null)
+                {
+                    vrHeadPos = vrCam.transform.position;
+                    vrHeadForward = vrCam.transform.forward;
+                    vrFloorY = vr.transform.position.y;
+                    hasVRPos = true;
+                }
+            }
+        }
+
         // 1. Stop OpenXR cleanly while VR camera is still alive
         EnsureXRDisabled();
 
         // 2. Wait a frame for Unity's rendering pipeline to release the XR display mirror
         yield return null;
 
-        var player = _player != null ? _player : FindFirstObjectByType<Player>();
         if (player != null)
         {
             var kb = player.transform.Find("PlayerKB")?.gameObject;
             var vr = player.transform.Find("PlayerVR")?.gameObject;
             if (kb != null && vr != null)
             {
-                kb.transform.position = vr.transform.position;
-                kb.transform.rotation = Quaternion.Euler(0, vr.transform.eulerAngles.y, 0);
-
                 var vrCam = vr.GetComponentInChildren<Camera>(true);
                 if (vrCam != null)
                 {
@@ -713,12 +853,53 @@ public class PauseMenu : MonoBehaviour
                     kbCam.stereoTargetEye = StereoTargetEyeMask.None;
                 }
 
+                var kbCC = kb.GetComponent<CharacterController>();
+                if (kbCC != null) kbCC.enabled = false;
+
+                if (hasVRPos)
+                {
+                    Vector3 flatVRForward = Vector3.ProjectOnPlane(vrHeadForward, Vector3.up).normalized;
+                    float finalYaw = flatVRForward.sqrMagnitude > 0.001f ? Quaternion.LookRotation(flatVRForward, Vector3.up).eulerAngles.y : vr.transform.eulerAngles.y;
+
+                    kb.transform.position = new Vector3(vrHeadPos.x, vrFloorY, vrHeadPos.z);
+                    kb.transform.rotation = Quaternion.Euler(0f, finalYaw, 0f);
+                }
+                else
+                {
+                    kb.transform.position = vr.transform.position;
+                    kb.transform.rotation = Quaternion.Euler(0f, vr.transform.eulerAngles.y, 0f);
+                }
+
+                // Update PlayerFollowObject constraint if present
+                var pfo = player.transform.Find("PlayerFollowObject");
+                if (pfo != null && pfo.TryGetComponent<UnityEngine.Animations.PositionConstraint>(out var constraint))
+                {
+                    constraint.constraintActive = false;
+                    for (int i = 0; i < constraint.sourceCount; i++)
+                    {
+                        constraint.RemoveSource(0);
+                    }
+                    var source = new UnityEngine.Animations.ConstraintSource { sourceTransform = kb.transform, weight = 1f };
+                    constraint.AddSource(source);
+                    constraint.constraintActive = true;
+                }
+
                 vr.SetActive(false);
                 kb.SetActive(true);
+
+                Physics.SyncTransforms();
+                if (kbCC != null) kbCC.enabled = true;
             }
         }
 
         Globals.isDesktopMode = true;
+
+        var companionAI = FindFirstObjectByType<CompanionAI>();
+        if (companionAI != null)
+        {
+            companionAI.UpdateTargetReference();
+            companionAI.EnsureMeshRenderersActiveAndUpdated();
+        }
         EnsureInputModuleActive();
         Globals.handleMovement = true;
         Globals.handleKBLook = true;
@@ -744,6 +925,7 @@ public class PauseMenu : MonoBehaviour
         }
 
         yield return null;
+        _isSwitchingControlScheme = false;
     }
 
     public static void EnsureXRDisabled()

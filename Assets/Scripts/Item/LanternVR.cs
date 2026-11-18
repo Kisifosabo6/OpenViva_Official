@@ -22,15 +22,19 @@ public class LanternVR : MonoBehaviour
         _lanternKB = GetComponent<LanternKB>();
         _grabScript = GetComponent<PlayerVR_GrabObject>();
 
-        _isOn = _lanternKB._isOn;
-        _diode = _lanternKB._diode;
+        if (_lanternKB != null)
+        {
+            _isOn = _lanternKB._isOn;
+            _diode = _lanternKB._diode;
+        }
 
-        _XRIButtonDownY.action.Enable();
-        _XRIButtonDownB.action.Enable();
+        if (_XRIButtonDownY?.action != null) _XRIButtonDownY.action.Enable();
+        if (_XRIButtonDownB?.action != null) _XRIButtonDownB.action.Enable();
     }
 
     private void Update()
     {
+        if (_grabScript == null) return;
         _isGrabbed = _grabScript.IsGrabbed;
 
         if (_isGrabbed != 0)
@@ -39,23 +43,23 @@ public class LanternVR : MonoBehaviour
 
             if (_isGrabbed == 1)
             {
-                _controlHintsL.CreateHint(HintConstants.LeftLanternHintVR);
-                _XRIButtonDownB.action.performed -= ToggleLantern;
-                _XRIButtonDownY.action.performed += ToggleLantern;
+                _controlHintsL?.CreateHint(HintConstants.LeftLanternHintVR);
+                if (_XRIButtonDownB?.action != null) _XRIButtonDownB.action.performed -= ToggleLantern;
+                if (_XRIButtonDownY?.action != null) _XRIButtonDownY.action.performed += ToggleLantern;
             }
             else if (_isGrabbed == 2)
             {
-                _controlHintsR.CreateHint(HintConstants.RightLanternHintVR);
-                _XRIButtonDownY.action.performed -= ToggleLantern;
-                _XRIButtonDownB.action.performed += ToggleLantern;  
+                _controlHintsR?.CreateHint(HintConstants.RightLanternHintVR);
+                if (_XRIButtonDownY?.action != null) _XRIButtonDownY.action.performed -= ToggleLantern;
+                if (_XRIButtonDownB?.action != null) _XRIButtonDownB.action.performed += ToggleLantern;  
             }
 
             _doOnce = false;
         }
         else
         {
-            _controlHintsL.ClearHint(HintConstants.LeftLanternHintVR);
-            _controlHintsR.ClearHint(HintConstants.RightLanternHintVR);
+            _controlHintsL?.ClearHint(HintConstants.LeftLanternHintVR);
+            _controlHintsR?.ClearHint(HintConstants.RightLanternHintVR);
             _doOnce = true;
         }
     }
@@ -64,7 +68,7 @@ public class LanternVR : MonoBehaviour
     {
         if (_isGrabbed == 0) return;
 
-        _diode.SetActive(!_isOn);
+        if (_diode != null) _diode.SetActive(!_isOn);
         _isOn = !_isOn;
     }
 }

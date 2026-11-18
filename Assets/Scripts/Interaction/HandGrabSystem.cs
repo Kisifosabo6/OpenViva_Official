@@ -240,16 +240,29 @@ public class HandGrabSystem : MonoBehaviour
         // Ignore collision between held item and player capsule
         IgnorePlayerCollision(item, true);
 
+        // Sanity check visualGripPoint: if it was somehow set to a transform outside this character's hierarchy (e.g. Shinobu), clear it!
+        if (visualGripPoint != null && transform.root != null && visualGripPoint.root != transform.root)
+        {
+            visualGripPoint = null;
+        }
+
         // Auto-find visual hand bone (hand_l / hand_r) if not assigned
         if (visualGripPoint == null)
         {
-            string handBoneName = isLeftHand ? "hand_l" : "hand_r";
-            var handGo = GameObject.Find(handBoneName);
-            if (handGo != null) visualGripPoint = handGo.transform;
+            if (gripPoint != null)
+            {
+                visualGripPoint = gripPoint;
+            }
+            else
+            {
+                string handBoneName = isLeftHand ? "hand_l" : "hand_r";
+                Transform foundBone = FindChildRecursive(transform.root, handBoneName);
+                visualGripPoint = foundBone != null ? foundBone : transform;
+            }
         }
 
         // Snap item to visual grip point if available, else gripPoint
-        Transform attachTarget = visualGripPoint != null ? visualGripPoint : gripPoint;
+        Transform attachTarget = visualGripPoint != null ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
         item.GetHoldTransform(isLeftHand, out Vector3 localPos, out Quaternion localRot);
         item.transform.SetParent(attachTarget, false);
         item.transform.localPosition = localPos;
@@ -298,6 +311,12 @@ public class HandGrabSystem : MonoBehaviour
             else legacy.IsGrabbedRight = true;
         }
 
+        var vrLegacy = item.GetComponent<PlayerVR_GrabObject>();
+        if (vrLegacy != null)
+        {
+            vrLegacy.IsGrabbed = isLeftHand ? 1 : 2;
+        }
+
         return true;
     }
 
@@ -342,6 +361,12 @@ public class HandGrabSystem : MonoBehaviour
         {
             if (isLeftHand) legacy.IsGrabbedLeft = false;
             else legacy.IsGrabbedRight = false;
+        }
+
+        var vrLegacy = item.GetComponent<PlayerVR_GrabObject>();
+        if (vrLegacy != null)
+        {
+            vrLegacy.IsGrabbed = 0;
         }
 
         OnItemReleased?.Invoke(item);
@@ -498,18 +523,27 @@ public class HandGrabSystem : MonoBehaviour
 
     public GrabbableItem FindBestGrabbable()
     {
-        Transform detectPoint = visualGripPoint != null ? visualGripPoint : gripPoint;
+        Transform detectPoint = (visualGripPoint != null && (transform.root == null || visualGripPoint.root == transform.root)) ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
 
-        // Raycast from hand
-        if (Physics.Raycast(detectPoint.position, -detectPoint.forward + detectPoint.up, out RaycastHit hit, grabRayDistance, grabLayerMask))
+        // Raycast from hand (check both controller/wrist forward and old desktop palm vector)
+        float forwardRayDist = Mathf.Max(grabRayDistance, 0.35f);
+        if (Physics.Raycast(detectPoint.position, detectPoint.forward, out RaycastHit hit, forwardRayDist, grabLayerMask))
         {
             var item = GetOrAddGrabbable(hit.collider.gameObject);
             if (item != null && item.canBePickedUp && !item.IsHeld && HasLineOfSightTo(item))
                 return item;
         }
 
-        // Overlap sphere fallback
-        var colliders = Physics.OverlapSphere(detectPoint.position, grabRadius, grabLayerMask);
+        if (Physics.Raycast(detectPoint.position, -detectPoint.forward + detectPoint.up, out hit, grabRayDistance, grabLayerMask))
+        {
+            var item = GetOrAddGrabbable(hit.collider.gameObject);
+            if (item != null && item.canBePickedUp && !item.IsHeld && HasLineOfSightTo(item))
+                return item;
+        }
+
+        // Overlap sphere fallback (ensure at least 22 cm reach in VR from wrist/grip center)
+        float effectiveRadius = Mathf.Max(grabRadius, 0.22f);
+        var colliders = Physics.OverlapSphere(detectPoint.position, effectiveRadius, grabLayerMask);
         GrabbableItem closest = null;
         float closestDist = float.MaxValue;
 
@@ -545,7 +579,7 @@ public class HandGrabSystem : MonoBehaviour
     /// </summary>
     public bool HasLineOfSightTo(GrabbableItem item)
     {
-        Transform detectPoint = visualGripPoint != null ? visualGripPoint : gripPoint;
+        Transform detectPoint = (visualGripPoint != null && (transform.root == null || visualGripPoint.root == transform.root)) ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
         if (item == null || detectPoint == null) return false;
         Vector3 handPos = detectPoint.position;
         Vector3 targetPoint = item.transform.position;
@@ -573,8 +607,8 @@ public class HandGrabSystem : MonoBehaviour
             if (hitCol == null) continue;
             if (hitCol.transform.IsChildOf(item.transform) || hitCol.gameObject == item.gameObject) continue;
             if (hitCol.CompareTag("Player") || hitCol.GetComponentInParent<CharacterController>() != null) continue;
-            if (hitCol.name.StartsWith("hand_") || hitCol.name.StartsWith("PhysicsHand_") || hitCol.name.StartsWith("wrist_")) continue;
-            if (hitCol.transform.IsChildOf(transform)) continue;
+            if (hitCol.name.StartsWith("hand_") || hitCol.name.StartsWith("PhysicsHand_") || hitCol.name.StartsWith("wrist_") || hitCol.name.Contains("Wrist") || hitCol.name.Contains("Controller")) continue;
+            if (hitCol.transform.IsChildOf(transform) || (transform.root != null && hitCol.transform.IsChildOf(transform.root))) continue;
 
             return false;
         }
@@ -593,6 +627,13 @@ public class HandGrabSystem : MonoBehaviour
             targetName.StartsWith("physicshand_") ||
             targetName.Contains("playerarmature") ||
             target.GetComponentInParent<CharacterController>() != null)
+        {
+            return null;
+        }
+
+        // Never make companions, dolls (e.g. Shinobu), or characters grabbable
+        if (target.GetComponentInParent<CompanionAI>() != null ||
+            target.GetComponentInParent<CharacterInteractable>() != null)
         {
             return null;
         }
@@ -619,13 +660,14 @@ public class HandGrabSystem : MonoBehaviour
         if (item != null) return item;
 
         var legacy = target.GetComponentInParent<PlayerKB_GrabObject>();
-        if (legacy == null)
+        var vrLegacy = target.GetComponentInParent<PlayerVR_GrabObject>();
+        if (legacy == null && vrLegacy == null)
         {
-            // Only items explicitly designated with GrabbableItem or PlayerKB_GrabObject can be grabbed!
+            // Only items explicitly designated with GrabbableItem, PlayerKB_GrabObject, or PlayerVR_GrabObject can be grabbed!
             return null;
         }
 
-        GameObject root = legacy.gameObject;
+        GameObject root = legacy != null ? legacy.gameObject : vrLegacy.gameObject;
         if (root.CompareTag("Player") || root.GetComponent<CharacterController>() != null)
             return null;
 
@@ -636,30 +678,79 @@ public class HandGrabSystem : MonoBehaviour
         item.rb = root.GetComponent<Rigidbody>();
         if (item.rb == null) item.rb = root.AddComponent<Rigidbody>();
 
-        string nameLower = root.name.ToLower();
-        if (nameLower.Contains("duck")) item.holdPose = GrabbableItem.HoldPose.RubberDucky;
-        else if (nameLower.Contains("bag")) item.holdPose = GrabbableItem.HoldPose.Bag;
-        else if (nameLower.Contains("flash")) item.holdPose = GrabbableItem.HoldPose.Flashlight;
-        else if (nameLower.Contains("peach")) item.holdPose = GrabbableItem.HoldPose.Peach;
-        else if (nameLower.Contains("straw")) item.holdPose = GrabbableItem.HoldPose.Strawberry;
-        else if (nameLower.Contains("knife")) item.holdPose = GrabbableItem.HoldPose.Knife;
-        else if (nameLower.Contains("bread") || nameLower.Contains("wheat")) item.holdPose = GrabbableItem.HoldPose.Wheat;
-        else if (nameLower.Contains("egg")) item.holdPose = GrabbableItem.HoldPose.Egg;
-        else if (nameLower.Contains("pot")) item.holdPose = GrabbableItem.HoldPose.Pot;
-        else if (nameLower.Contains("soap")) item.holdPose = GrabbableItem.HoldPose.Soap;
-        else if (nameLower.Contains("lantern")) item.holdPose = GrabbableItem.HoldPose.Lantern;
-        else if (nameLower.Contains("jar") || nameLower.Contains("flour")) item.holdPose = GrabbableItem.HoldPose.FlourJar;
-        else if (nameLower.Contains("bowl")) item.holdPose = GrabbableItem.HoldPose.MixingBowl;
-        else if (nameLower.Contains("spoon")) item.holdPose = GrabbableItem.HoldPose.MixingSpoon;
-        else if (nameLower.Contains("mortar")) item.holdPose = GrabbableItem.HoldPose.Mortar;
-        else if (nameLower.Contains("pestle")) item.holdPose = GrabbableItem.HoldPose.Pestle;
-        else if (nameLower.Contains("towel")) item.holdPose = GrabbableItem.HoldPose.Towel;
-        else if (nameLower.Contains("milk") || nameLower.Contains("canister")) item.holdPose = GrabbableItem.HoldPose.MilkCanister;
-        else if (nameLower.Contains("melon") || nameLower.Contains("cantaloupe")) item.holdPose = GrabbableItem.HoldPose.Cantaloupe;
-        else if (nameLower.Contains("berry") || nameLower.Contains("blueberry")) item.holdPose = GrabbableItem.HoldPose.Blueberry;
-        else item.holdPose = GrabbableItem.HoldPose.Default;
+        // Map hold pose from PlayerVR_GrabObject index if available, or deduce by object name
+        if (vrLegacy != null && vrLegacy.ObjectIndex >= 0)
+        {
+            item.holdPose = IndexToHoldPose(vrLegacy.ObjectIndex);
+        }
+        else
+        {
+            string nameLower = root.name.ToLower();
+            if (nameLower.Contains("duck")) item.holdPose = GrabbableItem.HoldPose.RubberDucky;
+            else if (nameLower.Contains("bag")) item.holdPose = GrabbableItem.HoldPose.Bag;
+            else if (nameLower.Contains("flash")) item.holdPose = GrabbableItem.HoldPose.Flashlight;
+            else if (nameLower.Contains("peach")) item.holdPose = GrabbableItem.HoldPose.Peach;
+            else if (nameLower.Contains("straw")) item.holdPose = GrabbableItem.HoldPose.Strawberry;
+            else if (nameLower.Contains("knife")) item.holdPose = GrabbableItem.HoldPose.Knife;
+            else if (nameLower.Contains("bread") || nameLower.Contains("wheat")) item.holdPose = GrabbableItem.HoldPose.Wheat;
+            else if (nameLower.Contains("egg")) item.holdPose = GrabbableItem.HoldPose.Egg;
+            else if (nameLower.Contains("pot")) item.holdPose = GrabbableItem.HoldPose.Pot;
+            else if (nameLower.Contains("soap")) item.holdPose = GrabbableItem.HoldPose.Soap;
+            else if (nameLower.Contains("lantern")) item.holdPose = GrabbableItem.HoldPose.Lantern;
+            else if (nameLower.Contains("jar") || nameLower.Contains("flour")) item.holdPose = GrabbableItem.HoldPose.FlourJar;
+            else if (nameLower.Contains("bowl")) item.holdPose = GrabbableItem.HoldPose.MixingBowl;
+            else if (nameLower.Contains("spoon")) item.holdPose = GrabbableItem.HoldPose.MixingSpoon;
+            else if (nameLower.Contains("mortar")) item.holdPose = GrabbableItem.HoldPose.Mortar;
+            else if (nameLower.Contains("pestle")) item.holdPose = GrabbableItem.HoldPose.Pestle;
+            else if (nameLower.Contains("towel")) item.holdPose = GrabbableItem.HoldPose.Towel;
+            else if (nameLower.Contains("milk") || nameLower.Contains("canister")) item.holdPose = GrabbableItem.HoldPose.MilkCanister;
+            else if (nameLower.Contains("melon") || nameLower.Contains("cantaloupe")) item.holdPose = GrabbableItem.HoldPose.Cantaloupe;
+            else if (nameLower.Contains("berry") || nameLower.Contains("blueberry")) item.holdPose = GrabbableItem.HoldPose.Blueberry;
+            else item.holdPose = GrabbableItem.HoldPose.Default;
+        }
 
         return item;
+    }
+
+    public static GrabbableItem.HoldPose IndexToHoldPose(int index)
+    {
+        return index switch
+        {
+            0 => GrabbableItem.HoldPose.Bag,
+            1 => GrabbableItem.HoldPose.RubberDucky,
+            2 => GrabbableItem.HoldPose.Peach,
+            3 => GrabbableItem.HoldPose.Strawberry,
+            4 => GrabbableItem.HoldPose.Cantaloupe,
+            5 => GrabbableItem.HoldPose.Blueberry,
+            6 => GrabbableItem.HoldPose.Wheat,
+            7 => GrabbableItem.HoldPose.Flashlight,
+            8 => GrabbableItem.HoldPose.Egg,
+            9 => GrabbableItem.HoldPose.FlourJar,
+            10 => GrabbableItem.HoldPose.Knife,
+            11 => GrabbableItem.HoldPose.Lantern,
+            12 => GrabbableItem.HoldPose.MilkCanister,
+            13 => GrabbableItem.HoldPose.MixingBowl,
+            14 => GrabbableItem.HoldPose.MixingSpoon,
+            15 => GrabbableItem.HoldPose.Mortar,
+            16 => GrabbableItem.HoldPose.Pestle,
+            17 => GrabbableItem.HoldPose.Pot,
+            18 => GrabbableItem.HoldPose.Soap,
+            19 => GrabbableItem.HoldPose.Towel,
+            20 => GrabbableItem.HoldPose.Bread,
+            _ => GrabbableItem.HoldPose.Default
+        };
+    }
+
+    private static Transform FindChildRecursive(Transform parent, string childName)
+    {
+        if (parent == null) return null;
+        if (parent.name.Equals(childName, System.StringComparison.OrdinalIgnoreCase)) return parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var found = FindChildRecursive(parent.GetChild(i), childName);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     void UpdateNearestItem()

@@ -62,19 +62,30 @@ public class PlayerKB_GrabObject : MonoBehaviour
     {
         _player = FindFirstObjectByType<Player>();
 
-        // Find the player's hand objects in the scene
-        _playerLeftHand = GameObject.Find("hand_l");
-        _playerRightHand = GameObject.Find("hand_r");
+        // Find the player's hand objects within the player's hierarchy (avoid finding companion/doll bones like Shinobu!)
+        if (_player != null)
+        {
+            _playerLeftHand = FindChildRecursive(_player.transform, "hand_l")?.gameObject;
+            _playerRightHand = FindChildRecursive(_player.transform, "hand_r")?.gameObject;
+        }
+
+        if (_playerLeftHand == null)
+            _playerLeftHand = GameObject.Find("PhysicsHand_L");
+        if (_playerRightHand == null)
+            _playerRightHand = GameObject.Find("PhysicsHand_R");
 
         // Set the grabbable object and its Rigidbody
         _grabbableObjectRB = GetComponent<Rigidbody>();
 
         // Set the colliders of the player's hands
-        _playerLeftCollider = _playerLeftHand.GetComponent<Collider>();
-        _playerRightCollider = _playerRightHand.GetComponent<Collider>();
+        if (_playerLeftHand != null)
+            _playerLeftCollider = _playerLeftHand.GetComponent<Collider>();
+        if (_playerRightHand != null)
+            _playerRightCollider = _playerRightHand.GetComponent<Collider>();
 
         GameObject hud = GameObject.Find("HUD");
-        _hud = hud.GetComponent<HintManager>();
+        if (hud != null)
+            _hud = hud.GetComponent<HintManager>();
 
         _outline = GetComponent<Outline>();
 
@@ -346,6 +357,18 @@ public class PlayerKB_GrabObject : MonoBehaviour
             if (_leftGrabAction != null) _player.Controls.Viva.DesktopLeftGrab.performed -= _leftGrabAction;
             if (_rightGrabAction != null) _player.Controls.Viva.DesktopRightGrab.performed -= _rightGrabAction;
         }
+    }
+
+    private static Transform FindChildRecursive(Transform parent, string childName)
+    {
+        if (parent == null) return null;
+        if (parent.name.Equals(childName, System.StringComparison.OrdinalIgnoreCase)) return parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var found = FindChildRecursive(parent.GetChild(i), childName);
+            if (found != null) return found;
+        }
+        return null;
     }
 }
 #endif

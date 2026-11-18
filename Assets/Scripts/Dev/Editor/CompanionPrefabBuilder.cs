@@ -122,11 +122,11 @@ namespace Viva.Dev
             RuntimeAnimatorController ac = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Resources/Animations/LoliAC.controller");
             if (ac != null) animator.runtimeAnimatorController = ac;
 
-            // 4. BoxCollider for interaction
+            // 4. BoxCollider for interaction closely fitted to her humanoid volume
             BoxCollider col = instance.GetComponent<BoxCollider>();
             if (col == null) col = instance.AddComponent<BoxCollider>();
-            col.center = new Vector3(0, 0.65f, 0);
-            col.size = new Vector3(0.5f, 1.3f, 0.5f);
+            col.center = new Vector3(0, 0.65f, -0.03f);
+            col.size = new Vector3(0.36f, 1.3f, 0.28f);
             col.isTrigger = true;
 
             // 5. AudioSource
@@ -311,6 +311,7 @@ namespace Viva.Dev
 
                 newSMR = container.AddComponent<SkinnedMeshRenderer>();
                 newSMR.sharedMesh = srcSMR.sharedMesh;
+                newSMR.updateWhenOffscreen = true;
 
                 int submeshCount = srcSMR.sharedMesh.subMeshCount;
                 Material[] assignedMats = new Material[submeshCount];
@@ -350,6 +351,15 @@ namespace Viva.Dev
                 }
                 newSMR.rootBone = targetRoot != null ? targetRoot : root.transform;
 
+                if (srcSMR.localBounds.size.sqrMagnitude > 0.01f)
+                {
+                    newSMR.localBounds = srcSMR.localBounds;
+                }
+                else if (srcSMR.sharedMesh != null)
+                {
+                    newSMR.localBounds = srcSMR.sharedMesh.bounds;
+                }
+
                 onCreated?.Invoke(newSMR);
             }
 
@@ -388,6 +398,11 @@ namespace Viva.Dev
             {
                 if (matHair != null) smr.sharedMaterial = matHair;
                 if (headBone != null) smr.rootBone = headBone;
+                smr.updateWhenOffscreen = true;
+                if (smr.sharedMesh != null)
+                {
+                    smr.localBounds = smr.sharedMesh.bounds;
+                }
             }
 
             // Setup SpringBone physics chains and collision envelopes

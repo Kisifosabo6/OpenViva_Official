@@ -191,15 +191,15 @@ public class DesktopHandDriver : MonoBehaviour
         Transform leftHandVisual = FindChildRecursive(leftWristBone, "hand_l") ?? leftWristBone;
         Transform rightHandVisual = FindChildRecursive(rightWristBone, "hand_r") ?? rightWristBone;
 
-        if (leftHandVisual == null)
+        if (leftHandVisual == null && transform.root != null)
         {
-            var go = GameObject.Find("hand_l");
-            if (go != null) leftHandVisual = go.transform;
+            var go = FindChildRecursive(transform.root, "hand_l");
+            if (go != null) leftHandVisual = go;
         }
-        if (rightHandVisual == null)
+        if (rightHandVisual == null && transform.root != null)
         {
-            var go = GameObject.Find("hand_r");
-            if (go != null) rightHandVisual = go.transform;
+            var go = FindChildRecursive(transform.root, "hand_r");
+            if (go != null) rightHandVisual = go;
         }
 
         // Use calibrated resting camera-space offsets

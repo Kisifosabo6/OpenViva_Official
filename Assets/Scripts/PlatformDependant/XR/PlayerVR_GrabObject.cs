@@ -31,7 +31,20 @@ public class PlayerVR_GrabObject : XRGrabInteractable
         // _animationIndexes = PlayerManager.Instance.AnimationVR.GetComponent<AnimationIndexes>();
 
         GameObject floatingHint = GameObject.Find("FloatingHint");
-        _hintManager = floatingHint.GetComponent<HintManager>();
+        if (floatingHint != null)
+        {
+            _hintManager = floatingHint.GetComponent<HintManager>();
+        }
+    }
+
+    public override bool IsSelectableBy(UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor interactor)
+    {
+        // If already held by HandGrabSystem, don't allow XRI near/far interactor to conflict or fight
+        var grabbable = GetComponent<GrabbableItem>();
+        if (grabbable != null && grabbable.IsHeld)
+            return false;
+
+        return base.IsSelectableBy(interactor);
     }
 
     protected override void OnSelectEntering(SelectEnterEventArgs args)
@@ -52,7 +65,7 @@ public class PlayerVR_GrabObject : XRGrabInteractable
             // _animationIndexes.PlayAnimationRight(ObjectIndex);
         }
 
-        FloatingCanvas.Instance.WarpToOrigin();
+        FloatingCanvas.Instance?.WarpToOrigin();
 
         base.OnSelectEntering(args);
     }
@@ -60,8 +73,12 @@ public class PlayerVR_GrabObject : XRGrabInteractable
     protected override void OnSelectExiting(SelectExitEventArgs args)
     {
         base.OnSelectExiting(args);
-        _hintManager.ClearHint(HintConstants.LeftGrabHintVR);
-        _hintManager.ClearHint(HintConstants.RightGrabHintVR);
+        IsGrabbed = 0;
+        if (_hintManager != null)
+        {
+            _hintManager.ClearHint(HintConstants.LeftGrabHintVR);
+            _hintManager.ClearHint(HintConstants.RightGrabHintVR);
+        }
     }
 
     protected override void Drop()

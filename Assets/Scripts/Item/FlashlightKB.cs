@@ -27,14 +27,20 @@ public class FlashlightKB : MonoBehaviour
         _grabScript = GetComponent<PlayerKB_GrabObject>();
 
         _player = FindFirstObjectByType<Player>();
-        _controls = _player.Controls;
-
-        _controls.Viva.InteractLeft.performed += ToggleFlashlightLeft;
-        _controls.Viva.InteractRight.performed += ToggleFlashlightRight;
+        if (_player != null)
+        {
+            _controls = _player.Controls;
+            if (_controls != null)
+            {
+                _controls.Viva.InteractLeft.performed += ToggleFlashlightLeft;
+                _controls.Viva.InteractRight.performed += ToggleFlashlightRight;
+            }
+        }
     }
 
     private void FixedUpdate()
     {
+        if (_grabScript == null) return;
         _isGrabbed = _grabScript.GetIsGrabbed();
 
         if (_doOnce)

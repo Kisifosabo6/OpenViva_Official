@@ -138,6 +138,19 @@ public class CompanionAI : MonoBehaviour
         AutoDetectBones();
         CacheBlendShapes();
         LoadVoiceClipsIfEmpty();
+        EnsureMeshRenderersActiveAndUpdated();
+    }
+
+    public void EnsureMeshRenderersActiveAndUpdated()
+    {
+        foreach (var smr in GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            smr.updateWhenOffscreen = true;
+            if (smr.localBounds.size.sqrMagnitude < 0.01f && smr.sharedMesh != null)
+            {
+                smr.localBounds = smr.sharedMesh.bounds;
+            }
+        }
     }
 
     private void Start()
@@ -147,10 +160,8 @@ public class CompanionAI : MonoBehaviour
 
         TrySnapToNavMesh();
 
-        if (target == null && Camera.main != null)
-        {
-            target = Camera.main.transform;
-        }
+        UpdateTargetReference();
+        EnsureMeshRenderersActiveAndUpdated();
 
         InitializeLocomotionAnimation();
 
@@ -159,6 +170,8 @@ public class CompanionAI : MonoBehaviour
 
         // Friendly greet on spawn
         PlayRandomVoice(greetClips);
+
+        LogAlignmentDiagnostics();
     }
 
     public void InitializeLocomotionAnimation()
@@ -179,6 +192,7 @@ public class CompanionAI : MonoBehaviour
     {
         Globals.OnFollowCalled += HandleFollowHotkey;
         PlayerManager.OnMoveCharaToCamera += HandleMoveCharaToCamera;
+        EnsureMeshRenderersActiveAndUpdated();
     }
 
     private void OnDisable()
@@ -384,6 +398,50 @@ public class CompanionAI : MonoBehaviour
         UpdateBlinking();
         UpdateIdleChatter();
         UpdateFacialExpressions();
+        LogAlignmentDiagnostics();
+    }
+
+    private float _nextDiagTime = 0f;
+    private void LogAlignmentDiagnostics()
+    {
+        if (Time.time < _nextDiagTime) return;
+        _nextDiagTime = Time.time + 4.0f;
+
+        Vector3 rootPos = transform.position;
+        var col = GetComponent<BoxCollider>();
+        Vector3 colCenter = col != null ? col.bounds.center : rootPos;
+
+        string diag = $"[ShinobuAlignment] Root={rootPos:F3}, ColCenter={colCenter:F3}, Armature={transform.Find("ShinobuArmature")?.position:F3}, Head={headBone?.position:F3}";
+        var smrs = GetComponentsInChildren<SkinnedMeshRenderer>();
+        foreach (var smr in smrs)
+        {
+            Vector3 meshCenter = smr.bounds.center;
+            Vector3 delta = meshCenter - colCenter;
+            diag += $"\n   -> SMR '{smr.name}': boundsCenter={meshCenter:F3}, deltaFromCol={delta:F3}, rootBone='{smr.rootBone?.name}' ({smr.rootBone?.position:F3})";
+        }
+        Debug.Log(diag);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        var col = GetComponent<BoxCollider>();
+        if (col != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(col.bounds.center, col.bounds.size);
+        }
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position, 0.05f);
+
+        var smrs = GetComponentsInChildren<SkinnedMeshRenderer>();
+        foreach (var smr in smrs)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireCube(smr.bounds.center, smr.bounds.size);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, smr.bounds.center);
+        }
     }
 
     private void LateUpdate()
@@ -394,11 +452,17 @@ public class CompanionAI : MonoBehaviour
         }
     }
 
-    private void UpdateTargetReference()
+    public void UpdateTargetReference()
     {
-        if (target == null && Camera.main != null)
+        if (Camera.main != null)
         {
-            target = Camera.main.transform;
+            // If target is unassigned, inactive in hierarchy, or points to an obsolete camera while mode switched
+            if (target == null || !target.gameObject.activeInHierarchy ||
+                (target.GetComponent<Camera>() != null && target != Camera.main.transform) ||
+                (!Globals.isDesktopMode && target.name.Contains("KB")))
+            {
+                target = Camera.main.transform;
+            }
         }
     }
 
