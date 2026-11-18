@@ -1,11 +1,14 @@
-﻿#if UNITY_EDITOR || UNITY_ANDROID
+﻿#if UNITY_EDITOR || UNITY_ANDROID || UNITY_STANDALONE_WIN
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity;
 
 /// <summary>
 /// VR locomotion controller that supplements the XRI locomotion providers.
-/// Handles smooth locomotion toggle, snap/smooth turn toggle, and movement speed.
+/// Handles smooth locomotion toggle, snap/smooth turn toggle, movement speed,
+/// and OpenViva 0.2.1-parity body collision anchoring.
 /// The actual locomotion is handled by XRI's ContinuousMoveProvider and SnapTurnProvider
 /// on the XR Origin. This script provides runtime control and settings integration.
 /// </summary>
@@ -22,6 +25,12 @@ public class PlayerVR_Locomotion : MonoBehaviour
     public float smoothTurnSpeed = 60f;
     [Tooltip("Snap turn angle in degrees")]
     public float snapTurnAngle = 45f;
+
+    [Header("VR Body Collision & Leaning (OpenViva 0.2.1 Parity)")]
+    [Tooltip("Slim radius for the player CharacterController (matching openviva021 0.09m-0.12m)")]
+    public float characterRadius = 0.12f;
+    [Tooltip("Prevent CharacterController from dynamically following head into counters and furniture")]
+    public bool anchorBodyToOrigin = true;
 
     [Header("Comfort")]
     [Tooltip("Vignette intensity during movement (0 = off, 1 = full)")]
@@ -41,9 +50,15 @@ public class PlayerVR_Locomotion : MonoBehaviour
 
     bool isSprinting;
 
+    void Start()
+    {
+        ApplyBodyCollisionSettings();
+    }
+
     void OnEnable()
     {
         ApplySettings();
+        ApplyBodyCollisionSettings();
     }
 
     void Update()
@@ -61,6 +76,51 @@ public class PlayerVR_Locomotion : MonoBehaviour
     }
 
     /// <summary>
+    /// Configure CharacterController, GravityProvider, and XRBodyTransformer to match
+    /// OpenViva 0.2.1 behavior (preventing leaning over counters from pushing the player back).
+    /// </summary>
+    public void ApplyBodyCollisionSettings()
+    {
+        var cc = GetComponentInParent<CharacterController>() ?? GetComponent<CharacterController>();
+        if (cc == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) cc = pvr.GetComponent<CharacterController>();
+        }
+
+        if (cc != null)
+        {
+            cc.radius = characterRadius;
+            if (anchorBodyToOrigin)
+            {
+                cc.center = new Vector3(0f, cc.center.y, 0f);
+            }
+        }
+
+        var grav = GetComponentInChildren<GravityProvider>(true);
+        if (grav == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) grav = pvr.GetComponentInChildren<GravityProvider>(true);
+        }
+        if (grav != null && anchorBodyToOrigin)
+        {
+            grav.updateCharacterControllerCenterEachFrame = false;
+        }
+
+        var transformer = GetComponentInChildren<XRBodyTransformer>(true);
+        if (transformer == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) transformer = pvr.GetComponentInChildren<XRBodyTransformer>(true);
+        }
+        if (transformer != null && anchorBodyToOrigin)
+        {
+            transformer.bodyPositionEvaluator = VRFixedBodyPositionEvaluator.SharedInstance;
+        }
+    }
+
+    /// <summary>
     /// Apply current settings to the XRI locomotion providers.
     /// Call this after changing any settings at runtime.
     /// </summary>
@@ -68,6 +128,7 @@ public class PlayerVR_Locomotion : MonoBehaviour
     {
         ApplyMoveSpeed();
         ApplyTurnMode();
+        ApplyBodyCollisionSettings();
     }
 
     void ApplyMoveSpeed()

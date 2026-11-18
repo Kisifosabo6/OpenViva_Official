@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR || UNITY_ANDROID
+﻿#if UNITY_EDITOR || UNITY_ANDROID || UNITY_STANDALONE_WIN
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -62,6 +62,14 @@ public class PlayerVR_GrabController : MonoBehaviour
     private Quaternion defaultRightLocalRot;
     private bool leftIsPinned = false;
     private bool rightIsPinned = false;
+
+    [Header("VR Hand Wall Collision & Stopping")]
+    [Tooltip("Allow visual hands to stop naturally against walls/countertops without clipping or pushing the camera")]
+    public bool enableWallCollision = true;
+    [Tooltip("Hand collision sphere radius for obstacle detection")]
+    public float handCollisionRadius = 0.045f;
+    [Tooltip("Offset from wrist to fingertips along hand reach")]
+    public float fingerForwardReach = 0.12f;
 
     // Direct action fallbacks when InputActionReferences are not set in inspector
     private InputAction fallbackLeftGrip;
@@ -251,7 +259,92 @@ public class PlayerVR_GrabController : MonoBehaviour
             }
         }
 
+        CleanHandColliders();
+        IgnorePlayerBodyCollisions();
+        ConfigureVRLocomotionCollision();
+
         SubscribeToHands();
+    }
+
+    /// <summary>
+    /// Ensure all hand meshes are triggers so they do not cause violent PhysX penetration against static geometry.
+    /// </summary>
+    public void CleanHandColliders()
+    {
+        var mcs = GetComponentsInChildren<MeshCollider>(true);
+        foreach (var mc in mcs)
+        {
+            if (mc != null && !mc.isTrigger)
+            {
+                mc.isTrigger = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Ignore collisions between the player's CharacterController/body and all hand colliders,
+    /// preventing feedback loops or character displacement when hands are near the body.
+    /// </summary>
+    public void IgnorePlayerBodyCollisions()
+    {
+        var playerCC = GetComponentInParent<CharacterController>() ?? GetComponent<CharacterController>();
+        if (playerCC == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) playerCC = pvr.GetComponent<CharacterController>();
+        }
+
+        if (playerCC != null)
+        {
+            var colliders = GetComponentsInChildren<Collider>(true);
+            foreach (var col in colliders)
+            {
+                if (col != null && col != playerCC)
+                    Physics.IgnoreCollision(playerCC, col, true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Configure the VR character controller and locomotion providers to match OpenViva 0.2.1
+    /// (anchoring the CharacterController at the player's base so leaning over countertops never pushes the player back).
+    /// </summary>
+    public void ConfigureVRLocomotionCollision()
+    {
+        var cc = GetComponentInParent<CharacterController>() ?? GetComponent<CharacterController>();
+        if (cc == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) cc = pvr.GetComponent<CharacterController>();
+        }
+
+        if (cc != null)
+        {
+            cc.radius = 0.12f;
+            cc.center = new Vector3(0f, cc.center.y, 0f);
+        }
+
+        var grav = GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity.GravityProvider>(true);
+        if (grav == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) grav = pvr.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity.GravityProvider>(true);
+        }
+        if (grav != null)
+        {
+            grav.updateCharacterControllerCenterEachFrame = false;
+        }
+
+        var transformer = GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Locomotion.XRBodyTransformer>(true);
+        if (transformer == null)
+        {
+            var pvr = GameObject.Find("PlayerVR") ?? GameObject.Find("Player")?.transform.Find("PlayerVR")?.gameObject;
+            if (pvr != null) transformer = pvr.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Locomotion.XRBodyTransformer>(true);
+        }
+        if (transformer != null)
+        {
+            transformer.bodyPositionEvaluator = VRFixedBodyPositionEvaluator.SharedInstance;
+        }
     }
 
     void SubscribeToHands()
@@ -326,6 +419,9 @@ public class PlayerVR_GrabController : MonoBehaviour
             rightVisualBase.localRotation = defaultRightLocalRot;
             rightIsPinned = false;
         }
+
+        if (leftHandAnimator != null) leftHandAnimator.SetWallContact(0f);
+        if (rightHandAnimator != null) rightHandAnimator.SetWallContact(0f);
     }
 
     void Update()
@@ -386,14 +482,15 @@ public class PlayerVR_GrabController : MonoBehaviour
 
     void LateUpdate()
     {
-        UpdateVisualHandPinning(leftHandGrab, leftHeldHandle, leftVisualBase, defaultLeftLocalPos, defaultLeftLocalRot, ref leftIsPinned, isLeft: true);
-        UpdateVisualHandPinning(rightHandGrab, rightHeldHandle, rightVisualBase, defaultRightLocalPos, defaultRightLocalRot, ref rightIsPinned, isLeft: false);
+        UpdateVisualHandPinning(leftHandGrab, leftHeldHandle, leftVisualBase, defaultLeftLocalPos, defaultLeftLocalRot, leftHandAnimator, ref leftIsPinned, isLeft: true);
+        UpdateVisualHandPinning(rightHandGrab, rightHeldHandle, rightVisualBase, defaultRightLocalPos, defaultRightLocalRot, rightHandAnimator, ref rightIsPinned, isLeft: false);
     }
 
-    void UpdateVisualHandPinning(HandGrabSystem hand, PhysicsDoorHandle heldHandle, Transform visualBase, Vector3 defaultPos, Quaternion defaultRot, ref bool isPinned, bool isLeft)
+    void UpdateVisualHandPinning(HandGrabSystem hand, PhysicsDoorHandle heldHandle, Transform visualBase, Vector3 defaultPos, Quaternion defaultRot, HandAnimator handAnim, ref bool isPinned, bool isLeft)
     {
         if (visualBase == null) return;
 
+        // 1. Door handle hold pinning
         if (heldHandle != null && heldHandle.IsHeld)
         {
             isPinned = true;
@@ -411,13 +508,102 @@ public class PlayerVR_GrabController : MonoBehaviour
             Quaternion lookRot = Quaternion.LookRotation(-toCam, Vector3.up);
             Quaternion handTilt = isLeft ? Quaternion.Euler(0f, 0f, 90f) : Quaternion.Euler(0f, 0f, 270f);
             visualBase.rotation = lookRot * handTilt;
+            if (handAnim != null) handAnim.SetWallContact(0f);
+            return;
         }
-        else if (isPinned)
+
+        // 2. Wall / countertop / obstacle collision stopping and surface conforming (matching OpenViva 0.2.1)
+        if (enableWallCollision && (hand == null || !hand.IsHolding))
+        {
+            Transform ctrl = visualBase.parent;
+            if (ctrl != null)
+            {
+                Vector3 targetWorldPos = ctrl.TransformPoint(defaultPos);
+                Quaternion targetWorldRot = ctrl.rotation * defaultRot;
+
+                Camera cam = Camera.main;
+                Vector3 camPos = cam != null ? cam.transform.position : transform.position;
+                Vector3 shoulderOffset = isLeft ? new Vector3(-0.18f, -0.15f, -0.05f) : new Vector3(0.18f, -0.15f, -0.05f);
+                Vector3 shoulderOrigin = cam != null ? cam.transform.TransformPoint(shoulderOffset) : camPos;
+
+                Vector3 toTarget = targetWorldPos - shoulderOrigin;
+                float targetDist = toTarget.magnitude;
+
+                if (targetDist > 0.05f)
+                {
+                    Vector3 rayDir = toTarget / targetDist;
+                    int layerMask = ~LayerMask.GetMask("Ignore Raycast");
+
+                    var hits = Physics.SphereCastAll(shoulderOrigin, handCollisionRadius, rayDir, targetDist + fingerForwardReach, layerMask, QueryTriggerInteraction.Ignore);
+                    float nearestHitDist = float.MaxValue;
+                    Vector3 hitNormal = Vector3.zero;
+                    bool hitObstacle = false;
+
+                    if (hits != null && hits.Length > 0)
+                    {
+                        foreach (var h in hits)
+                        {
+                            if (h.collider == null || h.collider.isTrigger) continue;
+                            if (h.collider.transform.root == transform.root) continue;
+                            if (h.distance < nearestHitDist)
+                            {
+                                nearestHitDist = h.distance;
+                                hitNormal = h.normal;
+                                hitObstacle = true;
+                            }
+                        }
+                    }
+
+                    if (hitObstacle)
+                    {
+                        isPinned = true;
+                        float reachAhead = (targetDist + fingerForwardReach) - nearestHitDist;
+                        float penetration = Mathf.Clamp01(reachAhead / fingerForwardReach);
+
+                        float palmThickness = 0.035f;
+                        float effectiveReach = Mathf.Lerp(fingerForwardReach, palmThickness, penetration);
+                        float clampedDist = Mathf.Max(0.04f, nearestHitDist - effectiveReach);
+
+                        visualBase.position = shoulderOrigin + rayDir * clampedDist;
+
+                        // Surface tilt conforming (matching OpenViva 0.2.1)
+                        if (hitNormal.sqrMagnitude > 0.01f && penetration > 0.02f)
+                        {
+                            Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, hitNormal).normalized;
+                            if (wallUp.sqrMagnitude < 0.01f && cam != null)
+                                wallUp = Vector3.ProjectOnPlane(cam.transform.up, hitNormal).normalized;
+
+                            Vector3 tiltAxis = -Vector3.Cross(hitNormal, wallUp).normalized;
+                            float tiltAngle = Mathf.Lerp(0f, 45f, penetration);
+                            Quaternion wallTilt = Quaternion.AngleAxis(tiltAngle, tiltAxis);
+                            visualBase.rotation = wallTilt * targetWorldRot;
+                        }
+                        else
+                        {
+                            visualBase.rotation = targetWorldRot;
+                        }
+
+                        if (handAnim != null) handAnim.SetWallContact(penetration);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // 3. Normal untethered pose
+        if (isPinned)
         {
             visualBase.localPosition = defaultPos;
             visualBase.localRotation = defaultRot;
             isPinned = false;
         }
+        else
+        {
+            visualBase.localPosition = defaultPos;
+            visualBase.localRotation = defaultRot;
+        }
+
+        if (handAnim != null) handAnim.SetWallContact(0f);
     }
 
     void ProcessTrigger(float triggerValue, ref bool triggerActive, HandGrabSystem hand, PhysicsDoorHandle heldHandle)
