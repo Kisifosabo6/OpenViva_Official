@@ -139,6 +139,14 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
     private Quaternion initialActiveKnobLocalRotation;
     private float currentKnobVisualAngle = 0f;
 
+    // Both door knobs (corridor enter & bathroom exit)
+    private Transform enterKnobTransform;
+    private Transform exitKnobTransform;
+    private Quaternion initialEnterLocalRotation;
+    private Quaternion initialExitLocalRotation;
+    private Outline enterOutline;
+    private Outline exitOutline;
+
     // Collisions ignored between hand and door while holding
     private readonly List<(Collider handCol, Collider doorCol)> ignoredColliders = new List<(Collider handCol, Collider doorCol)>();
 
@@ -256,10 +264,33 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
             }
         }
 
-        Transform enterKnobInit = transform.Find("Bathroom_DoorKnobEnter");
-        Transform exitKnobInit = transform.Find("Bathroom_DoorKnobExit");
-        if (enterKnobInit != null) EnsureKnobGripPoint(enterKnobInit);
-        if (exitKnobInit != null) EnsureKnobGripPoint(exitKnobInit);
+        enterKnobTransform = transform.Find("Bathroom_DoorKnobEnter");
+        exitKnobTransform = transform.Find("Bathroom_DoorKnobExit");
+        if (enterKnobTransform != null)
+        {
+            initialEnterLocalRotation = enterKnobTransform.localRotation;
+            EnsureKnobGripPoint(enterKnobTransform);
+
+            enterOutline = enterKnobTransform.GetComponent<Outline>() ?? enterKnobTransform.gameObject.AddComponent<Outline>();
+            enterOutline.OutlineMode = Outline.Mode.OutlineAll;
+            enterOutline.OutlineColor = new Color(1f, 0.85f, 0.2f, 1f);
+            enterOutline.OutlineWidth = 3.5f;
+            enterOutline.enabled = false;
+        }
+        if (exitKnobTransform != null)
+        {
+            initialExitLocalRotation = exitKnobTransform.localRotation;
+            EnsureKnobGripPoint(exitKnobTransform);
+
+            exitOutline = exitKnobTransform.GetComponent<Outline>() ?? exitKnobTransform.gameObject.AddComponent<Outline>();
+            exitOutline.OutlineMode = Outline.Mode.OutlineAll;
+            exitOutline.OutlineColor = new Color(1f, 0.85f, 0.2f, 1f);
+            exitOutline.OutlineWidth = 3.5f;
+            exitOutline.enabled = false;
+        }
+
+        currentKnobVisualAngle = 0f;
+        ApplyKnobRotation(0f);
 
         // 4. Resolve Outline
         if (outline == null)
@@ -356,17 +387,19 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
                 Quaternion deltaRot = holdingHand.transform.rotation * Quaternion.Inverse(initialWristRotation);
                 deltaRot.ToAngleAxis(out float twistAngle, out Vector3 twistAxis);
                 if (twistAngle > 180f) twistAngle -= 360f;
-                Vector3 spindleAxis = activeKnobTransform != null ? activeKnobTransform.TransformDirection(knobRotationAxis) : Vector3.right;
-                float spindleTwist = Mathf.Abs(twistAngle * Vector3.Dot(twistAxis, spindleAxis));
-                float effectiveTwist = Mathf.Max(spindleTwist, wristAngle * 0.85f);
+                Vector3 spindleAxis = transform.TransformDirection(knobRotationAxis);
+                float spindleTwist = twistAngle * Vector3.Dot(twistAxis, spindleAxis);
 
-                currentKnobVisualAngle = Mathf.Clamp(effectiveTwist, 0f, 45f);
-                if (activeKnobTransform != null)
+                float effectiveTwist = Mathf.Max(spindleTwist, 0f);
+                if (spindleTwist <= 0f && wristAngle > 15f)
                 {
-                    activeKnobTransform.localRotation = initialActiveKnobLocalRotation * Quaternion.AngleAxis(currentKnobVisualAngle, knobRotationAxis);
+                    effectiveTwist = Mathf.Max(effectiveTwist, wristAngle * 0.85f);
                 }
 
-                if (effectiveTwist >= vrUnlockTwistAngle)
+                currentKnobVisualAngle = Mathf.Clamp(effectiveTwist, 0f, 45f);
+                ApplyKnobRotation(currentKnobVisualAngle);
+
+                if (currentKnobVisualAngle >= vrUnlockTwistAngle)
                 {
                     isKnobTwisted = true;
                     isDoorLatched = false;
@@ -415,28 +448,55 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
     {
         if (!requireKnobTwistToUnlock) return;
 
+        float targetAngle = 0f;
         if (isHeld)
         {
-            if (isKnobTwisted && currentKnobVisualAngle < 45f)
+            if (!isVR)
             {
-                currentKnobVisualAngle = Mathf.MoveTowards(currentKnobVisualAngle, 45f, 360f * Time.deltaTime);
-                if (activeKnobTransform != null)
-                {
-                    activeKnobTransform.localRotation = initialActiveKnobLocalRotation * Quaternion.AngleAxis(currentKnobVisualAngle, knobRotationAxis);
-                }
+                // Desktop mode: automatically rotate 45 degrees while held
+                targetAngle = 45f;
+            }
+            else
+            {
+                // VR mode: if unlocked/twisted, keep at 45 degrees; otherwise follows wrist
+                targetAngle = isKnobTwisted ? 45f : currentKnobVisualAngle;
             }
         }
         else
         {
-            if (activeKnobTransform != null && currentKnobVisualAngle > 0.01f)
-            {
-                currentKnobVisualAngle = Mathf.MoveTowards(currentKnobVisualAngle, 0f, 450f * Time.deltaTime);
-                activeKnobTransform.localRotation = initialActiveKnobLocalRotation * Quaternion.AngleAxis(currentKnobVisualAngle, knobRotationAxis);
-                if (currentKnobVisualAngle <= 0.01f)
-                {
-                    activeKnobTransform.localRotation = initialActiveKnobLocalRotation;
-                }
-            }
+            // Released: smoothly unturn back to rest position (0 degrees)
+            targetAngle = 0f;
+        }
+
+        float speed = isHeld ? 360f : 450f;
+        if (Mathf.Abs(currentKnobVisualAngle - targetAngle) > 0.001f)
+        {
+            currentKnobVisualAngle = Mathf.MoveTowards(currentKnobVisualAngle, targetAngle, speed * Time.deltaTime);
+            ApplyKnobRotation(currentKnobVisualAngle);
+        }
+        else if (currentKnobVisualAngle != targetAngle)
+        {
+            currentKnobVisualAngle = targetAngle;
+            ApplyKnobRotation(currentKnobVisualAngle);
+        }
+    }
+
+    private void ApplyKnobRotation(float angle)
+    {
+        Quaternion shaftRot = Quaternion.AngleAxis(angle, knobRotationAxis);
+
+        if (enterKnobTransform != null)
+        {
+            enterKnobTransform.localRotation = shaftRot * initialEnterLocalRotation;
+        }
+        if (exitKnobTransform != null)
+        {
+            exitKnobTransform.localRotation = shaftRot * initialExitLocalRotation;
+        }
+
+        if (enterKnobTransform == null && exitKnobTransform == null && activeKnobTransform != null)
+        {
+            activeKnobTransform.localRotation = shaftRot * initialActiveKnobLocalRotation;
         }
     }
 
@@ -468,6 +528,43 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
 
     public void SetHighlight(bool highlighted)
     {
+        SetHighlight(highlighted, null);
+    }
+
+    public void SetHighlight(bool highlighted, Vector3? referencePos)
+    {
+        if (enterOutline != null && exitOutline != null)
+        {
+            if (!highlighted)
+            {
+                enterOutline.enabled = false;
+                exitOutline.enabled = false;
+            }
+            else
+            {
+                Vector3 refPos;
+                if (referencePos.HasValue)
+                {
+                    refPos = referencePos.Value;
+                }
+                else if (holdingHand != null)
+                {
+                    refPos = holdingHand.transform.position;
+                }
+                else
+                {
+                    Camera cam = Camera.main;
+                    refPos = (cam != null) ? cam.transform.position : transform.position;
+                }
+
+                Transform bestGrip = ResolveBestGrip(refPos);
+                bool isEnter = (bestGrip == enterKnobTransform || (enterKnobTransform != null && bestGrip.IsChildOf(enterKnobTransform)));
+                enterOutline.enabled = isEnter;
+                exitOutline.enabled = !isEnter;
+            }
+            return;
+        }
+
         if (outline != null)
         {
             outline.enabled = highlighted;
@@ -685,11 +782,10 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
         activeKnobTransform = (activeGrip != null && activeGrip.name == "GripPoint" && activeGrip.parent != null)
             ? activeGrip.parent
             : activeGrip;
-        if (activeKnobTransform != null)
+        if (activeKnobTransform != null && enterKnobTransform == null && exitKnobTransform == null)
         {
             initialActiveKnobLocalRotation = activeKnobTransform.localRotation;
         }
-        currentKnobVisualAngle = 0f;
 
         if (requireKnobTwistToUnlock)
         {
@@ -705,11 +801,10 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
             {
                 if (!vrMode)
                 {
-                    // Desktop mode: automatic twist & unlock
+                    // Desktop mode: automatic twist & unlock (UpdateKnobLatchAnimation smoothly animates to 45 deg)
                     isDoorLatched = false;
                     isKnobTwisted = true;
                     LockDoorJoint(false);
-                    currentKnobVisualAngle = 45f;
                     PlaySound(latchUnlockSound ?? (openSounds != null && openSounds.Length > 0 ? openSounds[0] : null));
                 }
                 else
@@ -884,6 +979,7 @@ public class PhysicsDoorHandle : MonoBehaviour, IInteractable
             isKnobTwisted = true;
             LockDoorJoint(false);
             currentKnobVisualAngle = 45f;
+            ApplyKnobRotation(45f);
             PlaySound(latchUnlockSound ?? (openSounds != null && openSounds.Length > 0 ? openSounds[0] : null));
         }
 

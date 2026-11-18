@@ -182,9 +182,6 @@ public class PlayerVR_GrabController : MonoBehaviour
             if (leftHandGrab == null)
             {
                 leftHandGrab = lCtrl.gameObject.AddComponent<HandGrabSystem>();
-                leftHandGrab.isLeftHand = true;
-                leftHandGrab.gripPoint = lWrist != null ? lWrist : lCtrl;
-                leftHandGrab.isKinematicallyDriven = true;
                 var col = lCtrl.GetComponent<Collider>();
                 if (col == null)
                 {
@@ -198,6 +195,21 @@ public class PlayerVR_GrabController : MonoBehaviour
                     leftHandGrab.handCollider = col;
                 }
             }
+
+            if (leftHandGrab != null)
+            {
+                leftHandGrab.isLeftHand = true;
+                leftHandGrab.isKinematicallyDriven = true;
+                Transform bestGripL = lWrist != null ? lWrist : (leftHandGrab.gripPoint != null ? leftHandGrab.gripPoint : lCtrl);
+                leftHandGrab.gripPoint = bestGripL;
+                // Pin visual grip point to VR wrist; prevent it from ever picking up Shinobu's hand
+                if (leftHandGrab.visualGripPoint == null || leftHandGrab.visualGripPoint.root != transform.root || leftHandGrab.visualGripPoint.name == "hand_l")
+                {
+                    leftHandGrab.visualGripPoint = bestGripL;
+                }
+                if (leftHandGrab.grabRadius < 0.25f) leftHandGrab.grabRadius = 0.25f;
+                if (leftHandGrab.grabRayDistance < 0.35f) leftHandGrab.grabRayDistance = 0.35f;
+            }
         }
 
         if (rCtrl != null)
@@ -209,9 +221,6 @@ public class PlayerVR_GrabController : MonoBehaviour
             if (rightHandGrab == null)
             {
                 rightHandGrab = rCtrl.gameObject.AddComponent<HandGrabSystem>();
-                rightHandGrab.isLeftHand = false;
-                rightHandGrab.gripPoint = rWrist != null ? rWrist : rCtrl;
-                rightHandGrab.isKinematicallyDriven = true;
                 var col = rCtrl.GetComponent<Collider>();
                 if (col == null)
                 {
@@ -224,6 +233,21 @@ public class PlayerVR_GrabController : MonoBehaviour
                 {
                     rightHandGrab.handCollider = col;
                 }
+            }
+
+            if (rightHandGrab != null)
+            {
+                rightHandGrab.isLeftHand = false;
+                rightHandGrab.isKinematicallyDriven = true;
+                Transform bestGripR = rWrist != null ? rWrist : (rightHandGrab.gripPoint != null ? rightHandGrab.gripPoint : rCtrl);
+                rightHandGrab.gripPoint = bestGripR;
+                // Pin visual grip point to VR wrist; prevent it from ever picking up Shinobu's hand
+                if (rightHandGrab.visualGripPoint == null || rightHandGrab.visualGripPoint.root != transform.root || rightHandGrab.visualGripPoint.name == "hand_r")
+                {
+                    rightHandGrab.visualGripPoint = bestGripR;
+                }
+                if (rightHandGrab.grabRadius < 0.25f) rightHandGrab.grabRadius = 0.25f;
+                if (rightHandGrab.grabRayDistance < 0.35f) rightHandGrab.grabRayDistance = 0.35f;
             }
         }
 
@@ -541,7 +565,7 @@ public class PlayerVR_GrabController : MonoBehaviour
         {
             if (nearHandle != null) nearHandle.SetHighlight(false);
             nearHandle = found;
-            if (nearHandle != null) nearHandle.SetHighlight(true);
+            if (nearHandle != null) nearHandle.SetHighlight(true, hand.transform.position);
         }
     }
 

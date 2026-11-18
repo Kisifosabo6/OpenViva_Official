@@ -774,7 +774,7 @@ public class PlayerKB_GrabController : MonoBehaviour
 
             if (highlightedDoorHandle != null && !string.IsNullOrEmpty(doorPrompt))
             {
-                highlightedDoorHandle.SetHighlight(true);
+                highlightedDoorHandle.SetHighlight(true, playerCamera != null ? playerCamera.transform.position : (Vector3?)null);
                 currentDoorPrompt = doorPrompt;
                 ShowHudHint(currentDoorPrompt);
             }
