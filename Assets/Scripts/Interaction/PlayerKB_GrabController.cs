@@ -242,97 +242,145 @@ public class PlayerKB_GrabController : MonoBehaviour
     void OnLeftGrab(InputAction.CallbackContext ctx)
     {
         if (Globals.isMenuOpen || leftHand == null) return;
-
-        // If left hand is holding a door handle, release it
-        if (activeDoorHandleLeft != null)
-        {
-            activeDoorHandleLeft.EndHold(leftHand);
-            activeDoorHandleLeft = null;
-            return;
-        }
-
-        // If looking at a door handle and left hand is free, grab it
-        if (highlightedDoorHandle != null && !leftHand.IsHolding)
-        {
-            activeDoorHandleLeft = highlightedDoorHandle;
-            leftDoorHoldStartTime = Time.time;
-            leftGrabHeld = true;
-            activeDoorHandleLeft.BeginHold(leftHand, false);
-            return;
-        }
-
-        if (leftHand.IsHolding)
-        {
-            // Toggle drop
-            leftHand.ReleaseItem(true);
-        }
-        else
-        {
-            TryGrabWithHand(leftHand);
-        }
+        TryInteractOrGrabWithHand(leftHand, isLeft: true);
     }
 
     void OnRightGrab(InputAction.CallbackContext ctx)
     {
         if (Globals.isMenuOpen || rightHand == null) return;
+        TryInteractOrGrabWithHand(rightHand, isLeft: false);
+    }
 
-        // If right hand is holding a door handle, release it
-        if (activeDoorHandleRight != null)
+    void TryInteractOrGrabWithHand(HandGrabSystem hand, bool isLeft)
+    {
+        if (hand == null) return;
+
+        // 1. If this hand is holding a door handle, release it
+        if (isLeft && activeDoorHandleLeft != null)
+        {
+            activeDoorHandleLeft.EndHold(leftHand);
+            activeDoorHandleLeft = null;
+            return;
+        }
+        if (!isLeft && activeDoorHandleRight != null)
         {
             activeDoorHandleRight.EndHold(rightHand);
             activeDoorHandleRight = null;
             return;
         }
 
-        // If looking at a door handle and right hand is free, grab it
-        if (highlightedDoorHandle != null && !rightHand.IsHolding)
+        // 2. If this hand is holding an item, toggle drop
+        if (hand.IsHolding)
         {
-            activeDoorHandleRight = highlightedDoorHandle;
-            rightDoorHoldStartTime = Time.time;
-            rightGrabHeld = true;
-            activeDoorHandleRight.BeginHold(rightHand, false);
+            hand.ReleaseItem(true);
             return;
         }
 
-        if (rightHand.IsHolding)
+        // 3. Find candidates for this activating hand
+        Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
+
+        // Candidate A: Grabbable item
+        GrabbableItem candidateItem = null;
+        float distToItem = float.MaxValue;
+
+        var lookedItem = GetLookedAtGrabbable(hand);
+        if (lookedItem != null && CanHandReachItem(hand, lookedItem, out float dLookedItem))
         {
-            rightHand.ReleaseItem(true);
+            candidateItem = lookedItem;
+            distToItem = dLookedItem;
         }
         else
         {
-            TryGrabWithHand(rightHand);
+            var nearbyItem = hand.FindBestGrabbable();
+            if (nearbyItem != null && CanHandReachItem(hand, nearbyItem, out float dNearItem))
+            {
+                candidateItem = nearbyItem;
+                distToItem = dNearItem;
+            }
         }
-    }
 
-    void TryGrabWithHand(HandGrabSystem hand)
-    {
-        if (hand == null || hand.IsHolding) return;
+        // Candidate B: Door handle
+        PhysicsDoorHandle candidateHandle = null;
+        float distToHandle = float.MaxValue;
 
-        // If looking at an interactable (e.g. door handle, candle, faucet), clicking interacts with it
-        if (highlightedInteractable != null && highlightedInteractable.CanInteract)
+        var lookedHandle = GetLookedAtDoorHandle(hand, out float dLookedHandle);
+        if (lookedHandle != null)
         {
-            highlightedInteractable.Interact(this.gameObject);
+            candidateHandle = lookedHandle;
+            distToHandle = dLookedHandle;
+        }
+        else
+        {
+            var nearbyHandle = FindNearbyDoorHandle(hand, out float dNearHandle);
+            if (nearbyHandle != null)
+            {
+                candidateHandle = nearbyHandle;
+                distToHandle = dNearHandle;
+            }
+        }
+
+        // Candidate C: Generic interactable
+        IInteractable candidateInteractable = null;
+        float distToInt = float.MaxValue;
+
+        var lookedInt = GetLookedAtInteractable(hand, out float dLookedInt);
+        if (lookedInt != null)
+        {
+            candidateInteractable = lookedInt;
+            distToInt = dLookedInt;
+        }
+        else
+        {
+            var nearbyInt = FindNearbyInteractable(hand, out float dNearInt);
+            if (nearbyInt != null)
+            {
+                candidateInteractable = nearbyInt;
+                distToInt = dNearInt;
+            }
+        }
+
+        // 4. PRIORITY: Whichever candidate is closest to the activating hand model wins!
+        float minDist = Mathf.Min(distToItem, Mathf.Min(distToHandle, distToInt));
+
+        if (minDist == float.MaxValue)
+        {
+            // Nothing reachable to grab or interact -> Point gesture!
+            TriggerPointGesture(isLeft);
             return;
         }
 
-        // 1. Try camera raycast target if THIS hand can physically reach it without wall obstruction
-        var target = GetLookedAtGrabbable();
-        if (target != null && CanHandReachItem(hand, target, out _))
+        if (minDist == distToItem && candidateItem != null)
         {
-            hand.GrabItem(target);
+            hand.GrabItem(candidateItem);
             return;
         }
 
-        // 2. Proximity fallback: hand is touching/overlapping an item without camera aim
-        var nearby = hand.FindBestGrabbable();
-        if (nearby != null && CanHandReachItem(hand, nearby, out _))
+        if (minDist == distToHandle && candidateHandle != null)
         {
-            hand.GrabItem(nearby);
+            if (isLeft)
+            {
+                activeDoorHandleLeft = candidateHandle;
+                leftDoorHoldStartTime = Time.time;
+                leftGrabHeld = true;
+                activeDoorHandleLeft.BeginHold(leftHand, false);
+            }
+            else
+            {
+                activeDoorHandleRight = candidateHandle;
+                rightDoorHoldStartTime = Time.time;
+                rightGrabHeld = true;
+                activeDoorHandleRight.BeginHold(rightHand, false);
+            }
             return;
         }
 
-        // 3. No object to pick up or interact with -> Point with index finger!
-        TriggerPointGesture(hand == leftHand);
+        if (minDist == distToInt && candidateInteractable != null)
+        {
+            candidateInteractable.Interact(this.gameObject);
+            return;
+        }
+
+        TriggerPointGesture(isLeft);
     }
 
     void OnLeftGrabReleased(InputAction.CallbackContext ctx)
@@ -459,7 +507,30 @@ public class PlayerKB_GrabController : MonoBehaviour
                 {
                     interactable.Interact(this.gameObject);
                     interactCooldown = 0.3f;
+                    return;
                 }
+            }
+        }
+
+        // If holding an interactable item in either hand, interact with it
+        if (rightHand != null && rightHand.IsHolding && rightHand.HeldItem != null)
+        {
+            var interactable = rightHand.HeldItem.GetComponent<IInteractable>();
+            if (interactable != null && interactable.CanInteract)
+            {
+                interactable.Interact(this.gameObject);
+                interactCooldown = 0.3f;
+                return;
+            }
+        }
+        if (leftHand != null && leftHand.IsHolding && leftHand.HeldItem != null)
+        {
+            var interactable = leftHand.HeldItem.GetComponent<IInteractable>();
+            if (interactable != null && interactable.CanInteract)
+            {
+                interactable.Interact(this.gameObject);
+                interactCooldown = 0.3f;
+                return;
             }
         }
     }
@@ -583,176 +654,300 @@ public class PlayerKB_GrabController : MonoBehaviour
     #region Camera-based detection (Desktop specific)
 
     /// <summary>
-    /// Raycasts from screen center to find what grabbable item the player is looking at (unfiltered by hand reach).
+    /// Raycasts from screen center to find what grabbable item the player is looking at.
+    /// Supports two-handed pickup: allows targeting an item already held by another hand.
     /// </summary>
-    public GrabbableItem GetLookedAtGrabbable()
+    public GrabbableItem GetLookedAtGrabbable(HandGrabSystem requestingHand = null)
     {
         if (playerCamera == null) return null;
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        if (Physics.Raycast(ray, out RaycastHit hit, cameraReachDistance, ~0, QueryTriggerInteraction.Ignore))
-        {
-            if (hit.collider.CompareTag("Player") || hit.collider.GetComponentInParent<CharacterController>() != null)
-                return null;
+        RaycastHit[] hits = Physics.RaycastAll(ray, cameraReachDistance, grabLayerMask, QueryTriggerInteraction.Ignore);
+        GrabbableItem bestItem = null;
+        float bestRayDist = float.MaxValue;
 
-            // Never grab interactables (door handles, candles, faucets) as items
-            if (hit.collider.GetComponentInParent<IInteractable>() != null ||
-                hit.collider.GetComponentInParent<InteractDoorKB>() != null ||
-                hit.collider.GetComponentInParent<InteractFaucet>() != null)
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var hit = hits[i];
+            var col = hit.collider;
+            if (col == null || col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null)
+                continue;
+
+            // Reject world architecture and door bodies
+            string nameLower = col.name.ToLower();
+            if (nameLower.Contains("door") || nameLower.Contains("handle") || nameLower.Contains("wall") || nameLower.Contains("floor"))
+                continue;
+
+            var item = HandGrabSystem.GetOrAddGrabbable(col.gameObject);
+            if (item != null && item.canBePickedUp)
             {
-                return null;
+                if (requestingHand != null)
+                {
+                    if (item.IsHeldBy(requestingHand) || item.IsTwoHandHeld) continue;
+                }
+                else if (item.IsTwoHandHeld)
+                {
+                    continue;
+                }
+
+                if (hit.distance < bestRayDist)
+                {
+                    bestRayDist = hit.distance;
+                    bestItem = item;
+                }
+            }
+        }
+        return bestItem;
+    }
+
+    public PhysicsDoorHandle GetLookedAtDoorHandle(HandGrabSystem requestingHand, out float distToHand)
+    {
+        distToHand = float.MaxValue;
+        if (playerCamera == null) return null;
+
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit[] hits = Physics.RaycastAll(ray, cameraReachDistance, ~0, QueryTriggerInteraction.Collide);
+        PhysicsDoorHandle bestHandle = null;
+        float bestRayDist = float.MaxValue;
+
+        Vector3 handPos = requestingHand != null
+            ? (requestingHand.visualGripPoint != null ? requestingHand.visualGripPoint.position : requestingHand.gripPoint.position)
+            : ray.origin;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var col = hits[i].collider;
+            if (col == null || col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null) continue;
+
+            PhysicsDoorHandle pdh = col.GetComponentInParent<PhysicsDoorHandle>();
+            if (pdh == null)
+            {
+                var childPdh = col.GetComponentInChildren<PhysicsDoorHandle>();
+                if (childPdh != null && childPdh.doorRigidbody != null)
+                {
+                    if (col.transform == childPdh.doorRigidbody.transform || col.transform.IsChildOf(childPdh.doorRigidbody.transform))
+                        pdh = childPdh;
+                }
             }
 
-            var item = HandGrabSystem.GetOrAddGrabbable(hit.collider.gameObject);
-            if (item != null && item.canBePickedUp && !item.IsHeld)
-                return item;
+            if (pdh != null)
+            {
+                Vector3 gripPos = pdh.GetGripPosition(pdh.ResolveBestGrip(requestingHand));
+                float dHand = Vector3.Distance(handPos, gripPos);
+
+                if (dHand <= 1.8f && pdh.CanReachFrom(handPos))
+                {
+                    if (hits[i].distance < bestRayDist)
+                    {
+                        bestRayDist = hits[i].distance;
+                        bestHandle = pdh;
+                        distToHand = dHand;
+                    }
+                }
+            }
         }
-        return null;
+        return bestHandle;
+    }
+
+    public PhysicsDoorHandle FindNearbyDoorHandle(HandGrabSystem hand, out float distance)
+    {
+        distance = float.MaxValue;
+        if (hand == null) return null;
+
+        Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
+        Collider[] hits = Physics.OverlapSphere(handPos, 0.45f, ~0, QueryTriggerInteraction.Collide);
+        PhysicsDoorHandle bestHandle = null;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var col = hits[i];
+            if (col == null || col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null) continue;
+
+            PhysicsDoorHandle pdh = col.GetComponentInParent<PhysicsDoorHandle>();
+            if (pdh == null)
+            {
+                var childPdh = col.GetComponentInChildren<PhysicsDoorHandle>();
+                if (childPdh != null && childPdh.doorRigidbody != null)
+                {
+                    if (col.transform == childPdh.doorRigidbody.transform || col.transform.IsChildOf(childPdh.doorRigidbody.transform))
+                        pdh = childPdh;
+                }
+            }
+
+            if (pdh != null && pdh.CanReachFrom(handPos))
+            {
+                Vector3 gripPos = pdh.GetGripPosition(pdh.ResolveBestGrip(hand));
+                float d = Vector3.Distance(handPos, gripPos);
+                if (d < distance)
+                {
+                    distance = d;
+                    bestHandle = pdh;
+                }
+            }
+        }
+        return bestHandle;
+    }
+
+    public IInteractable GetLookedAtInteractable(HandGrabSystem requestingHand, out float distToHand)
+    {
+        distToHand = float.MaxValue;
+        if (playerCamera == null) return null;
+
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit[] hits = Physics.RaycastAll(ray, cameraReachDistance, interactLayerMask, QueryTriggerInteraction.Collide);
+        IInteractable bestInteractable = null;
+        float bestRayDist = float.MaxValue;
+
+        Vector3 handPos = requestingHand != null
+            ? (requestingHand.visualGripPoint != null ? requestingHand.visualGripPoint.position : requestingHand.gripPoint.position)
+            : ray.origin;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var col = hits[i].collider;
+            if (col == null || col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null) continue;
+
+            var interactable = col.GetComponentInParent<IInteractable>();
+            if (interactable == null && col.name.ToLower().Contains("candle"))
+                interactable = col.GetComponentInParent<InteractCandle>() ?? col.gameObject.AddComponent<InteractCandle>();
+
+            // Exclude door handles and grabbable items here (they are handled as specialized candidates)
+            if (interactable != null && !(interactable is PhysicsDoorHandle) && col.GetComponentInParent<GrabbableItem>() == null)
+            {
+                if (interactable.CanInteract && hits[i].distance < bestRayDist)
+                {
+                    bestRayDist = hits[i].distance;
+                    bestInteractable = interactable;
+                    distToHand = Vector3.Distance(handPos, col.bounds.ClosestPoint(handPos));
+                }
+            }
+        }
+        return bestInteractable;
+    }
+
+    public IInteractable FindNearbyInteractable(HandGrabSystem hand, out float distance)
+    {
+        distance = float.MaxValue;
+        if (hand == null) return null;
+
+        Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
+        Collider[] hits = Physics.OverlapSphere(handPos, 0.45f, interactLayerMask, QueryTriggerInteraction.Collide);
+        IInteractable bestInteractable = null;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var col = hits[i];
+            if (col == null || col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null) continue;
+
+            var interactable = col.GetComponentInParent<IInteractable>();
+            if (interactable != null && !(interactable is PhysicsDoorHandle) && col.GetComponentInParent<GrabbableItem>() == null)
+            {
+                if (interactable.CanInteract)
+                {
+                    float d = Vector3.Distance(handPos, col.bounds.ClosestPoint(handPos));
+                    if (d < distance)
+                    {
+                        distance = d;
+                        bestInteractable = interactable;
+                    }
+                }
+            }
+        }
+        return bestInteractable;
     }
 
     void UpdateCameraHighlight()
     {
-        // If holding a door handle, show holding hint and ensure highlight stays active
-        if (activeDoorHandleLeft != null || activeDoorHandleRight != null)
-        {
-            if (highlightedItem != null)
-            {
-                highlightedItem.SetHighlight(false);
-                highlightedItem = null;
-            }
-            if (highlightedInteractable != null)
-            {
-                ClearHudHint("[E]: Interact");
-                highlightedInteractable = null;
-            }
-            if (!string.IsNullOrEmpty(currentGrabPrompt))
-            {
-                ClearHudHint(currentGrabPrompt);
-                currentGrabPrompt = null;
-            }
+        // 1. Door holding prompts for either hand
+        string holdPrompt = null;
+        if (activeDoorHandleLeft != null && activeDoorHandleRight != null)
+            holdPrompt = "[LMB] / [RMB]: Release Door | Move/WASD to swing";
+        else if (activeDoorHandleLeft != null)
+            holdPrompt = "[LMB]: Release Door | Move/WASD to swing";
+        else if (activeDoorHandleRight != null)
+            holdPrompt = "[RMB]: Release Door | Move/WASD to swing";
 
-            string holdHint = (activeDoorHandleLeft != null && activeDoorHandleRight != null)
-                ? "[LMB] / [RMB]: Release | Move/WASD to swing"
-                : (activeDoorHandleLeft != null ? "[LMB]: Release | Move/WASD to swing" : "[RMB]: Release | Move/WASD to swing");
-
-            if (currentDoorPrompt != holdHint)
-            {
-                if (!string.IsNullOrEmpty(currentDoorPrompt)) ClearHudHint(currentDoorPrompt);
-                currentDoorPrompt = holdHint;
-                ShowHudHint(currentDoorPrompt);
-            }
-            return;
-        }
+        // Determine which hands are available for world target interactions
+        bool leftAvailable = leftHand != null && !leftHand.IsHolding && activeDoorHandleLeft == null;
+        bool rightAvailable = rightHand != null && !rightHand.IsHolding && activeDoorHandleRight == null;
 
         PhysicsDoorHandle foundDoorHandle = null;
         GrabbableItem foundItem = null;
         IInteractable foundInteractable = null;
         string grabPrompt = null;
-        string doorPrompt = null;
+        string doorPrompt = holdPrompt;
 
-        if (playerCamera != null)
+        // Find candidate targets in front of camera
+        if (playerCamera != null && (leftAvailable || rightAvailable))
         {
-            Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            // Evaluate looked-at candidates
+            float dItemHand = float.MaxValue;
+            GrabbableItem itemCandidate = null;
 
-            // 1. Raycast with triggers allowed to detect door handles
-            RaycastHit[] hits = Physics.RaycastAll(ray, cameraReachDistance, ~0, QueryTriggerInteraction.Collide);
-            float nearestDist = float.MaxValue;
-            for (int i = 0; i < hits.Length; i++)
+            // Check if looking at an item
+            var lookedItem = GetLookedAtGrabbable(null);
+            if (lookedItem != null)
             {
-                var col = hits[i].collider;
-                if (col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null) continue;
+                float dL = float.MaxValue;
+                float dR = float.MaxValue;
+                bool leftCan = leftAvailable && CanHandReachItem(leftHand, lookedItem, out dL);
+                bool rightCan = rightAvailable && CanHandReachItem(rightHand, lookedItem, out dR);
 
-                // Handle must belong to this collider or its immediate door body, NOT arbitrary parent furniture/room triggers
-                PhysicsDoorHandle pdh = col.GetComponentInParent<PhysicsDoorHandle>();
-                if (pdh == null)
+                if (leftCan && rightCan)
                 {
-                    var childPdh = col.GetComponentInChildren<PhysicsDoorHandle>();
-                    if (childPdh != null && childPdh.doorRigidbody != null)
-                    {
-                        if (col.transform == childPdh.doorRigidbody.transform || col.transform.IsChildOf(childPdh.doorRigidbody.transform))
-                        {
-                            pdh = childPdh;
-                        }
-                    }
+                    itemCandidate = lookedItem;
+                    dItemHand = Mathf.Min(dL, dR);
+                    grabPrompt = (lookedItem.IsHeld) ? "[LMB] or [RMB]: Hold with Both Hands" : "[LMB] or [RMB]: Grab";
                 }
-
-                if (pdh != null)
+                else if (leftCan)
                 {
-                    Vector3 gripPos = pdh.GetGripPosition();
-                    float distToGrip = Vector3.Distance(ray.origin, gripPos);
-
-                    // Door handles can only be highlighted/grabbed within reachable proximity (1.8m)
-                    if (distToGrip <= 1.8f && pdh.CanReachFrom(ray.origin) && distToGrip < nearestDist)
-                    {
-                        nearestDist = distToGrip;
-                        foundDoorHandle = pdh;
-                    }
+                    itemCandidate = lookedItem;
+                    dItemHand = dL;
+                    grabPrompt = (lookedItem.IsHeld) ? "[LMB]: Hold with Both Hands" : "[LMB]: Grab";
+                }
+                else if (rightCan)
+                {
+                    itemCandidate = lookedItem;
+                    dItemHand = dR;
+                    grabPrompt = (lookedItem.IsHeld) ? "[RMB]: Hold with Both Hands" : "[RMB]: Grab";
                 }
             }
 
-            // 2. If looking at a door handle
-            if (foundDoorHandle != null)
-            {
-                bool leftFree = leftHand != null && !leftHand.IsHolding;
-                bool rightFree = rightHand != null && !rightHand.IsHolding;
+            // Check if looking at a door handle
+            HandGrabSystem preferHand = leftAvailable ? leftHand : rightHand;
+            float dHandleHand = float.MaxValue;
+            var lookedHandle = GetLookedAtDoorHandle(preferHand, out dHandleHand);
 
-                string action = foundDoorHandle.allowQuickClickToggle ? "Hold Handle | [E]: Toggle" : "Hold & Move Door";
+            // Check if looking at an interactable
+            float dIntHand = float.MaxValue;
+            var lookedInt = GetLookedAtInteractable(preferHand, out dIntHand);
 
-                if (leftFree && rightFree)
-                    doorPrompt = $"[LMB] or [RMB]: {action}";
-                else if (leftFree)
-                    doorPrompt = $"[LMB]: {action}";
-                else if (rightFree)
-                    doorPrompt = $"[RMB]: {action}";
-                else if (foundDoorHandle.allowQuickClickToggle)
-                    doorPrompt = "[E]: Toggle";
-            }
-            else
+            // PRIORITIZE BY DISTANCE TO AVAILABLE HANDS:
+            // Whichever object is closer to the player's available hands gets highlighted!
+            float bestDist = Mathf.Min(dItemHand, Mathf.Min(dHandleHand, dIntHand));
+
+            if (bestDist < float.MaxValue)
             {
-                // 3. Regular non-door raycast
-                bool bothFull = (leftHand != null && leftHand.IsHolding) && (rightHand != null && rightHand.IsHolding);
-                if (Physics.Raycast(ray, out RaycastHit hit, cameraReachDistance, ~0, QueryTriggerInteraction.Ignore))
+                if (bestDist == dItemHand && itemCandidate != null)
                 {
-                    if (!hit.collider.CompareTag("Player") && hit.collider.GetComponentInParent<CharacterController>() == null)
-                    {
-                        // Check for grabbable items only if hands aren't both full
-                        if (!bothFull)
-                        {
-                            var item = HandGrabSystem.GetOrAddGrabbable(hit.collider.gameObject);
-                            if (item != null && item.canBePickedUp && !item.IsHeld)
-                            {
-                                // Physical proximity check: can either hand reach it without wall obstructions?
-                                bool leftCanReach = leftHand != null && !leftHand.IsHolding && CanHandReachItem(leftHand, item, out _);
-                                bool rightCanReach = rightHand != null && !rightHand.IsHolding && CanHandReachItem(rightHand, item, out _);
-
-                                if (leftCanReach && rightCanReach)
-                                {
-                                    foundItem = item;
-                                    grabPrompt = "[LMB] or [RMB]: Grab";
-                                }
-                                else if (leftCanReach)
-                                {
-                                    foundItem = item;
-                                    grabPrompt = "[LMB]: Grab";
-                                }
-                                else if (rightCanReach)
-                                {
-                                    foundItem = item;
-                                    grabPrompt = "[RMB]: Grab";
-                                }
-                            }
-                        }
-
-                        // Check for interactables if not grabbing
-                        if (foundItem == null)
-                        {
-                            foundInteractable = hit.collider.GetComponentInParent<IInteractable>();
-                            if (foundInteractable == null && hit.collider.name.ToLower().Contains("candle"))
-                            {
-                                foundInteractable = hit.collider.GetComponentInParent<InteractCandle>() ?? hit.collider.gameObject.AddComponent<InteractCandle>();
-                            }
-                        }
-                    }
+                    foundItem = itemCandidate;
+                }
+                else if (bestDist == dHandleHand && lookedHandle != null)
+                {
+                    foundDoorHandle = lookedHandle;
+                    string action = foundDoorHandle.allowQuickClickToggle ? "Hold Handle | [E]: Toggle" : "Hold & Move Door";
+                    if (leftAvailable && rightAvailable)
+                        doorPrompt = $"[LMB] or [RMB]: {action}";
+                    else if (leftAvailable)
+                        doorPrompt = $"[LMB]: {action}";
+                    else if (rightAvailable)
+                        doorPrompt = $"[RMB]: {action}";
+                    else if (foundDoorHandle.allowQuickClickToggle)
+                        doorPrompt = "[E]: Toggle";
+                }
+                else if (bestDist == dIntHand && lookedInt != null)
+                {
+                    foundInteractable = lookedInt;
                 }
             }
         }
@@ -760,14 +955,14 @@ public class PlayerKB_GrabController : MonoBehaviour
         // Update door handle highlight & HUD hint
         if (foundDoorHandle != highlightedDoorHandle)
         {
-            if (highlightedDoorHandle != null)
+            if (highlightedDoorHandle != null && activeDoorHandleLeft != highlightedDoorHandle && activeDoorHandleRight != highlightedDoorHandle)
             {
                 highlightedDoorHandle.SetHighlight(false);
-                if (!string.IsNullOrEmpty(currentDoorPrompt))
-                {
-                    ClearHudHint(currentDoorPrompt);
-                    currentDoorPrompt = null;
-                }
+            }
+            if (!string.IsNullOrEmpty(currentDoorPrompt))
+            {
+                ClearHudHint(currentDoorPrompt);
+                currentDoorPrompt = null;
             }
 
             highlightedDoorHandle = foundDoorHandle;
@@ -778,12 +973,22 @@ public class PlayerKB_GrabController : MonoBehaviour
                 currentDoorPrompt = doorPrompt;
                 ShowHudHint(currentDoorPrompt);
             }
+            else if (!string.IsNullOrEmpty(doorPrompt))
+            {
+                currentDoorPrompt = doorPrompt;
+                ShowHudHint(currentDoorPrompt);
+            }
         }
-        else if (highlightedDoorHandle != null && currentDoorPrompt != doorPrompt)
+        else if (!string.IsNullOrEmpty(doorPrompt) && currentDoorPrompt != doorPrompt)
         {
             if (!string.IsNullOrEmpty(currentDoorPrompt)) ClearHudHint(currentDoorPrompt);
             currentDoorPrompt = doorPrompt;
-            if (!string.IsNullOrEmpty(currentDoorPrompt)) ShowHudHint(currentDoorPrompt);
+            ShowHudHint(currentDoorPrompt);
+        }
+        else if (string.IsNullOrEmpty(doorPrompt) && !string.IsNullOrEmpty(currentDoorPrompt))
+        {
+            ClearHudHint(currentDoorPrompt);
+            currentDoorPrompt = null;
         }
 
         // Update item highlight & HUD hint
@@ -813,6 +1018,11 @@ public class PlayerKB_GrabController : MonoBehaviour
             if (!string.IsNullOrEmpty(currentGrabPrompt)) ClearHudHint(currentGrabPrompt);
             currentGrabPrompt = grabPrompt;
             if (!string.IsNullOrEmpty(currentGrabPrompt)) ShowHudHint(currentGrabPrompt);
+        }
+        else if (foundItem == null && !string.IsNullOrEmpty(currentGrabPrompt))
+        {
+            ClearHudHint(currentGrabPrompt);
+            currentGrabPrompt = null;
         }
 
         // Update interactable highlight

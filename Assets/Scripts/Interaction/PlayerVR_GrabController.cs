@@ -67,9 +67,13 @@ public class PlayerVR_GrabController : MonoBehaviour
     [Tooltip("Allow visual hands to stop naturally against walls/countertops without clipping or pushing the camera")]
     public bool enableWallCollision = true;
     [Tooltip("Hand collision sphere radius for obstacle detection")]
-    public float handCollisionRadius = 0.045f;
+    public float handCollisionRadius = 0.038f;
     [Tooltip("Offset from wrist to fingertips along hand reach")]
-    public float fingerForwardReach = 0.12f;
+    public float fingerForwardReach = 0.115f;
+    [Tooltip("Palm thickness when hand presses flat against a surface")]
+    public float palmThickness = 0.020f;
+    [Tooltip("Finger width offset to bring visual hands nearly touching surfaces")]
+    public float fingerWidthOffset = 0.018f;
 
     // Direct action fallbacks when InputActionReferences are not set in inspector
     private InputAction fallbackLeftGrip;
@@ -478,6 +482,23 @@ public class PlayerVR_GrabController : MonoBehaviour
         // Handle trigger clicks (quick door toggle or item use)
         ProcessTrigger(leftTriggerValue, ref leftTriggerActive, leftHandGrab, leftHeldHandle);
         ProcessTrigger(rightTriggerValue, ref rightTriggerActive, rightHandGrab, rightHeldHandle);
+
+        // Two-handed item separation check (auto-release secondary hand if hands pull apart too far)
+        if (leftHandGrab != null && rightHandGrab != null &&
+            leftHandGrab.IsHolding && rightHandGrab.IsHolding &&
+            leftHandGrab.HeldItem != null && leftHandGrab.HeldItem == rightHandGrab.HeldItem)
+        {
+            Vector3 lPos = (leftHandGrab.visualGripPoint != null ? leftHandGrab.visualGripPoint : leftHandGrab.gripPoint).position;
+            Vector3 rPos = (rightHandGrab.visualGripPoint != null ? rightHandGrab.visualGripPoint : rightHandGrab.gripPoint).position;
+            if (Vector3.Distance(lPos, rPos) > 0.7f)
+            {
+                var item = leftHandGrab.HeldItem;
+                if (item.secondaryHand != null)
+                {
+                    item.secondaryHand.ReleaseItem(false);
+                }
+            }
+        }
     }
 
     void LateUpdate()
@@ -537,6 +558,7 @@ public class PlayerVR_GrabController : MonoBehaviour
                     var hits = Physics.SphereCastAll(shoulderOrigin, handCollisionRadius, rayDir, targetDist + fingerForwardReach, layerMask, QueryTriggerInteraction.Ignore);
                     float nearestHitDist = float.MaxValue;
                     Vector3 hitNormal = Vector3.zero;
+                    Vector3 nearestHitPoint = Vector3.zero;
                     bool hitObstacle = false;
 
                     if (hits != null && hits.Length > 0)
@@ -549,6 +571,7 @@ public class PlayerVR_GrabController : MonoBehaviour
                             {
                                 nearestHitDist = h.distance;
                                 hitNormal = h.normal;
+                                nearestHitPoint = h.point;
                                 hitObstacle = true;
                             }
                         }
@@ -560,23 +583,52 @@ public class PlayerVR_GrabController : MonoBehaviour
                         float reachAhead = (targetDist + fingerForwardReach) - nearestHitDist;
                         float penetration = Mathf.Clamp01(reachAhead / fingerForwardReach);
 
-                        float palmThickness = 0.035f;
                         float effectiveReach = Mathf.Lerp(fingerForwardReach, palmThickness, penetration);
-                        float clampedDist = Mathf.Max(0.04f, nearestHitDist - effectiveReach);
+                        float clampedDist = Mathf.Max(0.04f, nearestHitDist - effectiveReach + fingerWidthOffset);
 
                         visualBase.position = shoulderOrigin + rayDir * clampedDist;
+
+                        // When colliding down on a table or upward-facing surface (normal pointing up)
+                        if (hitNormal.y > 0.5f)
+                        {
+                            float targetTableY = nearestHitPoint.y + fingerWidthOffset;
+                            if (visualBase.position.y > targetTableY)
+                            {
+                                visualBase.position = new Vector3(visualBase.position.x, Mathf.Lerp(visualBase.position.y, targetTableY, penetration), visualBase.position.z);
+                            }
+                            else
+                            {
+                                visualBase.position = new Vector3(visualBase.position.x, Mathf.Max(visualBase.position.y, targetTableY), visualBase.position.z);
+                            }
+                        }
 
                         // Surface tilt conforming (matching OpenViva 0.2.1)
                         if (hitNormal.sqrMagnitude > 0.01f && penetration > 0.02f)
                         {
-                            Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, hitNormal).normalized;
-                            if (wallUp.sqrMagnitude < 0.01f && cam != null)
-                                wallUp = Vector3.ProjectOnPlane(cam.transform.up, hitNormal).normalized;
+                            if (hitNormal.y > 0.5f)
+                            {
+                                Vector3 flatFwd = Vector3.ProjectOnPlane(targetWorldRot * Vector3.forward, Vector3.up).normalized;
+                                if (flatFwd.sqrMagnitude > 0.01f)
+                                {
+                                    Quaternion flatRot = Quaternion.LookRotation(flatFwd, Vector3.up);
+                                    visualBase.rotation = Quaternion.Slerp(targetWorldRot, flatRot, penetration * 0.7f);
+                                }
+                                else
+                                {
+                                    visualBase.rotation = targetWorldRot;
+                                }
+                            }
+                            else
+                            {
+                                Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, hitNormal).normalized;
+                                if (wallUp.sqrMagnitude < 0.01f && cam != null)
+                                    wallUp = Vector3.ProjectOnPlane(cam.transform.up, hitNormal).normalized;
 
-                            Vector3 tiltAxis = -Vector3.Cross(hitNormal, wallUp).normalized;
-                            float tiltAngle = Mathf.Lerp(0f, 45f, penetration);
-                            Quaternion wallTilt = Quaternion.AngleAxis(tiltAngle, tiltAxis);
-                            visualBase.rotation = wallTilt * targetWorldRot;
+                                Vector3 tiltAxis = -Vector3.Cross(hitNormal, wallUp).normalized;
+                                float tiltAngle = Mathf.Lerp(0f, 45f, penetration);
+                                Quaternion wallTilt = Quaternion.AngleAxis(tiltAngle, tiltAxis);
+                                visualBase.rotation = wallTilt * targetWorldRot;
+                            }
                         }
                         else
                         {
@@ -614,7 +666,7 @@ public class PlayerVR_GrabController : MonoBehaviour
         {
             triggerActive = true;
 
-            // If holding a handle and trigger is pulled, toggle it (if allowed)
+            // 1. If holding a handle and trigger is pulled, toggle it (if allowed)
             if (heldHandle != null)
             {
                 if (heldHandle.allowQuickClickToggle)
@@ -624,27 +676,32 @@ public class PlayerVR_GrabController : MonoBehaviour
                 return;
             }
 
-            // If near a handle and hand is free, toggle it (if allowed)
-            if (!hand.IsHolding)
-            {
-                var nearbyHandle = FindNearbyDoorHandle(hand);
-                if (nearbyHandle != null)
-                {
-                    if (nearbyHandle.allowQuickClickToggle)
-                    {
-                        nearbyHandle.NudgeToggle();
-                    }
-                    return;
-                }
-            }
-
-            // Normal item interact if holding an item
+            // 2. Normal item interact if holding an item
             if (hand.IsHolding && hand.HeldItem != null)
             {
                 var interactable = hand.HeldItem.GetComponent<IInteractable>();
                 if (interactable != null && interactable.CanInteract)
                 {
                     interactable.Interact(gameObject);
+                }
+                return;
+            }
+
+            // 3. If hand is free, check nearby door handle or generic interactable
+            if (!hand.IsHolding)
+            {
+                var nearbyHandle = FindNearbyDoorHandle(hand);
+                if (nearbyHandle != null && nearbyHandle.allowQuickClickToggle)
+                {
+                    nearbyHandle.NudgeToggle();
+                    return;
+                }
+
+                var nearbyInteractable = FindNearbyInteractable(hand);
+                if (nearbyInteractable != null && nearbyInteractable.CanInteract)
+                {
+                    nearbyInteractable.Interact(gameObject);
+                    return;
                 }
             }
         }
@@ -662,17 +719,49 @@ public class PlayerVR_GrabController : MonoBehaviour
         {
             gripActive = true;
 
-            // Check for nearby door handle first!
+            // If already holding a handle, do not re-grab
+            if (heldHandle != null) return;
+
+            // If already holding an item, this hand is busy
+            if (hand.IsHolding) return;
+
+            Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
+
+            // Gather candidates for this hand
+            var nearbyItem = hand.FindBestGrabbable();
+            float distToItem = nearbyItem != null ? nearbyItem.GetDistanceTo(handPos) : float.MaxValue;
+
             var nearbyHandle = FindNearbyDoorHandle(hand);
+            float distToHandle = float.MaxValue;
             if (nearbyHandle != null)
+            {
+                Transform grip = nearbyHandle.ResolveBestGrip(hand);
+                distToHandle = Vector3.Distance(handPos, nearbyHandle.GetGripPosition(grip));
+            }
+
+            // PRIORITY: Whichever candidate is closest to the activating hand model wins!
+            if (nearbyItem != null && distToItem <= distToHandle)
+            {
+                hand.GrabItem(nearbyItem);
+                return;
+            }
+            else if (nearbyHandle != null && distToHandle <= distToItem)
             {
                 heldHandle = nearbyHandle;
                 heldHandle.BeginHold(hand, true);
                 return;
             }
-
-            if (!hand.IsHolding)
-                hand.AttemptGrab();
+            else if (nearbyItem != null)
+            {
+                hand.GrabItem(nearbyItem);
+                return;
+            }
+            else if (nearbyHandle != null)
+            {
+                heldHandle = nearbyHandle;
+                heldHandle.BeginHold(hand, true);
+                return;
+            }
         }
         else if (gripActive && gripValue < gripThreshold * 0.5f) // Hysteresis: release at half threshold
         {
@@ -692,7 +781,7 @@ public class PlayerVR_GrabController : MonoBehaviour
     PhysicsDoorHandle FindNearbyDoorHandle(HandGrabSystem hand)
     {
         if (hand == null) return null;
-        Vector3 handPos = hand.transform.position;
+        Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
         Collider[] hits = Physics.OverlapSphere(handPos, handleGrabRadius, ~0, QueryTriggerInteraction.Collide);
         PhysicsDoorHandle bestHandle = null;
         float bestDist = float.MaxValue;
@@ -734,6 +823,36 @@ public class PlayerVR_GrabController : MonoBehaviour
         return bestHandle;
     }
 
+    IInteractable FindNearbyInteractable(HandGrabSystem hand)
+    {
+        if (hand == null) return null;
+        Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
+        Collider[] hits = Physics.OverlapSphere(handPos, handleGrabRadius, ~0, QueryTriggerInteraction.Collide);
+        IInteractable bestInteractable = null;
+        float bestDist = float.MaxValue;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            var col = hits[i];
+            if (col.CompareTag("Player") || col.GetComponentInParent<CharacterController>() != null) continue;
+
+            var interactable = col.GetComponentInParent<IInteractable>();
+            if (interactable != null && !(interactable is PhysicsDoorHandle) && col.GetComponentInParent<GrabbableItem>() == null)
+            {
+                if (interactable.CanInteract)
+                {
+                    float d = Vector3.Distance(handPos, col.bounds.ClosestPoint(handPos));
+                    if (d < bestDist)
+                    {
+                        bestDist = d;
+                        bestInteractable = interactable;
+                    }
+                }
+            }
+        }
+        return bestInteractable;
+    }
+
     void UpdateHandleProximityHighlight(HandGrabSystem hand, ref PhysicsDoorHandle nearHandle, PhysicsDoorHandle currentlyHeld)
     {
         if (hand == null || currentlyHeld != null || hand.IsHolding)
@@ -747,6 +866,24 @@ public class PlayerVR_GrabController : MonoBehaviour
         }
 
         var found = FindNearbyDoorHandle(hand);
+
+        // If this hand is closer to a grabbable item than to the door handle, do not highlight the door handle!
+        if (found != null)
+        {
+            var bestItem = hand.FindBestGrabbable();
+            if (bestItem != null)
+            {
+                Vector3 handPos = (hand.visualGripPoint != null ? hand.visualGripPoint : (hand.gripPoint != null ? hand.gripPoint : hand.transform)).position;
+                float distItem = bestItem.GetDistanceTo(handPos);
+                Transform grip = found.ResolveBestGrip(hand);
+                float distHandle = Vector3.Distance(handPos, found.GetGripPosition(grip));
+                if (distItem < distHandle)
+                {
+                    found = null;
+                }
+            }
+        }
+
         if (found != nearHandle)
         {
             if (nearHandle != null) nearHandle.SetHighlight(false);

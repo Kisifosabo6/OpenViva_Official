@@ -86,6 +86,14 @@ public class DesktopHandDriver : MonoBehaviour
     public float wallContactThreshold = 0.02f;
     [Tooltip("Distance range (meters) over which wall blend reaches 100%")]
     public float wallBlendRange = 0.04f;
+    [Tooltip("Collision sphere radius for hand obstacle detection (meters)")]
+    public float handCollisionRadius = 0.038f;
+    [Tooltip("Finger forward reach from wrist to fingertips (meters)")]
+    public float fingerForwardReach = 0.115f;
+    [Tooltip("Palm thickness when hand presses flat against a surface (meters)")]
+    public float palmThickness = 0.020f;
+    [Tooltip("Finger width offset to bring visual hands nearly touching surfaces (meters)")]
+    public float fingerWidthOffset = 0.018f;
 
     [Header("Safety Thresholds")]
     [Tooltip("Maximum allowed distance between physics hand and target before snapping")]
@@ -666,13 +674,12 @@ public class DesktopHandDriver : MonoBehaviour
             if (targetDist > 0.02f)
             {
                 Vector3 rayDir = toTarget / targetDist;
-                float handRadius = 0.055f;
-                float fingerForwardReach = 0.14f; // Finger length from wrist to fingertips
                 int layerMask = ~LayerMask.GetMask("Ignore Raycast");
 
                 // Cast through the full reach of the hand including fingertips
-                var hits = Physics.SphereCastAll(shoulderOrigin, handRadius, rayDir, targetDist + fingerForwardReach, layerMask, QueryTriggerInteraction.Ignore);
+                var hits = Physics.SphereCastAll(shoulderOrigin, handCollisionRadius, rayDir, targetDist + fingerForwardReach, layerMask, QueryTriggerInteraction.Ignore);
                 float nearestHitDist = float.MaxValue;
+                Vector3 nearestHitPoint = Vector3.zero;
 
                 if (hits != null && hits.Length > 0)
                 {
@@ -683,6 +690,7 @@ public class DesktopHandDriver : MonoBehaviour
                         {
                             nearestHitDist = h.distance;
                             nearestHitNormal = h.normal;
+                            nearestHitPoint = h.point;
                             hitObstacle = true;
                         }
                     }
@@ -694,13 +702,28 @@ public class DesktopHandDriver : MonoBehaviour
                     float reachAhead = (targetDist + fingerForwardReach) - nearestHitDist;
                     hitWallPenetration = Mathf.Clamp01(reachAhead / fingerForwardReach);
 
-                    // When hand stands up against a wall, effective forward reach from wrist is palm thickness (~0.038m),
-                    // allowing the palm to physically touch the wall instead of floating in mid-air!
-                    float palmThickness = 0.038f;
+                    // When hand stands up against a wall, effective forward reach from wrist is palm thickness,
+                    // allowing the palm to physically touch the wall instead of floating in mid-air
                     float effectiveReach = Mathf.Lerp(fingerForwardReach, palmThickness, hitWallPenetration);
 
-                    float clampedDist = Mathf.Max(0.04f, nearestHitDist - effectiveReach);
+                    float clampedDist = Mathf.Max(0.04f, nearestHitDist - effectiveReach + fingerWidthOffset);
                     expectedPos = shoulderOrigin + rayDir * clampedDist;
+
+                    // When colliding down on a table or upward-facing surface (normal pointing up)
+                    if (nearestHitNormal.y > 0.5f)
+                    {
+                        // The table surface is at nearestHitPoint.y.
+                        // Bring the hand down close to the tabletop so it nearly touches the surface.
+                        float targetTableY = nearestHitPoint.y + fingerWidthOffset;
+                        if (expectedPos.y > targetTableY)
+                        {
+                            expectedPos.y = Mathf.Lerp(expectedPos.y, targetTableY, hitWallPenetration);
+                        }
+                        else
+                        {
+                            expectedPos.y = Mathf.Max(expectedPos.y, targetTableY);
+                        }
+                    }
                 }
             }
         }
@@ -732,29 +755,40 @@ public class DesktopHandDriver : MonoBehaviour
             driftSqr = 0f;
         }
 
-        // 4. Smooth visual placement & wall-conforming rotation (standing up & angling):
+        // 4. Smooth visual placement & wall/table-conforming rotation:
         Vector3 finalPos = expectedPos;
         Quaternion finalRot = expectedRot;
 
-        // If touching a wall, tilt the hand to stand up along the surface (matching openviva021)
+        // If touching a wall or table, conform the hand to the surface (matching openviva021)
         if (hitObstacle && nearestHitNormal.sqrMagnitude > 0.01f && hitWallPenetration > 0.01f)
         {
-            // Calculate upright vector along the wall surface
-            Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, nearestHitNormal).normalized;
-            if (wallUp.sqrMagnitude < 0.01f)
-                wallUp = Vector3.ProjectOnPlane(cameraTransform.up, nearestHitNormal).normalized;
-
-            // Pitch tilt axis parallel to wall surface (horizontal contact tangent)
-            Vector3 tiltAxis = -Vector3.Cross(nearestHitNormal, wallUp).normalized;
-
-            if (tiltAxis.sqrMagnitude > 0.01f)
+            if (nearestHitNormal.y > 0.5f)
             {
-                // Pitch fingers UP along the wall surface (up to 55 degrees)
-                // Natural pitch angle prevents over-rotating and never turns away horizontally
-                float tiltAngle = Mathf.Lerp(0f, 55f, hitWallPenetration);
-                Quaternion wallPitch = Quaternion.AngleAxis(tiltAngle, tiltAxis);
-                expectedRot = wallPitch * expectedRot;
-                finalRot = expectedRot;
+                // On a horizontal table/counter surface, flatten pitch so palm rests flat against the table
+                Vector3 flatFwd = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
+                if (flatFwd.sqrMagnitude > 0.01f)
+                {
+                    Quaternion flatRot = Quaternion.LookRotation(flatFwd, Vector3.up);
+                    expectedRot = Quaternion.Slerp(expectedRot, flatRot * rotOffset, hitWallPenetration * 0.7f);
+                    finalRot = expectedRot;
+                }
+            }
+            else
+            {
+                // On a vertical wall surface, pitch tilt fingers UP along the wall surface (up to 55 degrees)
+                Vector3 wallUp = Vector3.ProjectOnPlane(Vector3.up, nearestHitNormal).normalized;
+                if (wallUp.sqrMagnitude < 0.01f)
+                    wallUp = Vector3.ProjectOnPlane(cameraTransform.up, nearestHitNormal).normalized;
+
+                Vector3 tiltAxis = -Vector3.Cross(nearestHitNormal, wallUp).normalized;
+
+                if (tiltAxis.sqrMagnitude > 0.01f)
+                {
+                    float tiltAngle = Mathf.Lerp(0f, 55f, hitWallPenetration);
+                    Quaternion wallPitch = Quaternion.AngleAxis(tiltAngle, tiltAxis);
+                    expectedRot = wallPitch * expectedRot;
+                    finalRot = expectedRot;
+                }
             }
         }
 

@@ -65,8 +65,8 @@ public class GrabbableItem : MonoBehaviour
     public float breakForce = 5000f;
     [Tooltip("Use a fixed joint instead of a spring joint (rigid connection)")]
     public bool useFixedJoint;
-    [Tooltip("Can multiple characters hold this item at once")]
-    public bool allowMultipleHolders;
+    [Tooltip("Can multiple characters or hands hold this item at once (two-handed grip)")]
+    public bool allowMultipleHolders = true;
 
     [Header("Grab Settings")]
     [Tooltip("Toggle holding mode — click to grab, click again to drop (desktop)")]
@@ -85,6 +85,20 @@ public class GrabbableItem : MonoBehaviour
     // Runtime state
     [HideInInspector] public Rigidbody rb;
     [HideInInspector] public HandGrabSystem heldByHand;
+    [HideInInspector] public HandGrabSystem secondaryHand;
+
+    public HandGrabSystem primaryHand => heldByHand;
+    public bool IsHeld => heldByHand != null || secondaryHand != null;
+    public bool IsTwoHandHeld => heldByHand != null && secondaryHand != null;
+    public bool IsHeldBy(HandGrabSystem hand) => (hand != null) && (heldByHand == hand || secondaryHand == hand);
+
+    public bool CanBeGrabbedBy(HandGrabSystem hand)
+    {
+        if (!canBePickedUp || hand == null) return false;
+        if (IsHeldBy(hand)) return false;
+        if (IsTwoHandHeld) return false;
+        return true;
+    }
 
     int originalLayer;
     bool originalGravity;
@@ -102,21 +116,60 @@ public class GrabbableItem : MonoBehaviour
 
     /// <summary>
     /// Called when a hand grabs this item.
+    /// Supports two-handed holding when secondaryHand attaches.
     /// </summary>
     public void OnGrabbed(HandGrabSystem hand)
     {
-        heldByHand = hand;
-        originalLayer = gameObject.layer;
-        originalGravity = rb.useGravity;
-        originalKinematic = rb.isKinematic;
-        originalCollisionMode = rb.collisionDetectionMode;
+        if (heldByHand == null)
+        {
+            heldByHand = hand;
+            originalLayer = gameObject.layer;
+            originalGravity = rb.useGravity;
+            originalKinematic = rb.isKinematic;
+            originalCollisionMode = rb.collisionDetectionMode;
 
-        rb.useGravity = false;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.useGravity = false;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        if (outline != null)
-            outline.enabled = false;
+            if (outline != null)
+                outline.enabled = false;
+        }
+        else if (secondaryHand == null && hand != heldByHand)
+        {
+            secondaryHand = hand;
+            if (outline != null)
+                outline.enabled = false;
+        }
+    }
+
+    /// <summary>
+    /// Called when a specific hand releases this item.
+    /// Returns true if the item was completely released by all hands and should restore physics.
+    /// </summary>
+    public bool OnReleasedBy(HandGrabSystem hand, Vector3 throwVelocity, Vector3 angularVelocity)
+    {
+        if (hand == secondaryHand)
+        {
+            secondaryHand = null;
+            return false; // Still held by primary hand
+        }
+        else if (hand == heldByHand)
+        {
+            if (secondaryHand != null)
+            {
+                // Promote secondary hand to primary hand
+                heldByHand = secondaryHand;
+                secondaryHand = null;
+                return false; // Still held by promoted hand
+            }
+            else
+            {
+                heldByHand = null;
+                return true; // Completely released
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -125,6 +178,7 @@ public class GrabbableItem : MonoBehaviour
     public void OnReleased(Vector3 throwVelocity, Vector3 angularVelocity)
     {
         heldByHand = null;
+        secondaryHand = null;
         gameObject.layer = originalLayer;
         rb.isKinematic = originalKinematic;
         rb.useGravity = originalGravity;
@@ -141,6 +195,38 @@ public class GrabbableItem : MonoBehaviour
             rb.linearVelocity = vel;
             rb.angularVelocity = angularVelocity;
         }
+    }
+
+    /// <summary>
+    /// Get physical distance from a point to the closest point on this item's colliders.
+    /// </summary>
+    public float GetDistanceTo(Vector3 point)
+    {
+        float minDist = float.MaxValue;
+        var colliders = GetComponentsInChildren<Collider>();
+        if (colliders != null && colliders.Length > 0)
+        {
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                var col = colliders[i];
+                if (col == null || !col.enabled || col.isTrigger) continue;
+                Vector3 closestPt;
+                if (col is BoxCollider || col is SphereCollider || col is CapsuleCollider)
+                    closestPt = col.ClosestPoint(point);
+                else if (col is MeshCollider mc && mc.convex)
+                    closestPt = mc.ClosestPoint(point);
+                else
+                    closestPt = col.bounds.ClosestPoint(point);
+
+                float d = Vector3.Distance(point, closestPt);
+                if (d < minDist) minDist = d;
+            }
+        }
+        if (minDist == float.MaxValue)
+        {
+            minDist = Vector3.Distance(point, transform.position);
+        }
+        return minDist;
     }
 
     /// <summary>
@@ -217,6 +303,4 @@ public class GrabbableItem : MonoBehaviour
             _ => -1
         };
     }
-
-    public bool IsHeld => heldByHand != null;
 }

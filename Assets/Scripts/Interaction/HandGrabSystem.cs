@@ -145,7 +145,8 @@ public class HandGrabSystem : MonoBehaviour
     void LateUpdate()
     {
         // Keep held item rigidly locked at calibrated local position & rotation
-        if (IsHolding && HeldItem != null && visualGripPoint != null)
+        // Only the primary hand drives the item's transform directly to prevent two-handed jitter
+        if (IsHolding && HeldItem != null && visualGripPoint != null && HeldItem.primaryHand == this)
         {
             HeldItem.transform.localPosition = heldLocalPos;
             HeldItem.transform.localRotation = heldLocalRot;
@@ -221,10 +222,15 @@ public class HandGrabSystem : MonoBehaviour
     public bool GrabItem(GrabbableItem item)
     {
         if (item == null || !item.canBePickedUp) return false;
+        if (item.IsHeldBy(this)) return false;
+        if (item.IsTwoHandHeld) return false;
 
-        // If another hand is holding it, force drop
+        // If another hand is holding it and multiple holders NOT allowed, force drop from other hand
         if (item.IsHeld && !item.allowMultipleHolders)
-            item.heldByHand.ReleaseItem(false);
+        {
+            if (item.heldByHand != null)
+                item.heldByHand.ReleaseItem(false);
+        }
 
         if (IsHolding)
             ReleaseItem(false);
@@ -233,68 +239,84 @@ public class HandGrabSystem : MonoBehaviour
         item.OnGrabbed(this);
         ClearHighlight();
 
-        // Save original layer and move to held items layer
-        originalItemLayer = item.gameObject.layer;
-        originalItemScale = item.transform.localScale;
+        // Check if this hand is secondary holder (item was already held by primaryHand)
+        bool isSecondary = (item.primaryHand != this);
 
-        // Ignore collision between held item and player capsule
-        IgnorePlayerCollision(item, true);
-
-        // Sanity check visualGripPoint: if it was somehow set to a transform outside this character's hierarchy (e.g. Shinobu), clear it!
-        if (visualGripPoint != null && transform.root != null && visualGripPoint.root != transform.root)
+        if (!isSecondary)
         {
-            visualGripPoint = null;
-        }
+            // Primary hand attachment
+            originalItemLayer = item.gameObject.layer;
+            originalItemScale = item.transform.localScale;
 
-        // Auto-find visual hand bone (hand_l / hand_r) if not assigned
-        if (visualGripPoint == null)
-        {
-            if (gripPoint != null)
+            // Ignore collision between held item and player capsule
+            IgnorePlayerCollision(item, true);
+
+            // Sanity check visualGripPoint: if it was somehow set to a transform outside this character's hierarchy (e.g. Shinobu), clear it!
+            if (visualGripPoint != null && transform.root != null && visualGripPoint.root != transform.root)
             {
-                visualGripPoint = gripPoint;
+                visualGripPoint = null;
             }
-            else
+
+            // Auto-find visual hand bone (hand_l / hand_r) if not assigned
+            if (visualGripPoint == null)
             {
-                string handBoneName = isLeftHand ? "hand_l" : "hand_r";
-                Transform foundBone = FindChildRecursive(transform.root, handBoneName);
-                visualGripPoint = foundBone != null ? foundBone : transform;
+                if (gripPoint != null)
+                {
+                    visualGripPoint = gripPoint;
+                }
+                else
+                {
+                    string handBoneName = isLeftHand ? "hand_l" : "hand_r";
+                    Transform foundBone = FindChildRecursive(transform.root, handBoneName);
+                    visualGripPoint = foundBone != null ? foundBone : transform;
+                }
+            }
+
+            // Snap item to visual grip point if available, else gripPoint
+            Transform attachTarget = visualGripPoint != null ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
+            item.GetHoldTransform(isLeftHand, out Vector3 localPos, out Quaternion localRot);
+            item.transform.SetParent(attachTarget, false);
+            item.transform.localPosition = localPos;
+            item.transform.localRotation = localRot;
+
+            heldLocalPos = localPos;
+            heldLocalRot = localRot;
+
+            // Ensure scale is not affected by parent bone lossyScale
+            Vector3 parentLossy = attachTarget.lossyScale;
+            if (parentLossy.x > 0.0001f && parentLossy.y > 0.0001f && parentLossy.z > 0.0001f)
+            {
+                item.transform.localScale = new Vector3(originalItemScale.x / parentLossy.x, originalItemScale.y / parentLossy.y, originalItemScale.z / parentLossy.z);
+            }
+
+            // When held in hand, disable collisions and make Rigidbody kinematic
+            // so it stays 100% rigidly locked in the player's palm without floating in air or trailing
+            if (item.rb != null)
+            {
+                item.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                item.rb.isKinematic = true;
+                item.rb.useGravity = false;
+                item.rb.detectCollisions = false;
+                item.rb.interpolation = RigidbodyInterpolation.None;
+                item.rb.linearVelocity = Vector3.zero;
+                item.rb.angularVelocity = Vector3.zero;
+            }
+
+            // Only create joint if not kinematic and no visual direct parent
+            if (visualGripPoint == null && item.rb != null && !item.rb.isKinematic)
+            {
+                CreateGrabJoint(item);
             }
         }
-
-        // Snap item to visual grip point if available, else gripPoint
-        Transform attachTarget = visualGripPoint != null ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
-        item.GetHoldTransform(isLeftHand, out Vector3 localPos, out Quaternion localRot);
-        item.transform.SetParent(attachTarget, false);
-        item.transform.localPosition = localPos;
-        item.transform.localRotation = localRot;
-
-        heldLocalPos = localPos;
-        heldLocalRot = localRot;
-
-        // Ensure scale is not affected by parent bone lossyScale
-        Vector3 parentLossy = attachTarget.lossyScale;
-        if (parentLossy.x > 0.0001f && parentLossy.y > 0.0001f && parentLossy.z > 0.0001f)
+        else
         {
-            item.transform.localScale = new Vector3(originalItemScale.x / parentLossy.x, originalItemScale.y / parentLossy.y, originalItemScale.z / parentLossy.z);
-        }
+            // Secondary hand joined the grab (two-handed holding)
+            // Inherit layer, player collision settings from primary holder
+            originalItemLayer = item.gameObject.layer;
+            originalItemScale = item.transform.localScale;
+            IgnorePlayerCollision(item, true);
 
-        // When held in hand, disable collisions and make Rigidbody kinematic
-        // so it stays 100% rigidly locked in the player's palm without floating in air or trailing
-        if (item.rb != null)
-        {
-            item.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-            item.rb.isKinematic = true;
-            item.rb.useGravity = false;
-            item.rb.detectCollisions = false;
-            item.rb.interpolation = RigidbodyInterpolation.None;
-            item.rb.linearVelocity = Vector3.zero;
-            item.rb.angularVelocity = Vector3.zero;
-        }
-
-        // Only create joint if not kinematic and no visual direct parent
-        if (visualGripPoint == null && item.rb != null && !item.rb.isKinematic)
-        {
-            CreateGrabJoint(item);
+            item.GetHoldTransform(isLeftHand, out heldLocalPos, out heldLocalRot);
         }
 
         // Start blend 0→1
@@ -320,6 +342,47 @@ public class HandGrabSystem : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Promotes this hand from secondary holder to primary holder of an item when the first hand releases.
+    /// </summary>
+    public void AdoptPrimaryHold()
+    {
+        if (HeldItem == null) return;
+
+        if (visualGripPoint != null && transform.root != null && visualGripPoint.root != transform.root)
+        {
+            visualGripPoint = null;
+        }
+
+        if (visualGripPoint == null)
+        {
+            if (gripPoint != null)
+            {
+                visualGripPoint = gripPoint;
+            }
+            else
+            {
+                string handBoneName = isLeftHand ? "hand_l" : "hand_r";
+                Transform foundBone = FindChildRecursive(transform.root, handBoneName);
+                visualGripPoint = foundBone != null ? foundBone : transform;
+            }
+        }
+
+        Transform attachTarget = visualGripPoint != null ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
+        HeldItem.GetHoldTransform(isLeftHand, out Vector3 localPos, out Quaternion localRot);
+        HeldItem.transform.SetParent(attachTarget, false);
+        HeldItem.transform.localPosition = localPos;
+        HeldItem.transform.localRotation = localRot;
+        heldLocalPos = localPos;
+        heldLocalRot = localRot;
+
+        Vector3 parentLossy = attachTarget.lossyScale;
+        if (parentLossy.x > 0.0001f && parentLossy.y > 0.0001f && parentLossy.z > 0.0001f)
+        {
+            HeldItem.transform.localScale = new Vector3(originalItemScale.x / parentLossy.x, originalItemScale.y / parentLossy.y, originalItemScale.z / parentLossy.z);
+        }
+    }
+
     public void ReleaseItem(bool applyThrow = true)
     {
         if (!IsHolding) return;
@@ -329,25 +392,35 @@ public class HandGrabSystem : MonoBehaviour
 
         DestroyGrabJoint();
 
-        item.transform.SetParent(null);
-        item.transform.localScale = originalItemScale;
-
-        // Restore item layer
-        item.gameObject.layer = originalItemLayer;
-
-        // Restore collision between item and player
-        IgnorePlayerCollision(item, false);
-
         // Throw velocity
         Vector3 throwVel = Vector3.zero;
         Vector3 angularVel = Vector3.zero;
         if (applyThrow)
             GetAverageVelocity(out throwVel, out angularVel);
 
-        if (item.rb != null)
-            item.rb.detectCollisions = true;
+        bool fullyReleased = item.OnReleasedBy(this, throwVel, angularVel);
 
-        item.OnReleased(throwVel, angularVel);
+        if (fullyReleased)
+        {
+            item.transform.SetParent(null);
+            item.transform.localScale = originalItemScale;
+
+            // Restore item layer
+            item.gameObject.layer = originalItemLayer;
+
+            // Restore collision between item and player
+            IgnorePlayerCollision(item, false);
+
+            if (item.rb != null)
+                item.rb.detectCollisions = true;
+
+            item.OnReleased(throwVel, angularVel);
+        }
+        else if (item.primaryHand != null)
+        {
+            // If primary hand changed, the remaining hand adopts the primary hold transform
+            item.primaryHand.AdoptPrimaryHold();
+        }
 
         // Start blend out
         blendTarget = 0f;
@@ -366,7 +439,10 @@ public class HandGrabSystem : MonoBehaviour
         var vrLegacy = item.GetComponent<PlayerVR_GrabObject>();
         if (vrLegacy != null)
         {
-            vrLegacy.IsGrabbed = 0;
+            if (item.IsHeld && item.primaryHand != null)
+                vrLegacy.IsGrabbed = item.primaryHand.isLeftHand ? 1 : 2;
+            else
+                vrLegacy.IsGrabbed = 0;
         }
 
         OnItemReleased?.Invoke(item);
@@ -530,14 +606,14 @@ public class HandGrabSystem : MonoBehaviour
         if (Physics.Raycast(detectPoint.position, detectPoint.forward, out RaycastHit hit, forwardRayDist, grabLayerMask))
         {
             var item = GetOrAddGrabbable(hit.collider.gameObject);
-            if (item != null && item.canBePickedUp && !item.IsHeld && HasLineOfSightTo(item))
+            if (item != null && item.canBePickedUp && !item.IsHeldBy(this) && !item.IsTwoHandHeld && HasLineOfSightTo(item))
                 return item;
         }
 
         if (Physics.Raycast(detectPoint.position, -detectPoint.forward + detectPoint.up, out hit, grabRayDistance, grabLayerMask))
         {
             var item = GetOrAddGrabbable(hit.collider.gameObject);
-            if (item != null && item.canBePickedUp && !item.IsHeld && HasLineOfSightTo(item))
+            if (item != null && item.canBePickedUp && !item.IsHeldBy(this) && !item.IsTwoHandHeld && HasLineOfSightTo(item))
                 return item;
         }
 
@@ -550,7 +626,7 @@ public class HandGrabSystem : MonoBehaviour
         foreach (var col in colliders)
         {
             var item = GetOrAddGrabbable(col.gameObject);
-            if (item == null || !item.canBePickedUp || item.IsHeld) continue;
+            if (item == null || !item.canBePickedUp || item.IsHeldBy(this) || item.IsTwoHandHeld) continue;
 
             Vector3 closestPt;
             if (col is BoxCollider || col is SphereCollider || col is CapsuleCollider)
