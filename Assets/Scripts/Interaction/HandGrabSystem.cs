@@ -245,11 +245,24 @@ public class HandGrabSystem : MonoBehaviour
         if (!isSecondary)
         {
             // Primary hand attachment
+            item.InitInitialScale();
             originalItemLayer = item.gameObject.layer;
-            originalItemScale = item.transform.localScale;
+            originalItemScale = item.initialScale;
 
-            // Ignore collision between held item and player capsule
+            // Ignore collision between held item and player capsule / hands
             IgnorePlayerCollision(item, true);
+
+            // Pre-emptively make Rigidbody kinematic and zero velocity BEFORE transform parenting/movement
+            if (item.rb != null)
+            {
+                item.rb.linearVelocity = Vector3.zero;
+                item.rb.angularVelocity = Vector3.zero;
+                item.rb.isKinematic = true;
+                item.rb.useGravity = false;
+                item.rb.detectCollisions = false;
+                item.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                item.rb.interpolation = RigidbodyInterpolation.None;
+            }
 
             // Sanity check visualGripPoint: if it was somehow set to a transform outside this character's hierarchy (e.g. Shinobu), clear it!
             if (visualGripPoint != null && transform.root != null && visualGripPoint.root != transform.root)
@@ -289,19 +302,6 @@ public class HandGrabSystem : MonoBehaviour
                 item.transform.localScale = new Vector3(originalItemScale.x / parentLossy.x, originalItemScale.y / parentLossy.y, originalItemScale.z / parentLossy.z);
             }
 
-            // When held in hand, disable collisions and make Rigidbody kinematic
-            // so it stays 100% rigidly locked in the player's palm without floating in air or trailing
-            if (item.rb != null)
-            {
-                item.rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-                item.rb.isKinematic = true;
-                item.rb.useGravity = false;
-                item.rb.detectCollisions = false;
-                item.rb.interpolation = RigidbodyInterpolation.None;
-                item.rb.linearVelocity = Vector3.zero;
-                item.rb.angularVelocity = Vector3.zero;
-            }
-
             // Only create joint if not kinematic and no visual direct parent
             if (visualGripPoint == null && item.rb != null && !item.rb.isKinematic)
             {
@@ -312,8 +312,9 @@ public class HandGrabSystem : MonoBehaviour
         {
             // Secondary hand joined the grab (two-handed holding)
             // Inherit layer, player collision settings from primary holder
+            item.InitInitialScale();
             originalItemLayer = item.gameObject.layer;
-            originalItemScale = item.transform.localScale;
+            originalItemScale = item.initialScale;
             IgnorePlayerCollision(item, true);
 
             item.GetHoldTransform(isLeftHand, out heldLocalPos, out heldLocalRot);
@@ -369,6 +370,9 @@ public class HandGrabSystem : MonoBehaviour
         }
 
         Transform attachTarget = visualGripPoint != null ? visualGripPoint : (gripPoint != null ? gripPoint : transform);
+        HeldItem.InitInitialScale();
+        originalItemScale = HeldItem.initialScale;
+
         HeldItem.GetHoldTransform(isLeftHand, out Vector3 localPos, out Quaternion localRot);
         HeldItem.transform.SetParent(attachTarget, false);
         HeldItem.transform.localPosition = localPos;
@@ -403,13 +407,13 @@ public class HandGrabSystem : MonoBehaviour
         if (fullyReleased)
         {
             item.transform.SetParent(null);
-            item.transform.localScale = originalItemScale;
+            item.transform.localScale = item.initialScale;
 
             // Restore item layer
             item.gameObject.layer = originalItemLayer;
 
-            // Restore collision between item and player
-            IgnorePlayerCollision(item, false);
+            // Restore collision between item and player/hands after brief delay so item clears without depenetration explosion
+            StartCoroutine(RestorePlayerCollisionDelayed(item, 0.4f));
 
             if (item.rb != null)
                 item.rb.detectCollisions = true;
@@ -446,6 +450,15 @@ public class HandGrabSystem : MonoBehaviour
         }
 
         OnItemReleased?.Invoke(item);
+    }
+
+    private System.Collections.IEnumerator RestorePlayerCollisionDelayed(GrabbableItem item, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (item != null && !item.IsHeld)
+        {
+            IgnorePlayerCollision(item, false);
+        }
     }
 
     #endregion
@@ -534,24 +547,43 @@ public class HandGrabSystem : MonoBehaviour
     #region Player Collision Ignore
 
     /// <summary>
-    /// Finds the player capsule collider (cached) and ignores/restores
-    /// collision with all colliders on the held item.
-    /// Prevents the knife from bouncing off your own body when sprinting.
+    /// Finds player & hand colliders and ignores/restores collision with all colliders on the item.
+    /// Prevents held or newly released items from exploding against the player body or hands.
     /// </summary>
     void IgnorePlayerCollision(GrabbableItem item, bool ignore)
     {
-        if (playerCollider == null)
-            FindPlayerCollider();
+        if (item == null) return;
 
         var cols = item.GetComponentsInChildren<Collider>();
+        if (cols == null || cols.Length == 0) return;
+
+        var playerColliders = new System.Collections.Generic.List<Collider>();
+        if (playerCollider == null) FindPlayerCollider();
+        if (playerCollider != null) playerColliders.Add(playerCollider);
+
+        Transform playerRoot = transform.root;
+        if (playerRoot != null)
+        {
+            var rootCols = playerRoot.GetComponentsInChildren<Collider>();
+            foreach (var c in rootCols)
+            {
+                if (c != null && !playerColliders.Contains(c))
+                    playerColliders.Add(c);
+            }
+        }
+
+        if (handCollider != null && !playerColliders.Contains(handCollider))
+            playerColliders.Add(handCollider);
+
         foreach (var col in cols)
         {
-            if (col != null && col != handCollider)
+            if (col == null) continue;
+            foreach (var pCol in playerColliders)
             {
-                if (playerCollider != null)
-                    Physics.IgnoreCollision(playerCollider, col, ignore);
-                if (handCollider != null)
-                    Physics.IgnoreCollision(handCollider, col, ignore);
+                if (pCol != null && pCol != col)
+                {
+                    Physics.IgnoreCollision(pCol, col, ignore);
+                }
             }
         }
 
@@ -863,12 +895,44 @@ public class HandGrabSystem : MonoBehaviour
         if (dt <= 0f) return;
 
         Transform trackTransform = visualGripPoint != null ? visualGripPoint : gripPoint;
-        velocityHistory[velocityIndex] = (trackTransform.position - lastPosition) / dt;
+        if (trackTransform == null) trackTransform = transform;
+
+        Vector3 frameVel = (trackTransform.position - lastPosition) / dt;
+        if (float.IsNaN(frameVel.x) || float.IsInfinity(frameVel.x) ||
+            float.IsNaN(frameVel.y) || float.IsInfinity(frameVel.y) ||
+            float.IsNaN(frameVel.z) || float.IsInfinity(frameVel.z))
+        {
+            frameVel = Vector3.zero;
+        }
+        if (frameVel.magnitude > 20f)
+        {
+            frameVel = frameVel.normalized * 20f;
+        }
+        velocityHistory[velocityIndex] = frameVel;
 
         Quaternion deltaRot = trackTransform.rotation * Quaternion.Inverse(lastRotation);
         deltaRot.ToAngleAxis(out float angle, out Vector3 axis);
+        if (float.IsNaN(angle) || float.IsInfinity(angle)) angle = 0f;
+        if (float.IsNaN(axis.x) || float.IsInfinity(axis.x) ||
+            float.IsNaN(axis.y) || float.IsInfinity(axis.y) ||
+            float.IsNaN(axis.z) || float.IsInfinity(axis.z))
+        {
+            axis = Vector3.up;
+        }
         if (angle > 180f) angle -= 360f;
-        angularVelocityHistory[velocityIndex] = axis * (angle * Mathf.Deg2Rad / dt);
+
+        Vector3 frameAngVel = axis * (angle * Mathf.Deg2Rad / dt);
+        if (float.IsNaN(frameAngVel.x) || float.IsInfinity(frameAngVel.x) ||
+            float.IsNaN(frameAngVel.y) || float.IsInfinity(frameAngVel.y) ||
+            float.IsNaN(frameAngVel.z) || float.IsInfinity(frameAngVel.z))
+        {
+            frameAngVel = Vector3.zero;
+        }
+        if (frameAngVel.magnitude > 30f)
+        {
+            frameAngVel = frameAngVel.normalized * 30f;
+        }
+        angularVelocityHistory[velocityIndex] = frameAngVel;
 
         lastPosition = trackTransform.position;
         lastRotation = trackTransform.rotation;
@@ -888,6 +952,19 @@ public class HandGrabSystem : MonoBehaviour
 
         velocity /= velocityFrameWindow;
         angularVelocity /= velocityFrameWindow;
+
+        if (float.IsNaN(velocity.x) || float.IsInfinity(velocity.x) ||
+            float.IsNaN(velocity.y) || float.IsInfinity(velocity.y) ||
+            float.IsNaN(velocity.z) || float.IsInfinity(velocity.z))
+        {
+            velocity = Vector3.zero;
+        }
+        if (float.IsNaN(angularVelocity.x) || float.IsInfinity(angularVelocity.x) ||
+            float.IsNaN(angularVelocity.y) || float.IsInfinity(angularVelocity.y) ||
+            float.IsNaN(angularVelocity.z) || float.IsInfinity(angularVelocity.z))
+        {
+            angularVelocity = Vector3.zero;
+        }
     }
 
     #endregion

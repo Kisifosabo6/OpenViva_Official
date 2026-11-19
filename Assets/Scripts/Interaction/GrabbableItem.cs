@@ -100,9 +100,10 @@ public class GrabbableItem : MonoBehaviour
         return true;
     }
 
+    [HideInInspector] public Vector3 initialScale = Vector3.one;
+    private bool hasInitializedScale = false;
+
     int originalLayer;
-    bool originalGravity;
-    bool originalKinematic;
     CollisionDetectionMode originalCollisionMode;
     Outline outline;
 
@@ -112,6 +113,16 @@ public class GrabbableItem : MonoBehaviour
         if (rb == null)
             rb = gameObject.AddComponent<Rigidbody>();
         outline = GetComponent<Outline>();
+        InitInitialScale();
+    }
+
+    public void InitInitialScale()
+    {
+        if (!hasInitializedScale && transform != null)
+        {
+            initialScale = transform.localScale;
+            hasInitializedScale = true;
+        }
     }
 
     /// <summary>
@@ -120,17 +131,26 @@ public class GrabbableItem : MonoBehaviour
     /// </summary>
     public void OnGrabbed(HandGrabSystem hand)
     {
+        InitInitialScale();
+
         if (heldByHand == null)
         {
             heldByHand = hand;
             originalLayer = gameObject.layer;
-            originalGravity = rb.useGravity;
-            originalKinematic = rb.isKinematic;
-            originalCollisionMode = rb.collisionDetectionMode;
+            originalCollisionMode = rb != null ? rb.collisionDetectionMode : CollisionDetectionMode.ContinuousDynamic;
 
-            rb.useGravity = false;
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            // Immediately make kinematic and zero velocities BEFORE any transform move/reparenting
+            // to prevent PhysX penetration impulses or velocity spikes
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
+                rb.useGravity = false;
+                rb.detectCollisions = false;
+                rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                rb.interpolation = RigidbodyInterpolation.None;
+            }
 
             if (outline != null)
                 outline.enabled = false;
@@ -173,27 +193,48 @@ public class GrabbableItem : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when the hand releases this item. Applies throw velocity.
+    /// Called when the hand releases this item. Restores gravity and applies throw velocity.
     /// </summary>
     public void OnReleased(Vector3 throwVelocity, Vector3 angularVelocity)
     {
         heldByHand = null;
         secondaryHand = null;
         gameObject.layer = originalLayer;
-        rb.isKinematic = originalKinematic;
-        rb.useGravity = originalGravity;
-        rb.collisionDetectionMode = originalCollisionMode;
-        rb.interpolation = RigidbodyInterpolation.None;
 
-        // Apply throw
-        if (!rb.isKinematic)
+        if (rb != null)
         {
-            var vel = throwVelocity * throwForceMultiplier;
-            if (vel.magnitude > maxThrowSpeed)
-                vel = vel.normalized * maxThrowSpeed;
+            // Dropped items must ALWAYS react to gravity and fall cleanly
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            // Clear position-freezing constraints (e.g. FreezePositionY) from scene placement
+            rb.constraints = RigidbodyConstraints.None;
+            rb.detectCollisions = true;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-            rb.linearVelocity = vel;
-            rb.angularVelocity = angularVelocity;
+            // Sanitize throw velocities to prevent NaN / Infinity yeets
+            Vector3 safeVel = throwVelocity * throwForceMultiplier;
+            if (float.IsNaN(safeVel.x) || float.IsInfinity(safeVel.x) ||
+                float.IsNaN(safeVel.y) || float.IsInfinity(safeVel.y) ||
+                float.IsNaN(safeVel.z) || float.IsInfinity(safeVel.z))
+            {
+                safeVel = Vector3.zero;
+            }
+            if (safeVel.magnitude > maxThrowSpeed)
+                safeVel = safeVel.normalized * maxThrowSpeed;
+
+            Vector3 safeAngVel = angularVelocity;
+            if (float.IsNaN(safeAngVel.x) || float.IsInfinity(safeAngVel.x) ||
+                float.IsNaN(safeAngVel.y) || float.IsInfinity(safeAngVel.y) ||
+                float.IsNaN(safeAngVel.z) || float.IsInfinity(safeAngVel.z))
+            {
+                safeAngVel = Vector3.zero;
+            }
+            if (safeAngVel.magnitude > 25f)
+                safeAngVel = safeAngVel.normalized * 25f;
+
+            rb.linearVelocity = safeVel;
+            rb.angularVelocity = safeAngVel;
         }
     }
 

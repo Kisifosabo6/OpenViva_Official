@@ -26,6 +26,12 @@ public class FlashlightKB : MonoBehaviour
     {
         _grabScript = GetComponent<PlayerKB_GrabObject>();
 
+        if (_hud == null)
+        {
+            var h = GameObject.Find("HUD");
+            if (h != null) _hud = h.GetComponent<HintManager>();
+        }
+
         _player = FindFirstObjectByType<Player>();
         if (_player != null)
         {
@@ -47,12 +53,12 @@ public class FlashlightKB : MonoBehaviour
         {
             if (_isGrabbed == 1 && _doOnce)
             {
-                _hud.CreateHint(HintConstants.LeftFlashlightHint);
+                _hud?.CreateHint(HintConstants.LeftFlashlightHint);
                 _doOnce = false;
             }
             else if (_isGrabbed == 2 && _doOnce)
             {
-                _hud.CreateHint(HintConstants.RightFlashlightHint);
+                _hud?.CreateHint(HintConstants.RightFlashlightHint);
                 _doOnce = false;
             }
         }
@@ -60,8 +66,8 @@ public class FlashlightKB : MonoBehaviour
         {
             if (_isGrabbed == 0)
             {
-                _hud.ClearHint(HintConstants.LeftFlashlightHint);
-                _hud.ClearHint(HintConstants.RightFlashlightHint);
+                _hud?.ClearHint(HintConstants.LeftFlashlightHint);
+                _hud?.ClearHint(HintConstants.RightFlashlightHint);
                 _doOnce = true;
             }
         }
@@ -93,13 +99,13 @@ public class FlashlightKB : MonoBehaviour
     {
         if (_isGrabbed == 1)
         {
-            _hud.ClearHint(HintConstants.LeftFlashlightHint);
-            _hud.ClearHint(HintConstants.LeftReleaseHint);
+            _hud?.ClearHint(HintConstants.LeftFlashlightHint);
+            _hud?.ClearHint(HintConstants.LeftReleaseHint);
         }
         else
         {
-            _hud.ClearHint(HintConstants.RightFlashlightHint);
-            _hud.ClearHint(HintConstants.RightReleaseHint);
+            _hud?.ClearHint(HintConstants.RightFlashlightHint);
+            _hud?.ClearHint(HintConstants.RightReleaseHint);
         }
     }
 }

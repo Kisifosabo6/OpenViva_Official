@@ -39,12 +39,9 @@ public class PlayerVR_GrabObject : XRGrabInteractable
 
     public override bool IsSelectableBy(UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor interactor)
     {
-        // If already held by HandGrabSystem, don't allow XRI near/far interactor to conflict or fight
-        var grabbable = GetComponent<GrabbableItem>();
-        if (grabbable != null && grabbable.IsHeld)
-            return false;
-
-        return base.IsSelectableBy(interactor);
+        // HandGrabSystem drives all grabbing in OpenViva (Desktop and VR).
+        // Returning false disables XRI NearFarInteractors from fighting HandGrabSystem physics and parenting.
+        return false;
     }
 
     protected override void OnSelectEntering(SelectEnterEventArgs args)
@@ -97,13 +94,13 @@ public class PlayerVR_GrabObject : XRGrabInteractable
 
         if (collider.gameObject.name.Contains("Left"))
         {
-            FloatingCanvas.Instance.WarpToObject(transform);
-            _hintManager.CreateHint(HintConstants.LeftGrabHintVR);
+            FloatingCanvas.Instance?.WarpToObject(transform);
+            _hintManager?.CreateHint(HintConstants.LeftGrabHintVR);
         }
         else if (collider.gameObject.name.Contains("Right"))
         {
-            FloatingCanvas.Instance.WarpToObject(transform);
-            _hintManager.CreateHint(HintConstants.RightGrabHintVR);
+            FloatingCanvas.Instance?.WarpToObject(transform);
+            _hintManager?.CreateHint(HintConstants.RightGrabHintVR);
         }   
     }
 
@@ -111,8 +108,8 @@ public class PlayerVR_GrabObject : XRGrabInteractable
     {
         if (!collider.CompareTag(TagConstants.Player)) { return; }
 
-        FloatingCanvas.Instance.WarpToOrigin();
-        _hintManager.ClearHint(HintConstants.LeftGrabHintVR);
-        _hintManager.ClearHint(HintConstants.RightGrabHintVR);
+        FloatingCanvas.Instance?.WarpToOrigin();
+        _hintManager?.ClearHint(HintConstants.LeftGrabHintVR);
+        _hintManager?.ClearHint(HintConstants.RightGrabHintVR);
     }
 }

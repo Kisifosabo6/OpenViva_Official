@@ -19,6 +19,12 @@ public class LanternKB : MonoBehaviour
     {
         _grabScript = GetComponent<PlayerKB_GrabObject>();
 
+        if (_hud == null)
+        {
+            var h = GameObject.Find("HUD");
+            if (h != null) _hud = h.GetComponent<HintManager>();
+        }
+
         _player = FindFirstObjectByType<Player>();
         if (_player != null)
         {
@@ -40,12 +46,12 @@ public class LanternKB : MonoBehaviour
         {
             if (_isGrabbed == 1 && _doOnce)
             {
-                _hud.CreateHint(HintConstants.LeftLanternHint);
+                _hud?.CreateHint(HintConstants.LeftLanternHint);
                 _doOnce = false;
             }
             else if (_isGrabbed == 2 && _doOnce)
             {
-                _hud.CreateHint(HintConstants.RightLanternHint);
+                _hud?.CreateHint(HintConstants.RightLanternHint);
                 _doOnce = false;
             }
         }
@@ -53,8 +59,8 @@ public class LanternKB : MonoBehaviour
         {
             if (_isGrabbed == 0)
             {
-                _hud.ClearHint(HintConstants.LeftLanternHint);
-                _hud.ClearHint(HintConstants.RightLanternHint);
+                _hud?.ClearHint(HintConstants.LeftLanternHint);
+                _hud?.ClearHint(HintConstants.RightLanternHint);
                 _doOnce = true;
             }
         }
@@ -82,13 +88,13 @@ public class LanternKB : MonoBehaviour
     {
         if (_isGrabbed == 1)
         {
-            _hud.ClearHint(HintConstants.LeftLanternHint);
-            _hud.ClearHint(HintConstants.LeftReleaseHint);
+            _hud?.ClearHint(HintConstants.LeftLanternHint);
+            _hud?.ClearHint(HintConstants.LeftReleaseHint);
         }
         else
         {
-            _hud.ClearHint(HintConstants.RightLanternHint);
-            _hud.ClearHint(HintConstants.RightReleaseHint);
+            _hud?.ClearHint(HintConstants.RightLanternHint);
+            _hud?.ClearHint(HintConstants.RightReleaseHint);
         }
     }
 }
