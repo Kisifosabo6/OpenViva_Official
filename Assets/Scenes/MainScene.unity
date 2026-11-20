@@ -2842,7 +2842,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2643263963497183083, guid: d4b7028650b8c07489b249c0623139e2, type: 3}
 --- !u!1001 &72727104
@@ -3768,7 +3768,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2643263963497183083, guid: d4b7028650b8c07489b249c0623139e2, type: 3}
 --- !u!1001 &99465636
@@ -24643,7 +24643,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22400762, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00002670288
+      value: 0.00002670288
       objectReference: {fileID: 0}
     - target: {fileID: 22426080, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
       propertyPath: m_AnchorMax.x
@@ -46179,7 +46179,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2643263963497183083, guid: d4b7028650b8c07489b249c0623139e2, type: 3}
 --- !u!4 &748806709 stripped
@@ -61313,6 +61313,11 @@ MonoBehaviour:
   handleGrabRadius: 0.35
   leftVisualBase: {fileID: 0}
   rightVisualBase: {fileID: 0}
+  enableWallCollision: 1
+  handCollisionRadius: 0.038
+  fingerForwardReach: 0.115
+  palmThickness: 0.02
+  fingerWidthOffset: 0.018
 --- !u!1 &1065089534
 GameObject:
   m_ObjectHideFlags: 0
@@ -64798,10 +64803,10 @@ GameObject:
   - component: {fileID: 1114587578}
   - component: {fileID: 1114587581}
   - component: {fileID: 1114587580}
-  - component: {fileID: 1114587579}
   - component: {fileID: 1114587584}
   - component: {fileID: 1114587583}
   - component: {fileID: 1114587582}
+  - component: {fileID: 1114587585}
   m_Layer: 0
   m_Name: kitchenClosetDoor1_Handle
   m_TagString: Untagged
@@ -64825,27 +64830,6 @@ Transform:
   - {fileID: 1132273196}
   m_Father: {fileID: 5520639774432241610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1114587579
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114587577}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.12, y: 0.2, z: 0.12}
-  m_Center: {x: 0.0000008321367, y: 0.000000037252903, z: 0.00000093504786}
 --- !u!23 &1114587580
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -65069,6 +65053,27 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!135 &1114587585
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114587577}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.052920226
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1115076788
 GameObject:
   m_ObjectHideFlags: 0
@@ -107201,7 +107206,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2643263963497183083, guid: d4b7028650b8c07489b249c0623139e2, type: 3}
 --- !u!1001 &1709901047
@@ -208341,6 +208346,14 @@ PrefabInstance:
       value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: 5865087016758747202, guid: 2a1e7a6647b08e1458db967f53253c41, type: 3}
+      propertyPath: m_Lightmapping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5865087016758747202, guid: 2a1e7a6647b08e1458db967f53253c41, type: 3}
+      propertyPath: m_Shadows.m_Strength
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 5865087016758747202, guid: 2a1e7a6647b08e1458db967f53253c41, type: 3}
       propertyPath: m_Shadows.m_NearPlane
       value: 0.2
       objectReference: {fileID: 0}
@@ -297067,6 +297080,10 @@ MonoBehaviour:
   enableWallCollision: 1
   wallContactThreshold: 0.02
   wallBlendRange: 0.04
+  handCollisionRadius: 0.038
+  fingerForwardReach: 0.115
+  palmThickness: 0.02
+  fingerWidthOffset: 0.018
   maxDriftDistance: 1.5
   pauseHandOffset: {x: 0, y: -0.35, z: -0.1}
   pauseTransitionSpeed: 8
@@ -319185,9 +319202,9 @@ GameObject:
   - component: {fileID: 7319264330578074612}
   - component: {fileID: 3293155417330277533}
   - component: {fileID: 7319264330578074613}
-  - component: {fileID: 7319264330578074616}
   - component: {fileID: 7319264330578074615}
   - component: {fileID: 7319264330578074614}
+  - component: {fileID: 7319264330578074616}
   m_Layer: 0
   m_Name: kitchenClosetDoor1
   m_TagString: Untagged
@@ -769746,8 +769763,8 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &7319264330578074616
-BoxCollider:
+--- !u!64 &7319264330578074616
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -769764,9 +769781,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.07418105, y: 0.99048597, z: 0.27916643}
-  m_Center: {x: -0.03708835, y: 0.49524298, z: -0.13958322}
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -508168347783109115, guid: d2c56620af32e4d4d876e7494be083fa, type: 3}
 --- !u!1 &7319399354674284402
 GameObject:
   m_ObjectHideFlags: 0
