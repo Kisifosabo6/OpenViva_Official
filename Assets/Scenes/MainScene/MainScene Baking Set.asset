@@ -259,7 +259,7 @@ MonoBehaviour:
       cellProbeOcclusionDataAsset:
         m_AssetGUID: e5a9d94e1dfb9fa4cac53880c7262d81
         m_StreamableAssetPath: APVStreamingAssets\9897533c938275046ae581103bce3cd0\e5a9d94e1dfb9fa4cac53880c7262d81.bytes
-        m_ElementSize: 0
+        m_ElementSize: 32768
         m_StreamableCellDescs:
           m_Keys: 00000000
           m_Values:
@@ -294,7 +294,7 @@ MonoBehaviour:
     m_Extent: {x: 121.5, y: 121.5, z: 121.5}
   bakedSimplificationLevels: 4
   bakedMinDistanceBetweenProbes: 1
-  bakedProbeOcclusion: 0
+  bakedProbeOcclusion: 1
   bakedSkyOcclusionValue: 1
   bakedSkyShadingDirectionValue: 0
   bakedProbeOffset: {x: 0, y: 0, z: 0}
@@ -308,7 +308,7 @@ MonoBehaviour:
   L0ChunkSize: 65536
   L1ChunkSize: 32768
   L2TextureChunkSize: 32768
-  ProbeOcclusionChunkSize: 0
+  ProbeOcclusionChunkSize: 32768
   sharedValidityMaskChunkSize: 8192
   sharedSkyOcclusionL0L1ChunkSize: 65536
   sharedSkyShadingDirectionIndicesChunkSize: 0
