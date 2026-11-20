@@ -170,8 +170,6 @@ public class CompanionAI : MonoBehaviour
 
         // Friendly greet on spawn
         PlayRandomVoice(greetClips);
-
-        LogAlignmentDiagnostics();
     }
 
     public void InitializeLocomotionAnimation()
@@ -398,28 +396,6 @@ public class CompanionAI : MonoBehaviour
         UpdateBlinking();
         UpdateIdleChatter();
         UpdateFacialExpressions();
-        LogAlignmentDiagnostics();
-    }
-
-    private float _nextDiagTime = 0f;
-    private void LogAlignmentDiagnostics()
-    {
-        if (Time.time < _nextDiagTime) return;
-        _nextDiagTime = Time.time + 4.0f;
-
-        Vector3 rootPos = transform.position;
-        var col = GetComponent<BoxCollider>();
-        Vector3 colCenter = col != null ? col.bounds.center : rootPos;
-
-        string diag = $"[ShinobuAlignment] Root={rootPos:F3}, ColCenter={colCenter:F3}, Armature={transform.Find("ShinobuArmature")?.position:F3}, Head={headBone?.position:F3}";
-        var smrs = GetComponentsInChildren<SkinnedMeshRenderer>();
-        foreach (var smr in smrs)
-        {
-            Vector3 meshCenter = smr.bounds.center;
-            Vector3 delta = meshCenter - colCenter;
-            diag += $"\n   -> SMR '{smr.name}': boundsCenter={meshCenter:F3}, deltaFromCol={delta:F3}, rootBone='{smr.rootBone?.name}' ({smr.rootBone?.position:F3})";
-        }
-        Debug.Log(diag);
     }
 
     private void OnDrawGizmosSelected()

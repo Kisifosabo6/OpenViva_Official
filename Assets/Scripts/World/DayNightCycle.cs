@@ -147,6 +147,14 @@ public class DayNightCycle : MonoBehaviour
     [Tooltip("Stars particle system emission rate throughout the 24-hour cycle.")]
     [SerializeField] private AnimationCurve starEmissionCurve;
 
+    [Header("Environment & GI Update Settings")]
+    [Tooltip("Whether to update DynamicGI environment probe during play mode.")]
+    [SerializeField] private bool updateEnvironmentGI = true;
+
+    [Tooltip("How frequently (in real-time seconds) DynamicGI.UpdateEnvironment is called. Set to 0 to disable periodic probe updates. Recommended: 3 to 10 seconds to avoid ambient probe thrashing.")]
+    [SerializeField] private float environmentUpdateInterval = 5.0f;
+    private float _lastEnvironmentUpdateTime = -999f;
+
     private List<DaylightSensor> _daylightSensors = new List<DaylightSensor>();
     private bool? _lastNightState = null;
     private int _lastProcessedHour = -1;
@@ -593,10 +601,14 @@ public class DayNightCycle : MonoBehaviour
         bool isNightTime = (timeOfDay < 5.75f || timeOfDay >= 17.75f);
         UpdateDaylightSensors(isNightTime);
 
-        // 8. Update Environment reflections/GI
-        if (Application.isPlaying)
+        // 8. Update Environment reflections/GI (throttled to avoid frame-by-frame ambient probe thrashing)
+        if (Application.isPlaying && updateEnvironmentGI && environmentUpdateInterval > 0f)
         {
-            DynamicGI.UpdateEnvironment();
+            if (Time.time - _lastEnvironmentUpdateTime >= environmentUpdateInterval)
+            {
+                _lastEnvironmentUpdateTime = Time.time;
+                DynamicGI.UpdateEnvironment();
+            }
         }
     }
 
