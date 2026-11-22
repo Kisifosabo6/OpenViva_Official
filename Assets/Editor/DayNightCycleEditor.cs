@@ -12,11 +12,19 @@ public class DayNightCycleEditor : Editor
     private SerializedProperty currentCycleSpeedProp;
 
     private SerializedProperty sunPivotProp;
+    private SerializedProperty dummySunVisualProp;
     private SerializedProperty sunLightProp;
+    private SerializedProperty skyFillLightProp;
     private SerializedProperty moonPivotProp;
     private SerializedProperty moonObjectProp;
     private SerializedProperty moonLightProp;
     private SerializedProperty starsParticleSystemProp;
+
+    private SerializedProperty useStabilizedShadowsProp;
+    private SerializedProperty shadowStepIntervalProp;
+    private SerializedProperty shadowGlideDurationProp;
+    private SerializedProperty minSunElevationProp;
+    private SerializedProperty maxSunElevationProp;
 
     private SerializedProperty blendedSkyboxMaterialProp;
     private SerializedProperty nightCubemapProp;
@@ -47,11 +55,19 @@ public class DayNightCycleEditor : Editor
         currentCycleSpeedProp = serializedObject.FindProperty("currentCycleSpeed");
 
         sunPivotProp = serializedObject.FindProperty("sunPivot");
+        dummySunVisualProp = serializedObject.FindProperty("dummySunVisual");
         sunLightProp = serializedObject.FindProperty("sunLight");
+        skyFillLightProp = serializedObject.FindProperty("skyFillLight");
         moonPivotProp = serializedObject.FindProperty("moonPivot");
         moonObjectProp = serializedObject.FindProperty("moonObject");
         moonLightProp = serializedObject.FindProperty("moonLight");
         starsParticleSystemProp = serializedObject.FindProperty("starsParticleSystem");
+
+        useStabilizedShadowsProp = serializedObject.FindProperty("useStabilizedShadows");
+        shadowStepIntervalProp = serializedObject.FindProperty("shadowStepInterval");
+        shadowGlideDurationProp = serializedObject.FindProperty("shadowGlideDuration");
+        minSunElevationProp = serializedObject.FindProperty("minSunElevation");
+        maxSunElevationProp = serializedObject.FindProperty("maxSunElevation");
 
         blendedSkyboxMaterialProp = serializedObject.FindProperty("blendedSkyboxMaterial");
         nightCubemapProp = serializedObject.FindProperty("nightCubemap");
@@ -164,6 +180,21 @@ public class DayNightCycleEditor : Editor
 
         EditorGUILayout.Space(10);
 
+        // Shadow Motion & Anti-Wobble Stabilization
+        EditorGUILayout.LabelField("Shadow Motion & Anti-Wobble", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(useStabilizedShadowsProp, new GUIContent("Stabilize Shadows", "Decouples shadow casting from continuous per-frame light rotation to eliminate shadow crawling and jitter."));
+        if (useStabilizedShadowsProp.boolValue)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(shadowStepIntervalProp, new GUIContent("Step Interval (sec)", "Seconds between shadow light updates (e.g. 5-10s). Shadows stay completely frozen between steps."));
+            EditorGUILayout.PropertyField(shadowGlideDurationProp, new GUIContent("Glide Duration (sec)", "Duration of the smooth Slerp transition when catching up. Eliminates 1-frame popping."));
+            EditorGUILayout.PropertyField(minSunElevationProp, new GUIContent("Min Shadow Elevation", "Prevents grazing low-angle sun rays from creating stretched flickering shadows near horizon."));
+            EditorGUILayout.PropertyField(maxSunElevationProp, new GUIContent("Midday Max Elevation", "Peak sun elevation at midday noon."));
+            EditorGUI.indentLevel--;
+        }
+
+        EditorGUILayout.Space(10);
+
         // Lighting Curves & Gradients Foldout
         showCurves = EditorGUILayout.Foldout(showCurves, "Smooth Transition Curves & Gradients", true, EditorStyles.foldoutHeader);
         if (showCurves)
@@ -196,8 +227,10 @@ public class DayNightCycleEditor : Editor
         if (showReferences)
         {
             EditorGUI.indentLevel++;
-            if (sunPivotProp != null) EditorGUILayout.PropertyField(sunPivotProp);
-            if (sunLightProp != null) EditorGUILayout.PropertyField(sunLightProp);
+            if (sunPivotProp != null) EditorGUILayout.PropertyField(sunPivotProp, new GUIContent("Sun Pivot (Visual Celestial)"));
+            if (dummySunVisualProp != null) EditorGUILayout.PropertyField(dummySunVisualProp, new GUIContent("Dummy Sun Visual"));
+            if (sunLightProp != null) EditorGUILayout.PropertyField(sunLightProp, new GUIContent("Sun Light (Shadow Caster)"));
+            if (skyFillLightProp != null) EditorGUILayout.PropertyField(skyFillLightProp, new GUIContent("Sky Fill Light (Optional)"));
             if (moonPivotProp != null) EditorGUILayout.PropertyField(moonPivotProp);
             if (moonObjectProp != null) EditorGUILayout.PropertyField(moonObjectProp);
             if (moonLightProp != null) EditorGUILayout.PropertyField(moonLightProp);

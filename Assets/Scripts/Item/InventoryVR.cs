@@ -23,7 +23,7 @@ public class InventoryVR : MonoBehaviour
     [SerializeField] private int _maxInventorySize = 10;
 
     private GameObject _itemBeingRemoved;
-    private bool _canScroll;
+    private bool _canScroll = true;
 
     [Serializable]
     private class ItemInList
@@ -37,32 +37,60 @@ public class InventoryVR : MonoBehaviour
             this.item = item;
         }
     }
+
     private void Awake()
     {
-        _grabScript = GetComponentInParent<PlayerVR_GrabObject>();
+        if (_grabScript == null) _grabScript = GetComponentInParent<PlayerVR_GrabObject>();
+        if (_animator == null) _animator = GetComponentInParent<Animator>();
+        if (_itemIndexes == null) _itemIndexes = new ItemIndexes();
     }
 
     private void Start()
     {
-        _animator = GetComponentInParent<Animator>();
-        _itemIndexes = new ItemIndexes();
-        _rightThumbstick.action.performed += Scroll;
+        if (_animator == null) _animator = GetComponentInParent<Animator>();
+        if (_itemIndexes == null) _itemIndexes = new ItemIndexes();
     }
 
     private void OnEnable()
     {
-        _XRIButtonDownB.action.Enable();
-        _XRIButtonDownY.action.Enable();
-        _rightThumbstick.action.Enable();
-        _grabScript.OnGrabbedStateChanged += ShowHints;
-        _grabScript.OnGrabbedStateChanged += SwitchInputs;
+        if (_grabScript == null) _grabScript = GetComponentInParent<PlayerVR_GrabObject>();
+        if (_animator == null) _animator = GetComponentInParent<Animator>();
+
+        if (_XRIButtonDownB?.action != null) _XRIButtonDownB.action.Enable();
+        if (_XRIButtonDownY?.action != null) _XRIButtonDownY.action.Enable();
+        if (_rightThumbstick?.action != null)
+        {
+            _rightThumbstick.action.Enable();
+            _rightThumbstick.action.performed -= Scroll;
+            _rightThumbstick.action.performed += Scroll;
+        }
+
+        if (_grabScript != null)
+        {
+            _grabScript.OnGrabbedStateChanged -= ShowHints;
+            _grabScript.OnGrabbedStateChanged += ShowHints;
+            _grabScript.OnGrabbedStateChanged -= SwitchInputs;
+            _grabScript.OnGrabbedStateChanged += SwitchInputs;
+        }
     }
 
     private void OnDisable()
     {
-        _XRIButtonDownB?.action?.Disable();
-        _XRIButtonDownY?.action?.Disable();
-        _rightThumbstick?.action?.Disable();
+        if (_XRIButtonDownB?.action != null)
+        {
+            _XRIButtonDownB.action.performed -= ToggleBag;
+            _XRIButtonDownB.action.Disable();
+        }
+        if (_XRIButtonDownY?.action != null)
+        {
+            _XRIButtonDownY.action.performed -= ToggleBag;
+            _XRIButtonDownY.action.Disable();
+        }
+        if (_rightThumbstick?.action != null)
+        {
+            _rightThumbstick.action.performed -= Scroll;
+            _rightThumbstick.action.Disable();
+        }
         if (_grabScript != null)
         {
             _grabScript.OnGrabbedStateChanged -= ShowHints;
@@ -74,13 +102,26 @@ public class InventoryVR : MonoBehaviour
     {
         if (handedness == 1)
         {
-            _XRIButtonDownB.action.performed -= ToggleBag;
-            _XRIButtonDownY.action.performed += ToggleBag;
+            if (_XRIButtonDownB?.action != null) _XRIButtonDownB.action.performed -= ToggleBag;
+            if (_XRIButtonDownY?.action != null)
+            {
+                _XRIButtonDownY.action.performed -= ToggleBag;
+                _XRIButtonDownY.action.performed += ToggleBag;
+            }
         }
         else if (handedness == 2)
         {
-            _XRIButtonDownY.action.performed -= ToggleBag;
-            _XRIButtonDownB.action.performed += ToggleBag;
+            if (_XRIButtonDownY?.action != null) _XRIButtonDownY.action.performed -= ToggleBag;
+            if (_XRIButtonDownB?.action != null)
+            {
+                _XRIButtonDownB.action.performed -= ToggleBag;
+                _XRIButtonDownB.action.performed += ToggleBag;
+            }
+        }
+        else
+        {
+            if (_XRIButtonDownB?.action != null) _XRIButtonDownB.action.performed -= ToggleBag;
+            if (_XRIButtonDownY?.action != null) _XRIButtonDownY.action.performed -= ToggleBag;
         }
     }
 
@@ -88,37 +129,40 @@ public class InventoryVR : MonoBehaviour
     {
         if (_isOpen)
         {
-            _animator.Play("Close");
+            if (_animator != null) _animator.Play("Close");
             _isOpen = false;
         }
         else
         {
-            _animator.Play("Open");
+            if (_animator != null) _animator.Play("Open");
             _isOpen = true;
         }
-        ShowHints(_grabScript.IsGrabbed);
+        if (_grabScript != null)
+        {
+            ShowHints(_grabScript.IsGrabbed);
+        }
     }
 
     private void ShowHints(int handedness)
     {
-        _controlHintsL.ClearHint(HintConstants.LeftOpenBagHintVR);
-        _controlHintsR.ClearHint(HintConstants.RightOpenBagHintVR);
-        _controlHintsL.ClearHint(HintConstants.LeftCloseBagHintVR);
-        _controlHintsR.ClearHint(HintConstants.RightCloseBagHintVR);
+        _controlHintsL?.ClearHint(HintConstants.LeftOpenBagHintVR);
+        _controlHintsR?.ClearHint(HintConstants.RightOpenBagHintVR);
+        _controlHintsL?.ClearHint(HintConstants.LeftCloseBagHintVR);
+        _controlHintsR?.ClearHint(HintConstants.RightCloseBagHintVR);
 
         switch (handedness)
         {
             case 1:
                 if (!_isOpen)
-                { _controlHintsL.CreateHint(HintConstants.LeftOpenBagHintVR); }
+                { _controlHintsL?.CreateHint(HintConstants.LeftOpenBagHintVR); }
                 else
-                { _controlHintsL.CreateHint(HintConstants.LeftCloseBagHintVR); }
+                { _controlHintsL?.CreateHint(HintConstants.LeftCloseBagHintVR); }
                 break;
             case 2:
                 if (!_isOpen)
-                { _controlHintsR.CreateHint(HintConstants.RightOpenBagHintVR); }
+                { _controlHintsR?.CreateHint(HintConstants.RightOpenBagHintVR); }
                 else
-                { _controlHintsR.CreateHint(HintConstants.RightCloseBagHintVR); }
+                { _controlHintsR?.CreateHint(HintConstants.RightCloseBagHintVR); }
                 break;
         }
     }
@@ -137,27 +181,36 @@ public class InventoryVR : MonoBehaviour
          */
         if (other.TryGetComponent<PlayerVR_GrabObject>(out var script))
         {
-            if (script.IsGrabbed == 0 && !other.GetComponent<Rigidbody>().isKinematic && other != _itemBeingRemoved)
+            if (script != null && script.IsGrabbed == 0 && other.TryGetComponent<Rigidbody>(out var rb) && !rb.isKinematic && other != _itemBeingRemoved)
             {
                 PlaceInBag(other);
             }
         }
 
         if ((other.name == "Controller_BaseLeft" || other.name == "Controller_BaseRight")
+            && _grabScript != null
+            && PlayerManager.Instance != null
             && ((_grabScript.IsGrabbed == 1 && PlayerManager.Instance.GetObjectRight() == null)
             || (_grabScript.IsGrabbed == 2 && PlayerManager.Instance.GetObjectLeft() == null)))
         {
-                PrepareToRemove();
+            PrepareToRemove();
         }
     }
 
     private void PlaceInBag(GameObject item)
     {
         if (_inventory.Count >= _maxInventorySize) { return; }
-        string name = _itemIndexes.GetItemName(item.GetComponent<PlayerVR_GrabObject>().ObjectIndex);
-        _inventory.Add(new ItemInList(name, item));
-        item.GetComponent<Rigidbody>().isKinematic = true;
-        item.SetActive(false);
+        if (_itemIndexes == null) _itemIndexes = new ItemIndexes();
+        if (item.TryGetComponent<PlayerVR_GrabObject>(out var grabObj))
+        {
+            string name = _itemIndexes.GetItemName(grabObj.ObjectIndex);
+            _inventory.Add(new ItemInList(name, item));
+            if (item.TryGetComponent<Rigidbody>(out var rb))
+            {
+                rb.isKinematic = true;
+            }
+            item.SetActive(false);
+        }
     }
 
     private void Scroll(InputAction.CallbackContext context)
@@ -180,10 +233,14 @@ public class InventoryVR : MonoBehaviour
     private void PrepareToRemove()
     {
         if (_inventory.Count == 0) { return; }
+        ClampSelectedIndex();
         _itemBeingRemoved = _inventory[_selectedItem].item;
-        _itemBeingRemoved.transform.SetParent(transform);
-        _itemBeingRemoved.transform.position = transform.position;
-        _itemBeingRemoved.SetActive(true);
+        if (_itemBeingRemoved != null)
+        {
+            _itemBeingRemoved.transform.SetParent(transform);
+            _itemBeingRemoved.transform.position = transform.position;
+            _itemBeingRemoved.SetActive(true);
+        }
     }
 
     private void OnTriggerExit(Collider collider)
@@ -220,7 +277,7 @@ public class InventoryVR : MonoBehaviour
     private void CancelRemove()
     {
         if (_itemBeingRemoved == null) { return; }
-        if (_itemBeingRemoved.GetComponent<PlayerVR_GrabObject>().IsGrabbed != 0) { return; }
+        if (_itemBeingRemoved.TryGetComponent<PlayerVR_GrabObject>(out var grabObj) && grabObj.IsGrabbed != 0) { return; }
 
         for (int i = 0; i < _inventory.Count; i++)
         {

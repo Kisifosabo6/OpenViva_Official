@@ -19,6 +19,7 @@ EditorBuildSettings:
     com.unity.adaptivePerformance.basic.provider_settings: {fileID: 11400000, guid: 37eb1442c3189db4fa6d7d56fc6dcc59, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 08679b40712c2dc4995372c418c3c7e7, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: a2b05f5b5a4ea8e4d982db9fa2db10eb, type: 2}
+    com.unity.addressableassets: {fileID: 11400000, guid: b503bf6201d755fa48f30c2b76b6401e, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 3dee1732fe8f6dd42adbab36a2a1b733, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: e11ac0d8fbe15c14f99019496ae95a6c, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1a4c68ca72a83449f938d669337cb305, type: 2}

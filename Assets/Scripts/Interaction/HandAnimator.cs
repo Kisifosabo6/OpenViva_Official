@@ -47,6 +47,34 @@ public class HandAnimator : MonoBehaviour
     [Tooltip("Thumb max curl (less than fingers)")]
     public float thumbMaxCurl = 60f;
 
+    [Header("Thumb Curl Opposition")]
+    [Tooltip("Thumb 1 pitch angle at full curl in degrees")]
+    public float thumb1CurlPitch = -22f;
+    [Tooltip("Thumb 1 yaw (opposition) angle at full curl in degrees (sweeps across palm)")]
+    public float thumb1CurlYaw = 75f;
+    [Tooltip("Thumb 1 roll angle at full curl in degrees")]
+    public float thumb1CurlRoll = -28f;
+    [Tooltip("Thumb 2 flexion angle at full curl in degrees")]
+    public float thumb2CurlFlex = 38f;
+    [Tooltip("Thumb 3 flexion angle at full curl in degrees")]
+    public float thumb3CurlFlex = 32f;
+
+    [Header("Thumbs Up Calibration")]
+    [Tooltip("Thumb 1 pitch in ThumbsUp pose")]
+    public float thumbsUpPitch = -18f;
+    [Tooltip("Thumb 1 yaw in ThumbsUp pose")]
+    public float thumbsUpYaw = 16f;
+    [Tooltip("Thumb 1 roll (upward abduction) in ThumbsUp pose")]
+    public float thumbsUpRoll = 24f;
+    [Tooltip("Thumb 2 pitch in ThumbsUp pose")]
+    public float thumbsUpJoint2 = -4f;
+    [Tooltip("Thumb 3 pitch in ThumbsUp pose")]
+    public float thumbsUpJoint3 = -8f;
+
+    [Header("Finger Convergence")]
+    [Tooltip("Degree to which fingers cup/converge inward when curling into a fist")]
+    public float fingerConvergence = 1.0f;
+
     // Current grip/trigger from VR controller (0-1)
     float currentGrip;
     float currentTrigger;
@@ -61,6 +89,11 @@ public class HandAnimator : MonoBehaviour
     Gesture currentGesture = Gesture.None;
     float gestureTime;
     float gestureDuration;
+
+    // Gesture blend weights for special thumb/finger poses
+    float currentThumbsUpBlend;
+    float currentPinchBlend;
+    float currentPointBlend;
 
     // Rest pose (captured at startup)
     Quaternion[] restPose = new Quaternion[15];
@@ -97,12 +130,14 @@ public class HandAnimator : MonoBehaviour
         if (handAnimator == null)
             handAnimator = GetComponent<Animator>();
         AutoFindFingerBones();
+        SaveRestPose();
     }
 
     void Start()
     {
         AutoFindFingerBones();
-        SaveRestPose();
+        if (!hasRestPose)
+            SaveRestPose();
     }
 
     void Update()
@@ -127,6 +162,15 @@ public class HandAnimator : MonoBehaviour
             EvaluateGestureTargets();
         else
             EvaluateGripTriggerTargets();
+
+        // Smooth gesture blend weights
+        float targetThumbsUp = (currentGesture == Gesture.ThumbsUp) ? 1f : 0f;
+        float targetPinch = (currentGesture == Gesture.Pinch || isPinchHold) ? 1f : 0f;
+        float targetPoint = (currentGesture == Gesture.Point || currentGesture == Gesture.Poke) ? 1f : 0f;
+
+        currentThumbsUpBlend = Mathf.MoveTowards(currentThumbsUpBlend, targetThumbsUp, poseBlendSpeed * Time.deltaTime);
+        currentPinchBlend = Mathf.MoveTowards(currentPinchBlend, targetPinch, poseBlendSpeed * Time.deltaTime);
+        currentPointBlend = Mathf.MoveTowards(currentPointBlend, targetPoint, poseBlendSpeed * Time.deltaTime);
 
         // Smoothly interpolate current curls towards targets
         for (int i = 0; i < 5; i++)
@@ -213,6 +257,17 @@ public class HandAnimator : MonoBehaviour
         }
     }
 
+    /// <summary>Directly play a hold clip by name (e.g. holdKnife, holdBag) without needing a GrabbableItem.</summary>
+    public void PlayHoldClip(string clipName)
+    {
+        isHolding = true;
+        isPinchHold = false;
+        currentGesture = Gesture.None;
+
+        if (handAnimator != null && !string.IsNullOrEmpty(clipName))
+            handAnimator.Play(clipName, 0, 0f);
+    }
+
     /// <summary>Return to idle hand pose.</summary>
     public void ClearHoldPose()
     {
@@ -268,7 +323,7 @@ public class HandAnimator : MonoBehaviour
     {
         if (currentGrip > 0.01f || currentTrigger > 0.01f)
         {
-            targetFingerCurls[0] = currentGrip * 0.7f;
+            targetFingerCurls[0] = currentGrip * 0.85f;
             targetFingerCurls[1] = currentTrigger;
             targetFingerCurls[2] = currentGrip;
             targetFingerCurls[3] = currentGrip;
@@ -302,8 +357,8 @@ public class HandAnimator : MonoBehaviour
         {
             case Gesture.Point:
             case Gesture.Poke:
-                // Index extended (0), others curled (1)
-                targetFingerCurls[0] = 0.8f;
+                // Index extended (0), others curled (1), thumb wrapped across middle finger
+                targetFingerCurls[0] = 0.75f;
                 targetFingerCurls[1] = 0f;
                 targetFingerCurls[2] = 1f;
                 targetFingerCurls[3] = 1f;
@@ -321,11 +376,11 @@ public class HandAnimator : MonoBehaviour
 
             case Gesture.Come:
                 float beck = (Mathf.Sin(gestureTime * 5f) + 1f) * 0.5f;
-                targetFingerCurls[0] = 0.3f;
+                targetFingerCurls[0] = 0.4f;
                 targetFingerCurls[1] = beck;
                 targetFingerCurls[2] = beck * 0.8f;
-                targetFingerCurls[3] = 0.6f;
-                targetFingerCurls[4] = 0.7f;
+                targetFingerCurls[3] = 0.65f;
+                targetFingerCurls[4] = 0.75f;
                 break;
 
             case Gesture.PresentRight:
@@ -338,7 +393,7 @@ public class HandAnimator : MonoBehaviour
                 break;
 
             case Gesture.Headpat:
-                targetFingerCurls[0] = 0.2f;
+                targetFingerCurls[0] = 0.15f;
                 targetFingerCurls[1] = 0.25f;
                 targetFingerCurls[2] = 0.3f;
                 targetFingerCurls[3] = 0.3f;
@@ -347,7 +402,7 @@ public class HandAnimator : MonoBehaviour
 
             case Gesture.HeadpatScrub:
                 float scrub = Mathf.Sin(gestureTime * 8f) * 0.1f;
-                targetFingerCurls[0] = Mathf.Clamp01(0.25f + scrub);
+                targetFingerCurls[0] = Mathf.Clamp01(0.2f + scrub);
                 targetFingerCurls[1] = Mathf.Clamp01(0.3f + scrub);
                 targetFingerCurls[2] = Mathf.Clamp01(0.35f + scrub);
                 targetFingerCurls[3] = Mathf.Clamp01(0.35f - scrub);
@@ -355,6 +410,7 @@ public class HandAnimator : MonoBehaviour
                 break;
 
             case Gesture.ThumbsUp:
+                // All 4 fingers curled into a fist, thumb extended upright via thumbsUpBlend
                 targetFingerCurls[0] = 0f;
                 targetFingerCurls[1] = 1f;
                 targetFingerCurls[2] = 1f;
@@ -363,6 +419,7 @@ public class HandAnimator : MonoBehaviour
                 break;
 
             case Gesture.Fist:
+                // All 5 fingers curled tight, thumb wraps over index & middle
                 targetFingerCurls[0] = 1f;
                 targetFingerCurls[1] = 1f;
                 targetFingerCurls[2] = 1f;
@@ -372,31 +429,133 @@ public class HandAnimator : MonoBehaviour
 
             case Gesture.Pinch:
                 // Delicate pinch: thumb & index meet, middle/ring/pinky relaxed open
-                targetFingerCurls[0] = 0.45f;
-                targetFingerCurls[1] = 0.50f;
-                targetFingerCurls[2] = 0.25f;
-                targetFingerCurls[3] = 0.20f;
-                targetFingerCurls[4] = 0.15f;
+                targetFingerCurls[0] = 0.5f;
+                targetFingerCurls[1] = 0.48f;
+                targetFingerCurls[2] = 0.22f;
+                targetFingerCurls[3] = 0.18f;
+                targetFingerCurls[4] = 0.14f;
                 break;
         }
     }
 
-    /// <summary>Apply smoothed curl to one finger (3 joints).</summary>
+    /// <summary>Apply smoothed curl to one finger (3 joints) with anatomical joint progression, thumb opposition, and palm convergence.</summary>
     void ApplyFingerCurl(int fingerIndex, float curl)
     {
         curl = Mathf.Clamp01(curl);
-        float maxAngle = (fingerIndex == 0) ? thumbMaxCurl : maxCurlAngle;
 
-        for (int j = 0; j < 3; j++)
+        if (fingerIndex == 0)
         {
-            int boneIndex = fingerIndex * 3 + j;
-            if (boneIndex >= fingerBones.Length || fingerBones[boneIndex] == null) continue;
+            // === THUMB (3 joints) ===
+            // Joint 0: thumb1 (metacarpal opposition across palm)
+            // Joint 1: thumb2 (proximal phalanx flexion)
+            // Joint 2: thumb3 (distal phalanx flexion)
+            if (fingerBones.Length < 3) return;
 
-            Quaternion rest = restPose[boneIndex];
-            float jointScale = (j == 0) ? 0.7f : 1f;
-            Quaternion curled = rest * Quaternion.Euler(maxAngle * jointScale, 0f, 0f);
+            // Base curl offsets
+            float t1Pitch = thumb1CurlPitch * curl;
+            float t1Yaw = (isLeftHand ? thumb1CurlYaw : -thumb1CurlYaw) * curl;
+            float t1Roll = (isLeftHand ? thumb1CurlRoll : -thumb1CurlRoll) * curl;
+            Vector3 t1Euler = new Vector3(t1Pitch, t1Yaw, t1Roll);
 
-            fingerBones[boneIndex].localRotation = Quaternion.Slerp(rest, curled, curl);
+            Vector3 t2Euler = new Vector3(thumb2CurlFlex * curl, 0f, 0f);
+            Vector3 t3Euler = new Vector3(thumb3CurlFlex * curl, 0f, 0f);
+
+            // Special Pose: Thumbs Up
+            if (currentThumbsUpBlend > 0.001f)
+            {
+                Vector3 tu1 = new Vector3(
+                    thumbsUpPitch,
+                    isLeftHand ? thumbsUpYaw : -thumbsUpYaw,
+                    isLeftHand ? thumbsUpRoll : -thumbsUpRoll
+                );
+                Vector3 tu2 = new Vector3(thumbsUpJoint2, 0f, 0f);
+                Vector3 tu3 = new Vector3(thumbsUpJoint3, 0f, 0f);
+
+                t1Euler = Vector3.Lerp(t1Euler, tu1, currentThumbsUpBlend);
+                t2Euler = Vector3.Lerp(t2Euler, tu2, currentThumbsUpBlend);
+                t3Euler = Vector3.Lerp(t3Euler, tu3, currentThumbsUpBlend);
+            }
+
+            // Special Pose: Pinch
+            if (currentPinchBlend > 0.001f)
+            {
+                Vector3 p1 = new Vector3(
+                    -14f,
+                    isLeftHand ? 50f : -50f,
+                    isLeftHand ? -14f : 14f
+                );
+                Vector3 p2 = new Vector3(28f, 0f, 0f);
+                Vector3 p3 = new Vector3(24f, 0f, 0f);
+
+                t1Euler = Vector3.Lerp(t1Euler, p1, currentPinchBlend);
+                t2Euler = Vector3.Lerp(t2Euler, p2, currentPinchBlend);
+                t3Euler = Vector3.Lerp(t3Euler, p3, currentPinchBlend);
+            }
+
+            if (fingerBones[0] != null) fingerBones[0].localRotation = restPose[0] * Quaternion.Euler(t1Euler);
+            if (fingerBones[1] != null) fingerBones[1].localRotation = restPose[1] * Quaternion.Euler(t2Euler);
+            if (fingerBones[2] != null) fingerBones[2].localRotation = restPose[2] * Quaternion.Euler(t3Euler);
+        }
+        else
+        {
+            // === FINGERS 1 to 4: Index, Middle, Ring, Pinky ===
+            // Anatomical flexion joint distribution:
+            // Joint 0 (MCP knuckle): ~65° at max curl (0.72)
+            // Joint 1 (PIP middle): ~90° at max curl (1.00)
+            // Joint 2 (DIP tip): ~55° at max curl (0.62)
+            for (int j = 0; j < 3; j++)
+            {
+                int boneIndex = fingerIndex * 3 + j;
+                if (boneIndex >= fingerBones.Length || fingerBones[boneIndex] == null) continue;
+
+                float jointPitchScale = j switch
+                {
+                    0 => 0.72f,
+                    1 => 1.0f,
+                    2 => 0.62f,
+                    _ => 1.0f
+                };
+
+                float pitch = maxCurlAngle * jointPitchScale * curl;
+                float yaw = 0f;
+                float roll = 0f;
+
+                // Convergence / adduction on knuckle (joint 0) so fingers cup naturally toward palm center
+                if (j == 0 && fingerConvergence > 0.001f)
+                {
+                    float splayAngle = fingerIndex switch
+                    {
+                        1 => -3.5f,  // Index tilts slightly toward middle
+                        2 => 0f,     // Middle is center axis
+                        3 => 3.0f,   // Ring tilts toward middle
+                        4 => 7.5f,   // Pinky tilts toward middle
+                        _ => 0f
+                    };
+                    roll = (isLeftHand ? splayAngle : -splayAngle) * curl * fingerConvergence;
+                }
+
+                // Straighten & aim boost for Point gesture on index finger
+                if (fingerIndex == 1 && currentPointBlend > 0.001f)
+                {
+                    if (j == 0)
+                    {
+                        pitch -= 5f * currentPointBlend;
+                        roll += (isLeftHand ? 3.5f : -3.5f) * currentPointBlend;
+                    }
+                }
+
+                // Precise tip guiding for Pinch on index finger
+                if (fingerIndex == 1 && currentPinchBlend > 0.001f)
+                {
+                    if (j == 0)
+                    {
+                        roll += (isLeftHand ? 5.5f : -5.5f) * currentPinchBlend;
+                    }
+                }
+
+                Quaternion rot = Quaternion.Euler(pitch, yaw, roll);
+                fingerBones[boneIndex].localRotation = restPose[boneIndex] * rot;
+            }
         }
     }
 
@@ -519,12 +678,15 @@ public class HandAnimator : MonoBehaviour
     void SaveRestPose()
     {
         if (fingerBones == null || fingerBones.Length < 15) return;
-        for (int i = 0; i < Mathf.Min(fingerBones.Length, restPose.Length); i++)
+        bool allPresent = true;
+        for (int i = 0; i < 15; i++)
         {
             if (fingerBones[i] != null)
                 restPose[i] = fingerBones[i].localRotation;
+            else
+                allPresent = false;
         }
-        hasRestPose = true;
+        hasRestPose = allPresent;
     }
 
     string GetHoldClipName(GrabbableItem.HoldPose pose)

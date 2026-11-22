@@ -92,11 +92,17 @@ public class DayNightCycle : MonoBehaviour
     #region Scene References
 
     [Header("Sun & Celestial References")]
-    [Tooltip("Pivot transform that rotates the sun (e.g. Sun_Rotation or Revolution Point).")]
+    [Tooltip("Pivot transform that rotates the sun (e.g. Sun_Rotation or Revolution Point). Arcs continuously across the sky.")]
     [SerializeField] private Transform sunPivot;
+
+    [Tooltip("Optional dummy visual transform for the sun (mesh, billboard, flare). Arcs continuously every frame.")]
+    [SerializeField] private Transform dummySunVisual;
 
     [Tooltip("The main directional sunlight source.")]
     [SerializeField] private Light sunLight;
+
+    [Tooltip("Optional secondary directional sky fill light (no shadows) for warm/cool color depth.")]
+    [SerializeField] private Light skyFillLight;
 
     [Tooltip("Pivot transform for moon orbit (optional).")]
     [SerializeField] private Transform moonPivot;
@@ -109,6 +115,33 @@ public class DayNightCycle : MonoBehaviour
 
     [Tooltip("Twinkling star particle system (optional).")]
     [SerializeField] private ParticleSystem starsParticleSystem;
+
+    [Header("Shadow Motion & Stabilization")]
+    [Tooltip("Whether to use stepped stealth-gliding for the shadow-casting light to eliminate shadow wobbling/crawling.")]
+    [SerializeField] private bool useStabilizedShadows = true;
+
+    [Tooltip("Interval (in real-time seconds) between shadow light orientation updates. Recommended: 5 to 10 seconds.")]
+    [Range(2f, 20f)]
+    [SerializeField] private float shadowStepInterval = 7.0f;
+
+    [Tooltip("Duration (in seconds) of the smooth Slerp transition when catching up to the sun. Prevents 1-frame snapping.")]
+    [Range(0.2f, 2.5f)]
+    [SerializeField] private float shadowGlideDuration = 0.8f;
+
+    [Tooltip("Minimum elevation angle (degrees) for the shadow-casting sun light. Clamping prevents grazing angles from creating stretched flickering shadows.")]
+    [Range(10f, 30f)]
+    [SerializeField] private float minSunElevation = 15.0f;
+
+    [Tooltip("Maximum elevation angle (degrees) reached at midday noon.")]
+    [Range(45f, 85f)]
+    [SerializeField] private float maxSunElevation = 65.0f;
+
+    private float _timeSinceLastShadowStep = 0f;
+    private Quaternion _currentLightRotation;
+    private Quaternion _startLightRotation;
+    private Quaternion _targetLightRotation;
+    private bool _isGliding = false;
+    private float _glideTimer = 0f;
 
     [Header("Skybox & Cubemaps")]
     [Tooltip("The material assigned to RenderSettings.skybox using Custom/Skybox shader for seamless blending.")]
@@ -169,6 +202,7 @@ public class DayNightCycle : MonoBehaviour
         if (Instance == null) Instance = this;
         AutoFindReferences();
         InitializeDefaultCurves(false);
+        ResetShadowStabilization();
     }
 
     private void OnEnable()
@@ -176,7 +210,8 @@ public class DayNightCycle : MonoBehaviour
         if (Instance == null) Instance = this;
         AutoFindReferences();
         InitializeDefaultCurves(false);
-        ApplyTimeVisuals();
+        ResetShadowStabilization();
+        ApplyTimeVisuals(0f);
     }
 
     private void Start()
@@ -186,7 +221,8 @@ public class DayNightCycle : MonoBehaviour
         _daylightSensors = FindObjectsByType<DaylightSensor>(FindObjectsSortMode.None).ToList();
 
         UpdateSpeed();
-        ApplyTimeVisuals();
+        ResetShadowStabilization();
+        ApplyTimeVisuals(0f);
 
         if (Application.isPlaying)
         {
@@ -200,6 +236,24 @@ public class DayNightCycle : MonoBehaviour
         if (Application.isPlaying && runCycleInPlayMode && currentCycleSpeed != CycleSpeed.Paused)
         {
             ProgressCycle(Time.deltaTime);
+        }
+        else if (Application.isPlaying && _isGliding)
+        {
+            // If the cycle is paused while a glide is in progress, finish the glide cleanly
+            UpdateShadowStabilization(Time.deltaTime, CalculateSunRotation(timeOfDay, clampElevation: true));
+            if (sunLight != null)
+            {
+                sunLight.transform.rotation = _currentLightRotation;
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        // Enforce world rotation freeze on sunLight so parent transforms cannot alter it
+        if (Application.isPlaying && useStabilizedShadows && sunLight != null)
+        {
+            sunLight.transform.rotation = _currentLightRotation;
         }
     }
 
@@ -217,9 +271,10 @@ public class DayNightCycle : MonoBehaviour
         UpdateSpeed();
         AutoFindReferences();
         InitializeDefaultCurves(false);
+        ResetShadowStabilization();
         if (Application.isPlaying)
         {
-            ApplyTimeVisuals();
+            ApplyTimeVisuals(0f);
         }
     }
 
@@ -373,7 +428,7 @@ public class DayNightCycle : MonoBehaviour
 
     public void AutoFindReferences()
     {
-        // 1. Sun Pivot
+        // 1. Sun Pivot (The Celestial Orbit / Dummy Visual)
         if (sunPivot == null)
         {
             var sr = GameObject.Find("Day-Night-Seasons_Controller/Sun_Rotation");
@@ -386,7 +441,14 @@ public class DayNightCycle : MonoBehaviour
             }
         }
 
-        // 2. Sun Light
+        // 1b. Dummy Sun Visual (Optional dedicated visual transform in sky)
+        if (dummySunVisual == null && sunPivot != null)
+        {
+            var visual = sunPivot.Find("SunVisual") ?? sunPivot.Find("Visual");
+            if (visual != null) dummySunVisual = visual;
+        }
+
+        // 2. Sun Light (The Shadow-Casting Directional Light)
         if (sunLight == null)
         {
             if (sunPivot != null)
@@ -397,6 +459,13 @@ public class DayNightCycle : MonoBehaviour
             {
                 sunLight = RenderSettings.sun;
             }
+        }
+
+        // 2b. Sky Fill Light (Optional secondary directional fill)
+        if (skyFillLight == null)
+        {
+            var fillGo = GameObject.Find("SkyFillLight") ?? GameObject.Find("Day-Night-Seasons_Controller/SkyFillLight");
+            if (fillGo != null) skyFillLight = fillGo.GetComponent<Light>();
         }
 
         // 3. Moon Pivot & Moon
@@ -480,7 +549,7 @@ public class DayNightCycle : MonoBehaviour
         minutes = currentMinute;
         timeString = $"{hours:D2}h{minutes:D2}";
 
-        ApplyTimeVisuals();
+        ApplyTimeVisuals(deltaTime);
 
         if (currentMinute != _lastProcessedMinute)
         {
@@ -521,38 +590,80 @@ public class DayNightCycle : MonoBehaviour
     #region Visual Application (Sun, Moon, Stars, Skybox, Lights)
 
     /// <summary>
-    /// Applies the celestial positioning, lighting colors/intensities, stars, and skybox blending
-    /// with silky-smooth continuous transitions for the current timeOfDay. Works in both Edit Mode and Play Mode.
+    /// Applies celestial positioning, stabilized lighting colors/intensities, stars, and skybox blending.
+    /// Works in both Edit Mode and Play Mode.
     /// </summary>
-    public void ApplyTimeVisuals()
+    public void ApplyTimeVisuals(float deltaTime = 0f)
     {
         float normalizedTime = timeOfDay / 24f; // 0.0 to 1.0
 
-        // 1. Sun Rotation
-        // Radian angle: 0 at 06h00 (Sunrise), PI/2 at 12h00 (Noon), PI at 18h00 (Sunset), 3PI/2 at 00h00 (Midnight)
-        float rad = (timeOfDay - 6f) / 24f * Mathf.PI * 2f;
-        float elevation = Mathf.Sin(rad) * 65f;
-        float azimuth = (timeOfDay >= 6f && timeOfDay <= 18f)
-            ? Mathf.Lerp(40f, 220f, (timeOfDay - 6f) / 12f)
-            : Mathf.Lerp(220f, 400f, (timeOfDay > 18f ? (timeOfDay - 18f) / 12f : (timeOfDay + 6f) / 12f));
+        // 1. Visual Sun Celestial Orbit (The Dummy Sun)
+        // Rotates smoothly every frame following true celestial astronomical coordinates
+        Quaternion continuousSunRotation = CalculateSunRotation(timeOfDay, clampElevation: false);
 
         if (sunPivot != null)
         {
-            sunPivot.rotation = Quaternion.Euler(elevation, azimuth, 0f);
+            sunPivot.rotation = continuousSunRotation;
         }
 
-        // 2. Sunlight Color & Intensity via Continuous Curves
+        if (dummySunVisual != null && dummySunVisual != sunPivot)
+        {
+            dummySunVisual.rotation = continuousSunRotation;
+        }
+
+        // 2. Shadow-Casting Directional Light (The Stabilized Shadow Driver)
+        Quaternion targetShadowRotation = CalculateSunRotation(timeOfDay, clampElevation: true);
+
+        if (!Application.isPlaying || !useStabilizedShadows || deltaTime <= 0f)
+        {
+            // In Edit Mode, time scrubbing, or stabilization disabled: snap immediately
+            _currentLightRotation = targetShadowRotation;
+            _isGliding = false;
+            _timeSinceLastShadowStep = 0f;
+        }
+        else
+        {
+            // In Play Mode with stabilization enabled: stealth glide every shadowStepInterval seconds
+            UpdateShadowStabilization(deltaTime, targetShadowRotation);
+        }
+
         if (sunLight != null)
         {
-            float intensity = sunIntensityCurve != null ? Mathf.Max(0f, sunIntensityCurve.Evaluate(normalizedTime)) : 1.0f;
-            Color color = sunColorGradient != null ? sunColorGradient.Evaluate(normalizedTime) : Color.white;
-
-            sunLight.intensity = intensity;
-            sunLight.color = color;
-            sunLight.enabled = (intensity > 0.001f);
+            sunLight.transform.rotation = _currentLightRotation;
         }
 
-        // 3. Ambient Intensity & Fog Color (Smooth Environment Transitions)
+        // 3. Sunlight Color & Intensity (Continuous per-frame daylight formula & curve)
+        if (sunLight != null)
+        {
+            float baseIntensity = sunIntensityCurve != null ? Mathf.Max(0f, sunIntensityCurve.Evaluate(normalizedTime)) : CalculateDaylightIntensity(timeOfDay);
+            // Smoothly fade out intensity as sun approaches the horizon to prevent grazing acne
+            float elevFade = CalculateElevationFade(timeOfDay);
+            float finalIntensity = baseIntensity * elevFade;
+
+            Color color = sunColorGradient != null ? sunColorGradient.Evaluate(normalizedTime) : CalculateSunColor(timeOfDay);
+
+            sunLight.intensity = finalIntensity;
+            sunLight.color = color;
+            sunLight.enabled = (finalIntensity > 0.001f);
+        }
+
+        // 4. Optional Secondary Sky Fill Light (Ambient depth without shadow overhead)
+        if (skyFillLight != null)
+        {
+            float fillIntensity = (sunLight != null && sunLight.enabled) ? sunLight.intensity * 0.22f : 0f;
+            skyFillLight.intensity = fillIntensity;
+            skyFillLight.color = CalculateSkyFillColor(timeOfDay);
+            skyFillLight.shadows = LightShadows.None; // Never cast shadows to avoid extra shadow passes
+            skyFillLight.enabled = (fillIntensity > 0.001f);
+
+            // Orient downward from the sky hemisphere opposite the sun
+            float azimuth = (timeOfDay >= 6f && timeOfDay <= 18f)
+                ? Mathf.Lerp(40f, 220f, (timeOfDay - 6f) / 12f)
+                : 220f;
+            skyFillLight.transform.rotation = Quaternion.Euler(60f, azimuth + 180f, 0f);
+        }
+
+        // 5. Ambient Intensity & Fog Color (Smooth Environment Transitions)
         if (ambientIntensityCurve != null)
         {
             RenderSettings.ambientIntensity = ambientIntensityCurve.Evaluate(normalizedTime);
@@ -563,7 +674,7 @@ public class DayNightCycle : MonoBehaviour
             RenderSettings.fogColor = fogColorGradient.Evaluate(normalizedTime);
         }
 
-        // 4. Moon & Moonlight
+        // 6. Moon & Moonlight
         float moonIntensity = moonIntensityCurve != null ? Mathf.Max(0f, moonIntensityCurve.Evaluate(normalizedTime)) : 0f;
         if (moonLight != null)
         {
@@ -771,7 +882,8 @@ public class DayNightCycle : MonoBehaviour
         minutes = totalMins % 60;
         timeString = $"{hours:D2}h{minutes:D2}";
 
-        ApplyTimeVisuals();
+        ResetShadowStabilization();
+        ApplyTimeVisuals(0f);
 
         if (Application.isPlaying)
         {
@@ -793,7 +905,8 @@ public class DayNightCycle : MonoBehaviour
         timeOfDay = targetHour + (targetMinute / 60f);
         timeString = $"{hours:D2}h{minutes:D2}";
 
-        ApplyTimeVisuals();
+        ResetShadowStabilization();
+        ApplyTimeVisuals(0f);
 
         if (Application.isPlaying)
         {
@@ -838,6 +951,130 @@ public class DayNightCycle : MonoBehaviour
 
     public int GetMinutes() => hours * 60 + minutes;
     public CycleSpeed GetSpeed() => currentCycleSpeed;
+
+    #endregion
+
+    #region Mathematical Solar Formulas & Stabilization
+
+    /// <summary>
+    /// Resets shadow stabilization timers and snaps the shadow light immediately to its target angle.
+    /// Useful when scrubbing time in editor or teleporting time via code.
+    /// </summary>
+    public void ResetShadowStabilization()
+    {
+        _isGliding = false;
+        _timeSinceLastShadowStep = 0f;
+        _currentLightRotation = CalculateSunRotation(timeOfDay, clampElevation: true);
+        if (sunLight != null)
+        {
+            sunLight.transform.rotation = _currentLightRotation;
+        }
+    }
+
+    /// <summary>
+    /// Updates the stealth glide state machine for the shadow-casting directional light.
+    /// Freezes the light for shadowStepInterval seconds, then gently slerps over shadowGlideDuration.
+    /// </summary>
+    private void UpdateShadowStabilization(float deltaTime, Quaternion targetRotation)
+    {
+        if (!_isGliding)
+        {
+            _timeSinceLastShadowStep += deltaTime;
+            if (_timeSinceLastShadowStep >= shadowStepInterval)
+            {
+                _timeSinceLastShadowStep = 0f;
+                _startLightRotation = _currentLightRotation;
+                _targetLightRotation = targetRotation;
+                _isGliding = true;
+                _glideTimer = 0f;
+            }
+        }
+
+        if (_isGliding)
+        {
+            _glideTimer += deltaTime;
+            float progress = Mathf.Clamp01(_glideTimer / Mathf.Max(0.01f, shadowGlideDuration));
+            float smoothT = Mathf.SmoothStep(0f, 1f, progress);
+
+            _currentLightRotation = Quaternion.Slerp(_startLightRotation, _targetLightRotation, smoothT);
+
+            if (progress >= 1.0f)
+            {
+                _isGliding = false;
+                _currentLightRotation = _targetLightRotation;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculates celestial orientation (elevation and azimuth) for a given time of day.
+    /// When clampElevation is true, elevation is clamped to minSunElevation to prevent extreme grazing shadows.
+    /// </summary>
+    public Quaternion CalculateSunRotation(float t, bool clampElevation = false)
+    {
+        float rad = (t - 6f) / 24f * Mathf.PI * 2f;
+        float elevation = Mathf.Sin(rad) * maxSunElevation;
+
+        if (clampElevation && (t >= 5.5f && t <= 18.5f))
+        {
+            elevation = Mathf.Max(elevation, minSunElevation);
+        }
+
+        float azimuth = (t >= 6f && t <= 18f)
+            ? Mathf.Lerp(40f, 220f, (t - 6f) / 12f)
+            : Mathf.Lerp(220f, 400f, (t > 18f ? (t - 18f) / 12f : (t + 6f) / 12f));
+
+        return Quaternion.Euler(elevation, azimuth, 0f);
+    }
+
+    /// <summary>
+    /// Smoothly fades out direct sunlight intensity as the true sun approaches the horizon (< minSunElevation),
+    /// completely preventing elongated grazing shadows or shadow acne at dawn and dusk.
+    /// </summary>
+    public float CalculateElevationFade(float t)
+    {
+        if (t < 5.5f || t > 18.5f) return 0f;
+        float rad = (t - 6f) / 24f * Mathf.PI * 2f;
+        float trueElevation = Mathf.Sin(rad) * maxSunElevation;
+        return Mathf.Clamp01((trueElevation - 4f) / Mathf.Max(0.1f, minSunElevation - 4f));
+    }
+
+    /// <summary>
+    /// Calculates theoretical daylight intensity from a smooth bell curve peaking at noon (1.35).
+    /// </summary>
+    public static float CalculateDaylightIntensity(float t)
+    {
+        if (t <= 5.5f || t >= 18.5f) return 0f;
+        float dayProgress = (t - 6f) / 12f;
+        float sine = Mathf.Clamp01(Mathf.Sin(dayProgress * Mathf.PI));
+        return Mathf.Pow(sine, 0.75f) * 1.35f;
+    }
+
+    /// <summary>
+    /// Calculates natural blackbody sun color temperature throughout the day.
+    /// </summary>
+    public static Color CalculateSunColor(float t)
+    {
+        if (t < 5.2f || t > 19.0f) return new Color(0.23f, 0.31f, 0.48f); // Night indigo
+        if (t < 6.0f) return Color.Lerp(new Color(1.0f, 0.58f, 0.45f), new Color(1.0f, 0.72f, 0.44f), (t - 5.2f) / 0.8f); // Dawn peach
+        if (t < 9.0f) return Color.Lerp(new Color(1.0f, 0.72f, 0.44f), new Color(1.0f, 0.94f, 0.82f), (t - 6.0f) / 3.0f); // Morning gold
+        if (t < 15.5f) return new Color(1.0f, 0.98f, 0.95f); // Midday crisp white
+        if (t < 17.5f) return Color.Lerp(new Color(1.0f, 0.98f, 0.95f), new Color(1.0f, 0.73f, 0.35f), (t - 15.5f) / 2.0f); // Golden hour
+        if (t < 18.3f) return Color.Lerp(new Color(1.0f, 0.73f, 0.35f), new Color(1.0f, 0.35f, 0.15f), (t - 17.5f) / 0.8f); // Sunset fiery amber
+        return Color.Lerp(new Color(1.0f, 0.35f, 0.15f), new Color(0.40f, 0.25f, 0.45f), (t - 18.3f) / 0.7f); // Dusk twilight
+    }
+
+    /// <summary>
+    /// Calculates complementary sky fill color (cool sky blue during the day, dusk violet at sunset).
+    /// </summary>
+    public static Color CalculateSkyFillColor(float t)
+    {
+        if (t < 6.0f || t > 18.5f) return new Color(0.10f, 0.14f, 0.25f); // Dark navy
+        if (t < 8.0f) return new Color(0.65f, 0.72f, 0.88f); // Soft morning blue
+        if (t < 16.0f) return new Color(0.55f, 0.75f, 0.92f); // Clear midday sky blue
+        if (t < 18.0f) return new Color(0.62f, 0.48f, 0.68f); // Sunset lavender/violet
+        return new Color(0.25f, 0.20f, 0.38f); // Dusk purple
+    }
 
     #endregion
 }

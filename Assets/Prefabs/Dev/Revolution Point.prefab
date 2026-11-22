@@ -239,11 +239,18 @@ MonoBehaviour:
   runCycleInPlayMode: 1
   currentCycleSpeed: 0
   sunPivot: {fileID: 4539315990263086204}
+  dummySunVisual: {fileID: 0}
   sunLight: {fileID: 1686450943902568182}
+  skyFillLight: {fileID: 0}
   moonPivot: {fileID: 0}
   moonObject: {fileID: 0}
   moonLight: {fileID: 0}
   starsParticleSystem: {fileID: 0}
+  useStabilizedShadows: 1
+  shadowStepInterval: 7
+  shadowGlideDuration: 0.8
+  minSunElevation: 15
+  maxSunElevation: 65
   blendedSkyboxMaterial: {fileID: 2100000, guid: ca03f43f381be2b4b9c61f569e0e8785, type: 2}
   nightCubemap: {fileID: 8900000, guid: b64dc5c23b5a31242aabbc1ed246c924, type: 3}
   dawnCubemap: {fileID: 8900000, guid: 9a8c3b101b919f74abbe49ef15d51b94, type: 3}
@@ -705,6 +712,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  updateEnvironmentGI: 1
+  environmentUpdateInterval: 5
 --- !u!1 &5886995189330840313
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,7 +742,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5886995189330840313}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -800, z: 0}
   m_LocalScale: {x: 40, y: 40, z: 40}
   m_ConstrainProportionsScale: 0
