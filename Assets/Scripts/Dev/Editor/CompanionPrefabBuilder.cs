@@ -27,6 +27,32 @@ namespace Viva.Dev
             PlaceShinobuInScenePath("Assets/Scenes/Landscape_Main.unity", new Vector3(735.95f, 86.75f, 1117.58f));
         }
 
+        [MenuItem("OpenViva/Configure Ragdoll on Shinobu Prefabs", false, 4)]
+        public static void ConfigureRagdollOnShinobuPrefabs()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabSavePath);
+            if (prefab == null)
+            {
+                Debug.LogError($"[CompanionPrefabBuilder] Could not find prefab at {PrefabSavePath}");
+                return;
+            }
+
+            GameObject instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+            if (instance == null) return;
+
+            CompanionPhysicalReaction physReaction = instance.GetComponent<CompanionPhysicalReaction>();
+            if (physReaction == null) physReaction = instance.AddComponent<CompanionPhysicalReaction>();
+            physReaction.EnsureRagdollBones();
+
+            PrefabUtility.SaveAsPrefabAssetAndConnect(instance, PrefabSavePath, InteractionMode.AutomatedAction);
+            PrefabUtility.SaveAsPrefabAsset(instance, PrefabCompanionPath);
+            Object.DestroyImmediate(instance);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            Debug.Log("[CompanionPrefabBuilder] Successfully configured ragdoll on Shinobu prefabs.");
+        }
+
         private static void PlaceShinobuInScenePath(string scenePath, Vector3 spawnPos)
         {
             var activeScene = EditorSceneManager.GetActiveScene();
@@ -229,6 +255,11 @@ namespace Viva.Dev
                 boneMap,
                 rootBone
             );
+
+            // 7b. CompanionPhysicalReaction & Ragdoll Setup
+            CompanionPhysicalReaction physReaction = instance.GetComponent<CompanionPhysicalReaction>();
+            if (physReaction == null) physReaction = instance.AddComponent<CompanionPhysicalReaction>();
+            physReaction.EnsureRagdollBones();
 
             // Save Prefabs
             Directory.CreateDirectory(Path.GetDirectoryName(PrefabSavePath));

@@ -1,0 +1,8 @@
+{
+  "name": "com.unityessentials.humanoid.activeragdoll",
+  "version": "2.0.6",
+  "displayName": "Humanoid ActiveRagdoll",
+  "description": "Physics-driven active ragdoll that follows an animation using PD controller and ConfigurableJoints with collision-aware strength modulation.",
+  "unity": "6000.0",
+  "dependencies": {}
+}

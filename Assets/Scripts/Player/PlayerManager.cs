@@ -13,6 +13,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer _handSkin;
     [SerializeField] private GameObject _leftHandKB; // PlayerKB's left hand
     [SerializeField] private GameObject _rightHandKB; // PlayerKB's right hand
+
+    public GameObject LeftHandKB => _leftHandKB;
+    public GameObject RightHandKB => _rightHandKB;
     private List<PlayerVR_GrabObject> _itemList;
 
     // Static Events

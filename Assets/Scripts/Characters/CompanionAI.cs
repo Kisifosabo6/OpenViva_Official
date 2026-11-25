@@ -17,7 +17,17 @@ public class CompanionAI : MonoBehaviour
         Idle,
         Walking,
         Running,
-        Interacting
+        Interacting,
+        Pulled,
+        Falling,
+        GettingUp
+    }
+
+    public CompanionState CurrentState => currentState;
+
+    public void SetState(CompanionState newState)
+    {
+        currentState = newState;
     }
 
     [Header("Navigation & Follow")]
@@ -131,6 +141,11 @@ public class CompanionAI : MonoBehaviour
             animator.applyRootMotion = false;
         }
         if (interactable == null) interactable = GetComponent<CharacterInteractable>();
+
+        if (!TryGetComponent<CompanionPhysicalReaction>(out _))
+        {
+            gameObject.AddComponent<CompanionPhysicalReaction>();
+        }
 
         CacheAnimatorParameters();
         SetupAudioSource();
@@ -445,6 +460,7 @@ public class CompanionAI : MonoBehaviour
     private void UpdateNavigationAndMovement()
     {
         if (agent == null) return;
+        if (currentState == CompanionState.Falling || currentState == CompanionState.GettingUp || currentState == CompanionState.Pulled) return;
 
         if (!agent.enabled || !agent.isOnNavMesh)
         {
@@ -551,6 +567,7 @@ public class CompanionAI : MonoBehaviour
     private void UpdateAnimations()
     {
         if (animator == null) return;
+        if (currentState == CompanionState.Falling || currentState == CompanionState.GettingUp) return;
 
         // 1. Calculate actual transform-based velocity
         Vector3 positionDelta = transform.position - lastPosition;
@@ -579,7 +596,7 @@ public class CompanionAI : MonoBehaviour
 
         float targetForwardSpeed = 0f;
         float targetSidewaysSpeed = 0f;
-        float targetSpeed = 1f;
+        float targetSpeed = 0f;
 
         if (isMoving)
         {
@@ -625,6 +642,7 @@ public class CompanionAI : MonoBehaviour
     private void UpdateHeadTracking()
     {
         if (headBone == null || target == null) return;
+        if (currentState == CompanionState.Falling || currentState == CompanionState.GettingUp) return;
 
         Vector3 eyesToTarget = target.position - headBone.position;
         Vector3 forward = transform.forward;
@@ -762,6 +780,14 @@ public class CompanionAI : MonoBehaviour
             case "Headpat":
                 TriggerHeadpat();
                 PlayRandomVoice(headpatClips);
+                break;
+
+            case "Knockdown":
+            case "Push":
+                if (TryGetComponent<CompanionPhysicalReaction>(out var physReact))
+                {
+                    physReact.TriggerKnockdown();
+                }
                 break;
 
             default:

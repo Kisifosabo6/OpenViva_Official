@@ -450,6 +450,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unityessentials.humanoid.activeragdoll": {
+      "version": "file:com.unityessentials.humanoid.activeragdoll",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.wooshii.hierarchydecorator": {
       "version": "https://github.com/WooshiiDev/HierarchyDecorator.git",
       "depth": 0,
