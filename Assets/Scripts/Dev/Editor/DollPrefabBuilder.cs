@@ -17,7 +17,6 @@ namespace Viva.Dev
         private const string ArmaturePath = "Assets/Materials/Dolls/Models/default_armature.fbx";
         private const string BodyLodPath = "Assets/Materials/Dolls/Models/default_body_LOD.fbx";
         private const string BodyFullPath = "Assets/Materials/Dolls/Models/default_body.fbx";
-        private const string BodyNeckSeamPath = "Assets/Materials/Dolls/Models/default_body_neckseam.fbx";
 
         private const string TorsoTexPath = "Assets/Materials/Dolls/Textures/default_torso.psd";
         private const string LimbsTexPath = "Assets/Materials/Dolls/Textures/default_limbs.psd";
@@ -132,7 +131,7 @@ namespace Viva.Dev
                 if (armatureRoot == null && lower.Contains("armature"))
                 {
                     armatureRoot = t;
-                    t.name = "DollArmature";
+                    t.name = "CharacterArmature";
                 }
                 if (!boneMap.ContainsKey(t.name)) boneMap.Add(t.name, t);
                 if (lower == "spine1" || lower == "hips") rootBone = t;
@@ -155,9 +154,9 @@ namespace Viva.Dev
             Avatar dollAvatar = CreateOrUpdateDollAvatar(instance);
             if (dollAvatar != null) animator.avatar = dollAvatar;
 
-            // 1. Body model & textures (use neck-seam vertex-color body if present; note [uvTest/limbs, torso] submesh order)
-            string bodyAssetPath = File.Exists(BodyNeckSeamPath) ? BodyNeckSeamPath : BodyLodPath;
-            Material[] bodyMaterials = bodyAssetPath == BodyNeckSeamPath
+            // 1. Body model & textures (use default_body.fbx; note [uvTest/limbs, torso] submesh order)
+            string bodyAssetPath = File.Exists(BodyFullPath) ? BodyFullPath : BodyLodPath;
+            Material[] bodyMaterials = bodyAssetPath == BodyFullPath
                 ? new[] { matLimbs, matTorso }
                 : new[] { matTorso, matLimbs };
             SkinnedMeshRenderer bodySMR = AttachSubMesh(
@@ -285,14 +284,6 @@ namespace Viva.Dev
                 lodImporter.useFileUnits = true;
                 lodImporter.isReadable = true;
                 lodImporter.SaveAndReimport();
-            }
-
-            if (AssetImporter.GetAtPath(BodyNeckSeamPath) is ModelImporter neckImporter)
-            {
-                neckImporter.globalScale = 3.75f;
-                neckImporter.useFileUnits = true;
-                neckImporter.isReadable = true;
-                neckImporter.SaveAndReimport();
             }
 
             if (AssetImporter.GetAtPath(ArmaturePath) is ModelImporter armImporter)

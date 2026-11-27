@@ -49,7 +49,8 @@ namespace Viva.Dolls
         {
             if (bodyArmature == null)
             {
-                bodyArmature = transform.Find("DollArmature")
+                bodyArmature = transform.Find("CharacterArmature")
+                    ?? transform.Find("DollArmature")
                     ?? transform.Find("default_armature")
                     ?? DollUtilities.FindTransformRecursive(transform, "Armature")
                     ?? transform;
