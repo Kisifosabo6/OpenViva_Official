@@ -80,6 +80,9 @@ public class CompanionAI : MonoBehaviour
     public List<AudioClip> idleClips = new List<AudioClip>();
     public List<AudioClip> happyClips = new List<AudioClip>();
 
+    [Header("Preview")]
+    public bool isPreviewMode = false;
+
     [Header("Components")]
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Animator animator;
@@ -173,7 +176,10 @@ public class CompanionAI : MonoBehaviour
         lastPosition = transform.position;
         smoothedVelocity = Vector3.zero;
 
-        TrySnapToNavMesh();
+        if (!isPreviewMode)
+        {
+            TrySnapToNavMesh();
+        }
 
         UpdateTargetReference();
         EnsureMeshRenderersActiveAndUpdated();
@@ -183,8 +189,18 @@ public class CompanionAI : MonoBehaviour
         nextBlinkTime = Time.time + Random.Range(minBlinkInterval, maxBlinkInterval);
         nextIdleVoiceTime = Time.time + Random.Range(minIdleVoiceInterval, maxIdleVoiceInterval);
 
-        // Friendly greet on spawn
-        PlayRandomVoice(greetClips);
+        if (!isPreviewMode)
+        {
+            // Friendly greet on spawn
+            PlayRandomVoice(greetClips);
+        }
+    }
+
+    public void RefreshFaceSetup()
+    {
+        AutoDetectBones();
+        CacheBlendShapes();
+        EnsureMeshRenderersActiveAndUpdated();
     }
 
     public void InitializeLocomotionAnimation()
@@ -405,6 +421,12 @@ public class CompanionAI : MonoBehaviour
 
     private void Update()
     {
+        if (isPreviewMode)
+        {
+            UpdateBlinking();
+            UpdateFacialExpressions();
+            return;
+        }
         UpdateTargetReference();
         UpdateNavigationAndMovement();
         UpdateAnimations();
@@ -437,6 +459,7 @@ public class CompanionAI : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (isPreviewMode) return;
         if (enableHeadTracking)
         {
             UpdateHeadTracking();

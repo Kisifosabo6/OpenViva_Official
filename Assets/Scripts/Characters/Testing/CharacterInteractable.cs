@@ -1,7 +1,7 @@
 using UnityEngine;
 using Viva.Interaction;
 
-public class CharacterInteractable : MonoBehaviour, IItemInteractable
+public class CharacterInteractable : MonoBehaviour, IItemInteractable, IInteractable
 {
     [Header("Selection Visuals")]
     public GameObject selectionArrow;
@@ -9,8 +9,18 @@ public class CharacterInteractable : MonoBehaviour, IItemInteractable
     [HideInInspector]
     public string characterName;
 
-    // Pointer always interacts with characters (never grabs them)
+    // Pointer always interacts with dolls (never grabs them)
     public InteractionType CurrentType => InteractionType.Interact;
+
+    public bool CanInteract => true;
+
+    public void Interact(GameObject interactor)
+    {
+        if (CharacterSelectionManager.Instance != null)
+        {
+            CharacterSelectionManager.Instance.SelectCharacter(this);
+        }
+    }
 
     public bool ExecuteAction(GameObject interactor, HandSide hand, Transform handTransform)
     {
