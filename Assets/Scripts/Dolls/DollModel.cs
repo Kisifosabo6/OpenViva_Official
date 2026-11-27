@@ -455,6 +455,15 @@ namespace Viva.Dolls
                 destSMR.rootBone = targetDoll.headBone;
             }
 
+            Vector3? headColLocalCenter = null;
+            float headColRadius = 0.105f;
+            if (targetDoll.headBone != null && headCollisionWorldSphere.w > 0.001f)
+            {
+                Vector3 worldCenter = new Vector3(-headCollisionWorldSphere.x, headCollisionWorldSphere.y, headCollisionWorldSphere.z);
+                headColLocalCenter = targetDoll.headBone.InverseTransformPoint(worldCenter);
+                headColRadius = headCollisionWorldSphere.w;
+            }
+
             bodyArmature.position = cachedArmaturePos;
             bodyArmature.rotation = cachedArmatureRot;
 
@@ -464,7 +473,7 @@ namespace Viva.Dolls
                 animator.Rebind();
             }
 
-            SetupDynamicSpringBones(targetDoll);
+            SetupDynamicSpringBones(targetDoll, headColLocalCenter, headColRadius);
             targetDoll.ApplySkinColor(calibratedSkin);
             targetDoll.ApplyNeckColor(calibratedSkin, 1f);
 
@@ -481,41 +490,83 @@ namespace Viva.Dolls
             }
         }
 
-        private void SetupDynamicSpringBones(DollInstance targetDoll)
+        private static SpringSphereCollider EnsureHeadSphereCollider(Transform headBone, string colliderName, Vector3 localPos, float radius)
+        {
+            Transform colTransform = headBone.Find(colliderName);
+            if (colTransform == null)
+            {
+                colTransform = new GameObject(colliderName).transform;
+                colTransform.SetParent(headBone, false);
+            }
+            colTransform.localPosition = localPos;
+            colTransform.localRotation = Quaternion.identity;
+            colTransform.localScale = Vector3.one;
+
+            SpringSphereCollider col = DollUtilities.EnsureComponent<SpringSphereCollider>(colTransform.gameObject);
+            col.radius = radius;
+            return col;
+        }
+
+        private static bool IsForeheadBangChain(Transform chainRoot, Transform headBone, string rootBoneName)
+        {
+            if (!string.IsNullOrEmpty(rootBoneName))
+            {
+                string lower = rootBoneName.ToLowerInvariant();
+                if (lower.Contains("bang") || lower.Contains("front") || lower.Contains("fringe") || lower.Contains("maegami"))
+                {
+                    return true;
+                }
+            }
+
+            if (headBone != null && chainRoot != null && chainRoot.IsChildOf(headBone))
+            {
+                Vector3 localPos = headBone.InverseTransformPoint(chainRoot.position);
+                // Forehead/hairline sits in front of headBone (+Z), above eyes (+Y), between temples
+                if (localPos.z > 0.045f && localPos.y > 0.04f && Mathf.Abs(localPos.x) < 0.09f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void SetupDynamicSpringBones(DollInstance targetDoll, Vector3? headColLocalCenter = null, float headColRadius = 0.105f)
         {
             if (targetDoll.bodyArmature == null) return;
 
-            SpringSphereCollider headCol = null;
+            SpringSphereCollider[] headColliders = Array.Empty<SpringSphereCollider>();
             if (targetDoll.headBone != null)
             {
-                Transform existingCol = targetDoll.headBone.Find("Col_Head");
-                if (existingCol == null)
-                {
-                    existingCol = new GameObject("Col_Head").transform;
-                    existingCol.SetParent(targetDoll.headBone, false);
-                    existingCol.localPosition = new Vector3(0f, 0.08f, 0f);
-                }
-                headCol = DollUtilities.EnsureComponent<SpringSphereCollider>(existingCol.gameObject);
-                headCol.radius = 0.125f;
+                // Compensate for headBone's backward pitch (~-29.5 deg X) when no card sphere is provided
+                Vector3 headCenter = headColLocalCenter ?? new Vector3(0f, 0.085f, 0.025f);
+                SpringSphereCollider headCol = EnsureHeadSphereCollider(targetDoll.headBone, "Col_Head", headCenter, headColRadius);
+                SpringSphereCollider foreheadCol = EnsureHeadSphereCollider(targetDoll.headBone, "Col_Forehead", new Vector3(0f, 0.095f, 0.055f), 0.075f);
+                headColliders = new[] { headCol, foreheadCol };
             }
-
-            var headColliders = headCol != null ? new[] { headCol } : Array.Empty<SpringSphereCollider>();
 
             foreach (var info in dynamicBoneInfos)
             {
                 Transform chainRoot = DollUtilities.FindTransformRecursive(targetDoll.bodyArmature, info.rootBone);
                 if (chainRoot == null) continue;
 
+                bool enableHeadCollision = info.headCollision || (targetDoll.headBone != null && chainRoot.IsChildOf(targetDoll.headBone));
+                bool isBangs = IsForeheadBangChain(chainRoot, targetDoll.headBone, info.rootBone);
+
                 foreach (Transform bone in chainRoot.GetComponentsInChildren<Transform>(true))
                 {
                     if (bone.childCount == 0) continue;
 
                     SpringBone sb = DollUtilities.EnsureComponent<SpringBone>(bone.gameObject);
-                    sb.stiffnessForce = Mathf.Lerp(120f, 360f, info.stiffness);
-                    sb.dragForce = Mathf.Clamp(info.damping * 2.5f, 0.2f, 0.8f);
-                    sb.springForce = info.useGravity ? new Vector3(0f, -0.0005f, 0f) : Vector3.zero;
-                    sb.radius = 0.02f;
-                    sb.sphereColliders = info.headCollision ? headColliders : Array.Empty<SpringSphereCollider>();
+                    sb.stiffnessForce = isBangs
+                        ? Mathf.Lerp(1500f, 3200f, info.stiffness)
+                        : Mathf.Lerp(180f, 450f, info.stiffness);
+                    sb.dragForce = isBangs
+                        ? Mathf.Clamp(info.damping * 2.5f, 0.3f, 0.85f)
+                        : Mathf.Clamp(info.damping * 2.5f, 0.2f, 0.7f);
+                    sb.springForce = info.useGravity ? new Vector3(0f, -2.5f, 0f) : Vector3.zero;
+                    sb.radius = 0.008f;
+                    sb.sphereColliders = enableHeadCollision ? headColliders : Array.Empty<SpringSphereCollider>();
                     sb.capsuleColliders = Array.Empty<SpringCapsuleCollider>();
                     sb.panelColliders = Array.Empty<SpringPanelCollider>();
                 }
@@ -525,7 +576,7 @@ namespace Viva.Dolls
             sm.automaticUpdates = true;
             sm.simulationFrameRate = 60;
             sm.dynamicRatio = 1.0f;
-            sm.gravity = new Vector3(0f, -9.81f, 0f);
+            sm.gravity = Vector3.zero;
             sm.bounce = 0.05f;
             sm.friction = 0.8f;
             sm.collideWithGround = false;
@@ -609,33 +660,50 @@ namespace Viva.Dolls
                 }
             }
 
-            // 2. Find the head's bottom neck rim loop near bodyCenter, and remove 1 bottom band of triangles (replace_rows = 1)
+            // 2. Find the head's bottom neck rim loop near bodyCenter, and peel 1..2 bottom neck bands
+            //    only while the loop is still below/at the collarbone (never peel up into the chin/jawline).
             int[] origHeadSkinTris = GetHeadSubmeshTriangles(mbs, headSkinSubmesh);
             List<int> origHeadRim = FindOrderedBoundaryLoop(mbs.vertexTable, origHeadSkinTris, bodyCenter, true);
             if (origHeadRim.Count < 8) return false;
 
-            var origRimSet = new HashSet<int>(origHeadRim);
-            // Expand rimSet to include any coincident UV-split vertices at the rim
-            ExpandCoincidentVertices(mbs.vertexTable, origRimSet);
+            float bodyZ = bodyCenter.z;
+            List<int> currentTris = new List<int>(origHeadSkinTris);
+            List<int> headCutLoop = origHeadRim;
 
-            // Filter out triangles touching the bottom rim (replace_rows = 1)
-            var keptHeadSkinTris = new List<int>(origHeadSkinTris.Length);
-            for (int t = 0; t + 2 < origHeadSkinTris.Length; t += 3)
+            for (int row = 0; row < 2; row++)
             {
-                int a = origHeadSkinTris[t];
-                int b = origHeadSkinTris[t + 1];
-                int c = origHeadSkinTris[t + 2];
-                if (origRimSet.Contains(a) || origRimSet.Contains(b) || origRimSet.Contains(c))
-                    continue;
-                keptHeadSkinTris.Add(a);
-                keptHeadSkinTris.Add(b);
-                keptHeadSkinTris.Add(c);
-            }
-            if (keptHeadSkinTris.Count == 0) return false;
+                float curZ = AverageLoopZ(mbs.vertexTable, headCutLoop);
+                if (row > 0 && curZ >= bodyZ + 0.008f) break;
 
-            // Find the newly exposed cut loop on the head neck
-            List<int> headCutLoop = FindOrderedBoundaryLoop(mbs.vertexTable, keptHeadSkinTris.ToArray(), bodyCenter, true);
-            if (headCutLoop.Count < 8) return false;
+                var rimSet = new HashSet<int>(headCutLoop);
+                ExpandCoincidentVertices(mbs.vertexTable, rimSet);
+
+                var nextTris = new List<int>(currentTris.Count);
+                for (int t = 0; t + 2 < currentTris.Count; t += 3)
+                {
+                    int a = currentTris[t];
+                    int b = currentTris[t + 1];
+                    int c = currentTris[t + 2];
+                    if (rimSet.Contains(a) || rimSet.Contains(b) || rimSet.Contains(c))
+                        continue;
+                    nextTris.Add(a);
+                    nextTris.Add(b);
+                    nextTris.Add(c);
+                }
+                if (nextTris.Count == 0) break;
+
+                List<int> nextLoop = FindOrderedBoundaryLoop(mbs.vertexTable, nextTris.ToArray(), bodyCenter, true);
+                if (nextLoop.Count < 24) break; // Reject peel if neck ring collapses (e.g. Cerberus 32->22, Cirno 33->18)
+
+                float nextZ = AverageLoopZ(mbs.vertexTable, nextLoop);
+                if (nextZ > bodyZ + 0.035f) break; // Never peel up into the chin/jawline
+
+                currentTris = nextTris;
+                headCutLoop = nextLoop;
+            }
+
+            List<int> keptHeadSkinTris = currentTris;
+            if (keptHeadSkinTris.Count == 0 || headCutLoop.Count < 8) return false;
 
             // Align headCutLoop to bodyLoop (reverse + cyclic offset) to eliminate twist/pinch
             AlignOrderedLoop(bodyVerts, bodyLoop, mbs.vertexTable, headCutLoop);
@@ -750,33 +818,34 @@ namespace Viva.Dolls
                 unifiedColors.Add(new Color(1f, 1f, 1f, 1f)); // 1 = 100% head texture
             }
 
-            // 6. Build smooth linear quad bridge (bridgeCuts = 2) between bodyLoop (t=0) and headCutLoop (t=1)
+            // 6. Build smooth linear bridge (bridgeCuts = 2) between bodyLoop (t=0) and headCutLoop (t=1)
+            //    Uses two-pointer advancing triangulation when loop counts differ so zero vertices are skipped.
             const int bridgeCuts = 2;
-            int nBridge = bodyLoop.Count;
-            var rings = new List<int[]>(bridgeCuts + 2);
-            rings.Add(bodyLoop.ToArray());
+            int nBody = bodyLoop.Count;
+            int nHead = headCutLoop.Count;
+            int nMid = Mathf.Max(nBody, nHead);
 
-            // Pre-map each bodyLoop[i] to its aligned headCutLoop index and clean head-rim UV0
-            var alignedHeadUnified = new int[nBridge];
-            var bodyUvAtIdx = new Vector2[nBridge];
-            var headBotUvAtIdx = new Vector2[nBridge];
-            for (int i = 0; i < nBridge; i++)
+            var headCutUnified = new int[nHead];
+            var headBotUvForHead = new Vector2[nHead];
+            var bodyUvForHead = new Vector2[nHead];
+            for (int j = 0; j < nHead; j++)
             {
-                int hIdx = (i * headCutLoop.Count) / nBridge;
-                int hi = headCutLoop[hIdx];
-                alignedHeadUnified[i] = headToUnified[hi];
-                int bi = bodyLoop[i];
-                bodyUvAtIdx[i] = (bodyUvs != null && bi < bodyUvs.Length) ? bodyUvs[bi] : new Vector2(0.5f, 0.5f);
-                unifiedUv1[alignedHeadUnified[i]] = bodyUvAtIdx[i];
+                int hi = headCutLoop[j];
+                int hui = headToUnified[hi];
+                headCutUnified[j] = hui;
 
-                // Match nearest origHeadRim vertex UV (same island check as viva_seamless_poc.py)
-                Vector2 topUv = unifiedUv0[alignedHeadUnified[i]];
+                int bi = bodyLoop[(j * nBody) / nHead];
+                Vector2 buv = (bodyUvs != null && bi < bodyUvs.Length) ? bodyUvs[bi] : new Vector2(0.5f, 0.5f);
+                bodyUvForHead[j] = buv;
+                unifiedUv1[hui] = buv;
+
+                Vector2 topUv = unifiedUv0[hui];
                 Vector2 botUv = topUv;
                 float bestRimDistSq = float.MaxValue;
-                Vector3 bPos = unifiedVerts[bi];
+                Vector3 hPos = unifiedVerts[hui];
                 foreach (int rhi in origHeadRim)
                 {
-                    float dSq = (mbs.vertexTable[rhi] - bPos).sqrMagnitude;
+                    float dSq = (mbs.vertexTable[rhi] - hPos).sqrMagnitude;
                     if (dSq < bestRimDistSq && mbs.uvTable != null && rhi < mbs.uvTable.Length)
                     {
                         bestRimDistSq = dSq;
@@ -784,63 +853,46 @@ namespace Viva.Dolls
                     }
                 }
                 if ((botUv - topUv).sqrMagnitude > 0.04f) botUv = topUv;
-                headBotUvAtIdx[i] = botUv;
-                unifiedUv0[bi] = botUv;
+                headBotUvForHead[j] = botUv;
             }
+
+            for (int i = 0; i < nBody; i++)
+            {
+                int j = (i * nHead) / nBody;
+                unifiedUv0[bodyLoop[i]] = headBotUvForHead[j];
+            }
+
+            var rings = new List<int[]>(bridgeCuts + 2);
+            rings.Add(bodyLoop.ToArray());
 
             for (int k = 1; k <= bridgeCuts; k++)
             {
                 float t = k / (float)(bridgeCuts + 1);
                 float smoothT = t * t * (3f - 2f * t);
-                var ring = new int[nBridge];
-                for (int i = 0; i < nBridge; i++)
+                var ring = new int[nMid];
+                for (int i = 0; i < nMid; i++)
                 {
-                    int bi = bodyLoop[i];
-                    int hui = alignedHeadUnified[i];
+                    int bi = bodyLoop[(i * nBody) / nMid];
+                    int j = (i * nHead) / nMid;
+                    int hui = headCutUnified[j];
                     ring[i] = unifiedVerts.Count;
                     unifiedVerts.Add(Vector3.Lerp(unifiedVerts[bi], unifiedVerts[hui], t));
                     unifiedNorms.Add(Vector3.Slerp(unifiedNorms[bi], unifiedNorms[hui], t).normalized);
-                    unifiedUv0.Add(Vector2.Lerp(headBotUvAtIdx[i], unifiedUv0[hui], t));
-                    unifiedUv1.Add(bodyUvAtIdx[i]);
+                    unifiedUv0.Add(Vector2.Lerp(headBotUvForHead[j], unifiedUv0[hui], t));
+                    unifiedUv1.Add((bodyUvs != null && bi < bodyUvs.Length) ? bodyUvs[bi] : bodyUvForHead[j]);
                     unifiedWeights.Add(LerpBoneWeight(unifiedWeights[bi], unifiedWeights[hui], t));
                     unifiedColors.Add(new Color(smoothT, smoothT, smoothT, 1f));
                 }
                 rings.Add(ring);
             }
-            rings.Add(alignedHeadUnified);
+            rings.Add(headCutUnified);
 
-            Vector3 bridgeAxisCenter = Vector3.zero;
-            foreach (int bi in bodyLoop) bridgeAxisCenter += unifiedVerts[bi];
-            foreach (int hui in alignedHeadUnified) bridgeAxisCenter += unifiedVerts[hui];
-            bridgeAxisCenter /= Mathf.Max(1, bodyLoop.Count + alignedHeadUnified.Length);
-
-            var bridgeTris = new List<int>(nBridge * (bridgeCuts + 1) * 6);
+            // Determine global outward winding once from bodyLoop so every bridge triangle faces outward
+            bool flipWinding = ShouldFlipBridgeWinding(unifiedVerts, bodyLoop, bodyCenter);
+            var bridgeTris = new List<int>(nMid * (bridgeCuts + 1) * 6);
             for (int k = 0; k <= bridgeCuts; k++)
             {
-                int[] r0 = rings[k];
-                int[] r1 = rings[k + 1];
-                for (int i = 0; i < nBridge; i++)
-                {
-                    int nxt = (i + 1) % nBridge;
-                    int v00 = r0[i];
-                    int v01 = r0[nxt];
-                    int v11 = r1[nxt];
-                    int v10 = r1[i];
-
-                    Vector3 quadCenter = 0.25f * (unifiedVerts[v00] + unifiedVerts[v01] + unifiedVerts[v11] + unifiedVerts[v10]);
-                    Vector3 triCross = Vector3.Cross(unifiedVerts[v01] - unifiedVerts[v00], unifiedVerts[v11] - unifiedVerts[v00]);
-                    Vector3 outward = quadCenter - new Vector3(bridgeAxisCenter.x, bridgeAxisCenter.y, quadCenter.z);
-                    if (Vector3.Dot(triCross, outward) >= 0f)
-                    {
-                        bridgeTris.Add(v00); bridgeTris.Add(v01); bridgeTris.Add(v11);
-                        bridgeTris.Add(v00); bridgeTris.Add(v11); bridgeTris.Add(v10);
-                    }
-                    else
-                    {
-                        bridgeTris.Add(v00); bridgeTris.Add(v11); bridgeTris.Add(v01);
-                        bridgeTris.Add(v00); bridgeTris.Add(v10); bridgeTris.Add(v11);
-                    }
-                }
+                BridgeTwoOrderedLoops(unifiedVerts, rings[k], rings[k + 1], flipWinding, bridgeTris);
             }
 
             // 7. Assemble submeshes: [0] limbs, [1] unified torso+bridge+headSkin, [2..] other head materials
@@ -926,36 +978,132 @@ namespace Viva.Dolls
             return true;
         }
 
+        private static float AverageLoopZ(Vector3[] verts, List<int> loop)
+        {
+            if (loop == null || loop.Count == 0) return 0f;
+            float sum = 0f;
+            foreach (int vi in loop) sum += verts[vi].z;
+            return sum / loop.Count;
+        }
+
+        private static bool ShouldFlipBridgeWinding(List<Vector3> verts, List<int> bodyLoop, Vector3 center)
+        {
+            float signed = 0f;
+            int n = bodyLoop.Count;
+            for (int i = 0; i < n; i++)
+            {
+                Vector3 a = verts[bodyLoop[i]];
+                Vector3 b = verts[bodyLoop[(i + 1) % n]];
+                Vector3 tangent = b - a;
+                Vector3 radial = a - center;
+                // In Z-up space, Cross(tangent, Z_up) points outward if loop is CCW
+                signed += Vector3.Dot(Vector3.Cross(tangent, Vector3.forward), radial);
+            }
+            return signed < 0f;
+        }
+
+        private static void BridgeTwoOrderedLoops(
+            List<Vector3> verts,
+            int[] r0,
+            int[] r1,
+            bool flipWinding,
+            List<int> outTris)
+        {
+            int n0 = r0.Length;
+            int n1 = r1.Length;
+            if (n0 == 0 || n1 == 0) return;
+
+            int i0 = 0;
+            int i1 = 0;
+            while (i0 < n0 || i1 < n1)
+            {
+                int c0 = r0[i0 % n0];
+                int c1 = r1[i1 % n1];
+                int nx0 = r0[(i0 + 1) % n0];
+                int nx1 = r1[(i1 + 1) % n1];
+
+                bool advance0;
+                if (i0 >= n0) advance0 = false;
+                else if (i1 >= n1) advance0 = true;
+                else
+                {
+                    float d0 = (verts[nx0] - verts[c1]).sqrMagnitude;
+                    float d1 = (verts[c0] - verts[nx1]).sqrMagnitude;
+                    advance0 = d0 <= d1;
+                }
+
+                if (advance0)
+                {
+                    AddTri(outTris, c0, nx0, c1, flipWinding);
+                    i0++;
+                }
+                else
+                {
+                    AddTri(outTris, c0, nx1, c1, flipWinding);
+                    i1++;
+                }
+            }
+        }
+
+        private static void AddTri(List<int> tris, int a, int b, int c, bool flip)
+        {
+            if (!flip) { tris.Add(a); tris.Add(b); tris.Add(c); }
+            else { tris.Add(a); tris.Add(c); tris.Add(b); }
+        }
+
         private static void SmoothNormalsForVertexSet(
             List<Vector3> verts,
             List<int> tris,
             HashSet<int> targetVerts,
             List<Vector3> normals)
         {
-            var accum = new Dictionary<int, Vector3>(targetVerts.Count);
-            foreach (int vi in targetVerts) accum[vi] = Vector3.zero;
+            // Group target vertices by canonical 3D position so UV-split seams share smooth normals
+            var posToAccum = new Dictionary<(int, int, int), Vector3>(targetVerts.Count);
+            var vertToKey = new Dictionary<int, (int, int, int)>(targetVerts.Count);
+            foreach (int vi in targetVerts)
+            {
+                Vector3 v = verts[vi];
+                var key = (Mathf.RoundToInt(v.x * 10000f), Mathf.RoundToInt(v.y * 10000f), Mathf.RoundToInt(v.z * 10000f));
+                vertToKey[vi] = key;
+                if (!posToAccum.ContainsKey(key)) posToAccum[key] = Vector3.zero;
+            }
+
+            // Include any coincident UV-split vertices sharing the same 3D position
+            var expandedTargets = new HashSet<int>(targetVerts);
+            for (int i = 0; i < verts.Count; i++)
+            {
+                if (expandedTargets.Contains(i)) continue;
+                Vector3 v = verts[i];
+                var key = (Mathf.RoundToInt(v.x * 10000f), Mathf.RoundToInt(v.y * 10000f), Mathf.RoundToInt(v.z * 10000f));
+                if (posToAccum.ContainsKey(key))
+                {
+                    expandedTargets.Add(i);
+                    vertToKey[i] = key;
+                }
+            }
 
             for (int t = 0; t + 2 < tris.Count; t += 3)
             {
                 int i0 = tris[t];
                 int i1 = tris[t + 1];
                 int i2 = tris[t + 2];
-                bool h0 = targetVerts.Contains(i0);
-                bool h1 = targetVerts.Contains(i1);
-                bool h2 = targetVerts.Contains(i2);
+                bool h0 = expandedTargets.Contains(i0);
+                bool h1 = expandedTargets.Contains(i1);
+                bool h2 = expandedTargets.Contains(i2);
                 if (!h0 && !h1 && !h2) continue;
 
                 Vector3 faceCross = Vector3.Cross(verts[i1] - verts[i0], verts[i2] - verts[i0]);
-                if (h0) accum[i0] += faceCross;
-                if (h1) accum[i1] += faceCross;
-                if (h2) accum[i2] += faceCross;
+                if (h0) posToAccum[vertToKey[i0]] += faceCross;
+                if (h1) posToAccum[vertToKey[i1]] += faceCross;
+                if (h2) posToAccum[vertToKey[i2]] += faceCross;
             }
 
-            foreach (var kv in accum)
+            foreach (int vi in expandedTargets)
             {
-                if (kv.Value.sqrMagnitude > 1e-10f)
+                Vector3 sum = posToAccum[vertToKey[vi]];
+                if (sum.sqrMagnitude > 1e-10f)
                 {
-                    normals[kv.Key] = kv.Value.normalized;
+                    normals[vi] = sum.normalized;
                 }
             }
         }
@@ -1039,12 +1187,19 @@ namespace Viva.Dolls
                 while (true)
                 {
                     int next = -1;
+                    float bestScore = float.NegativeInfinity;
+                    Vector3 prevDir = prev >= 0 ? (verts[curr] - verts[prev]).normalized : Vector3.zero;
                     foreach (int nb in adj[curr])
                     {
-                        if (nb != prev && !visited.Contains(nb))
+                        if (nb == prev || visited.Contains(nb)) continue;
+                        // At degree>2 junctions (e.g. bronya/chloe), follow the smoothest tangent continuation
+                        float score = prev >= 0
+                            ? Vector3.Dot((verts[nb] - verts[curr]).normalized, prevDir)
+                            : 0f;
+                        if (score > bestScore)
                         {
+                            bestScore = score;
                             next = nb;
-                            break;
                         }
                     }
                     if (next < 0) break;
@@ -1637,7 +1792,11 @@ namespace Viva.Dolls
                 {
                     if (bone.childCount > 0)
                     {
-                        dynamicBoneInfos.Add(new DynamicBoneInfo(bone.name));
+                        var info = new DynamicBoneInfo(bone.name)
+                        {
+                            headCollision = targetDoll.headBone != null && bone.IsChildOf(targetDoll.headBone)
+                        };
+                        dynamicBoneInfos.Add(info);
                     }
                 }
             }

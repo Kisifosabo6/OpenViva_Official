@@ -47,8 +47,8 @@ namespace Viva.Dolls
                 RenderCamera.cullingMask = 1 << previewLayer;
                 EnsurePreviewLight(previewLayer);
             }
-            RenderCamera.clearFlags = CameraClearFlags.SolidColor;
-            RenderCamera.backgroundColor = new Color(0.12f, 0.13f, 0.16f, 1f);
+            RenderCamera.clearFlags = CameraClearFlags.Skybox;
+            RenderCamera.backgroundColor = new Color(0.28f, 0.30f, 0.35f, 1f);
             RenderCamera.targetTexture = PreviewRenderTexture;
             RenderCamera.enabled = true;
             if (previewLight != null) previewLight.enabled = true;
@@ -172,9 +172,12 @@ namespace Viva.Dolls
                     previewLight = gameObject.AddComponent<Light>();
                 }
             }
-            previewLight.type = LightType.Directional;
+            // Use a short-range Point light at the isolated preview stage (y = -50) instead of a
+            // Directional light, because URP ignores Light.cullingMask and a Directional light leaks into the room.
+            previewLight.type = LightType.Point;
             previewLight.color = Color.white;
-            previewLight.intensity = 1.15f;
+            previewLight.range = 6f;
+            previewLight.intensity = 2.2f;
             previewLight.shadows = LightShadows.None;
             previewLight.cullingMask = 1 << previewLayer;
             previewLight.enabled = true;

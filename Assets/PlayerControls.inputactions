@@ -677,6 +677,17 @@
                 },
                 {
                     "name": "",
+                    "id": "b1f9d6a2-4c7e-4b3a-9e8d-1a2b3c4d5e6f",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "8c6cf395-fbfc-42b7-85ad-20b52ca2333e",
                     "path": "<Keyboard>/#(E)",
                     "interactions": "",

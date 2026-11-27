@@ -31,6 +31,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject bookMesh;
     [SerializeField] private GameObject LeftPage;
     [SerializeField] private GameObject RightPage;
+    [SerializeField] private GameObject defaultRightPage;
     [SerializeField] private Transform pageBoneL;
     [SerializeField] private Transform pageBoneR;
 
@@ -72,6 +73,7 @@ public class PauseMenu : MonoBehaviour
 
         leftPages = GetDirectChildren(LeftPage);
         rightPages = GetDirectChildren(RightPage);
+        ResolveDefaultRightPage();
 
         if (Globals.isDesktopMode)
         {
@@ -390,6 +392,11 @@ public class PauseMenu : MonoBehaviour
             LeftPage.SetActive(true);
             RightPage.SetActive(true);
             rootPage.SetActive(true);
+            ResolveDefaultRightPage();
+            if (defaultRightPage != null)
+            {
+                defaultRightPage.SetActive(true);
+            }
             ConfigurePageEventCameras();
         }
 
@@ -520,9 +527,21 @@ public class PauseMenu : MonoBehaviour
         Application.Quit();
     }
 
+    private void ResolveDefaultRightPage()
+    {
+        if (defaultRightPage != null || RightPage == null) return;
+        Transform charsSelection = RightPage.transform.Find("CharactersSelection");
+        if (charsSelection != null)
+        {
+            defaultRightPage = charsSelection.gameObject;
+        }
+    }
+
     public void OpenControlsMenu()
     {
         if (rootPage != null) rootPage.SetActive(false);
+        ResolveDefaultRightPage();
+        if (defaultRightPage != null) defaultRightPage.SetActive(false);
 
         Transform uiMain = LeftPage != null ? (LeftPage.name == "UI_Main" ? LeftPage.transform : (LeftPage.transform.Find("UI_Main") ?? LeftPage.transform)) : null;
         Transform uiDesc = RightPage != null ? (RightPage.name == "UI_Descriptions" ? RightPage.transform : (RightPage.transform.Find("UI_Descriptions") ?? RightPage.transform)) : null;
@@ -586,6 +605,8 @@ public class PauseMenu : MonoBehaviour
         }
 
         if (rootPage != null) rootPage.SetActive(true);
+        ResolveDefaultRightPage();
+        if (defaultRightPage != null) defaultRightPage.SetActive(true);
         ConfigurePageEventCameras();
     }
 

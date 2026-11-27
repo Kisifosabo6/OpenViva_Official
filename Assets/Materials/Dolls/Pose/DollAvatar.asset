@@ -209,7 +209,7 @@ Avatar:
           m_AxesId: -1
         - m_ParentId: 75
           m_AxesId: -1
-        m_ID: 000000008bec5ee238550c8d3281244371ffe0fc89a23a1dc439c55ed8fa8805aba14422020d6818f8405194148f195376683de8f3771ce1b139e94232dc0b4935fede353e50c51dd72205be365d3d3b8badd5b1d82389ca51bc2bb9f15bed627978d4d03b29f52348b072ba24a36df016377d91ec4183a5215804da42bbbe1636c82db76df0eb3a0ed91d8cff2b6412768bb1659ff971c6bdf4b2d81329770fd53aad2afc68cb19b9b56d875afb436e39c64c94b5c4508741b8723a68996fe90ba46013872fa61341b958baf16f7c05cbc82573130eb920959d31799de8b5d851f26f22416e1178fb08c8b7046b21a38b03fd6ca0e12ad22591070cad805578d1f2904df818227ed42a4dbab07c68cf719f5dbc8552213bd9fd1ee2f048cd6ffa7b29b36ded4f06228457407e3b5a528a5a6d8f9fc42952b5d9dca3ad274fcd3810c257d430bc9c2738c026b63c05cba2cb32c221a8602c84e4e20138def89c0dc298dc4a4f06162589d3e37d468a6246ebd978100c8cdf05cd1673421fe90725b3abbb9336ae06
+        m_ID: 0000000008de224e82a8df46053d041bfd01f29bbfa0ef137e8c478c31f4edb332896f88c25e001d1b7c80c8e1ff0b69342076dc2529d2d80417443f8d658226aad4ba70dd4428d03436e873588d7581099ee3241870e1cf66000be17da5ff054f7a01de819c77f1a1be170cbd8b465ad66415940f7d52f9d42816e000f3f522e096e38ed8de4647b16094e360010057959f5ca87ced9c0bd324fa62911a419a1569c52f5b1edb5bb1b1e7897483bd4717beb2bdfbab634af64b8de6a0991660c3a4199a62ec6b419d6081ef23501cdc637e27e5b015fc3360ed23437efc5815e4dcc25f03265a4c1a9e3364784350957f681bf487c6238c27efb32befc81e4c30646b9e84305348bd94dc9f4f969daf299fabe1c71a6a0f386be5318c60bc592c25e78a3189b58dfe5d8e15ac043a8b22ec6f193cdf6c4140a9ce994e33a2008d3e6f2a9678f7a8c6ae3bf5ca1474fd56a0d45a068f6972869a56267a96b3a8ec54630f366777204c3742c682ac7f021eeb2f255244c7ebe45beda03e379831f3ed6582cf52548d
         m_AxesArray: []
     m_AvatarSkeletonPose:
       data:
@@ -805,7 +805,7 @@ Avatar:
         - t: {x: -0.000000054761763, y: -0.000000001117587, z: 0.000000031292437}
           q: {x: 0.00000029988593, y: 0.00000010430815, z: -0.00000014342373, w: 1}
           s: {x: 0.99999964, y: 0.9999996, z: 1}
-    m_SkeletonNameIDArray: 000000008bec5ee278ff95889df5e670635f1f4ea077980492b29b08b6dd370c2ddba7a249e6973d20d94fec8cc5ceb7d57b88b5b83b8dcee185cbcc66d52aa83f6b6caa029cf5e3ebee3540b2507342878adc6c83d9db09fec8e98a006210b4c34a97fef18f94f2d5e038f64ee6a8582adb98c743e44016eff8c14db646874fdb06823482b8c43605e825525c56635061a1fa1988d33abad16d7cb8e4b7d396e0e4d4f3c2ae9c11549e9b66afda2523cce72ad953d611209cf6f3a707df183264e217c8975cc59e81f1fa9f167d263734d20251948cf3c46cf56e9a4dfd371ca56702bd0c8dbd415533fb43625939424592a9641c2cef662b462d67e063f941b9ddbf438eb77d4237a51d156e1b5b1759719916c8b18d02910fcb00a66509013b2b3e351296f0ade2ccf565754029cd57ef0dabf7b1fc3e0fc861602ec038e6c65a0d476fb0b2bb360ef4b9016436b826afa69e7f11e09c487b229d835ef6bbdae0b0b9ed8a72b8549812ef0d2654ed3a4c96ecab8c82f8f232c4fac55806fb581631cf71abff57
+    m_SkeletonNameIDArray: 0000000008de224e78ff95889df5e670635f1f4ea077980492b29b08b6dd370c2ddba7a249e6973d20d94fec8cc5ceb7d57b88b5b83b8dcee185cbcc66d52aa83f6b6caa029cf5e3ebee3540b2507342878adc6c83d9db09fec8e98a006210b4c34a97fef18f94f2d5e038f64ee6a8582adb98c743e44016eff8c14db646874fdb06823482b8c43605e825525c56635061a1fa1988d33abad16d7cb8e4b7d396e0e4d4f3c2ae9c11549e9b66afda2523cce72ad953d611209cf6f3a707df183264e217c8975cc59e81f1fa9f167d263734d20251948cf3c46cf56e9a4dfd371ca56702bd0c8dbd415533fb43625939424592a9641c2cef662b462d67e063f941b9ddbf438eb77d4237a51d156e1b5b1759719916c8b18d02910fcb00a66509013b2b3e351296f0ade2ccf565754029cd57ef0dabf7b1fc3e0fc861602ec038e6c65a0d476fb0b2bb360ef4b9016436b826afa69e7f11e09c487b229d835ef6bbdae0b0b9ed8a72b8549812ef0d2654ed3a4c96ecab8c82f8f232c4fac55806fb581631cf71abff57
     m_Human:
       data:
         serializedVersion: 2
@@ -934,7 +934,7 @@ Avatar:
               m_AxesId: 52
             - m_ParentId: 57
               m_AxesId: 53
-            m_ID: 8bec5ee238550c8d32812443c439c55eaba14422020d6818f8405194f3771ce151bc2bb93b29f52324a36df016377d91ec4183a536c82db7fc68cb19b9b56d87b5c4508741b8723a68996fe90ba46013872fa61341b958baf16f7c05130eb9209de8b5d8416e1178fb08c8b7046b21a38b03fd6ca0e12ad22591070cad805578d1f2904df818227ed42a4dbab07c68cf719f5dbc8552213bd9fd1ee2f048cd6f228457407e3b5a529fc42952ad274fcdd430bc9c2738c026b63c05cba2cb32c221a8602c84e4e20138def89c0dc298dc4a4f06162589d3e37d468a6246ebd978100c8cdf05cd1673421fe907
+            m_ID: 08de224e82a8df46053d041b7e8c478c32896f88c25e001d1b7c80c82529d2d866000be1819c77f1bd8b465ad66415940f7d52f9e096e38e5b1edb5bb1b1e789fbab634af64b8de6a0991660c3a4199a62ec6b419d6081ef23501cdcb015fc337efc581503265a4c1a9e3364784350957f681bf487c6238c27efb32befc81e4c30646b9e84305348bd94dc9f4f969daf299fabe1c71a6a0f386be5318c60bc59fe5d8e15ac043a8b3cdf6c414e33a2009678f7a8c6ae3bf5ca1474fd56a0d45a068f6972869a56267a96b3a8ec54630f366777204c3742c682ac7f021eeb2f255244c7ebe45beda03e379831
             m_AxesArray:
             - m_PreQ: {x: -0.4091537, y: -0.57670903, z: 0.4091537, w: 0.57670903}
               m_PostQ: {x: -0.5, y: -0.5, z: 0.5, w: 0.5}
@@ -1609,104 +1609,104 @@ Avatar:
         m_X: []
     m_RootMotionSkeletonIndexArray: 
   m_TOS:
-    1472335928: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/handTarget_r
-    992039557: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/thumb1_l
-    259467539: DollArmature/spine1/pelvis_r/upperLegControl_r/thigh_r
-    432761084: DollArmature/spine1/spine2
-    2350766350: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeMiddle1_r
-    3148591909: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/wrist_r
-    409472258: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l
-    112080531: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/upperArm_r
-    1126465842: DollArmature/spine1/pelvis_l
-    3406118070: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/index1_r/index2_r/index3_r
-    4033717028: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r
+    1195826904: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeIndex1_r/toeIndex2_r
+    646079885: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeMiddle1_l
+    1097654076: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r
+    2187718131: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/wrist_r
+    1612093856: CharacterArmature/spine1/spine2/spine3/neck/head/eyeball_l
+    2585371843: CharacterArmature/spine1/spine2/spine3/neck/head/eyeball_r
+    1514572733: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r
+    643209862: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/middle1_r/middle2_r/middle3_r
+    2351154823: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/middle1_l/middle2_l
+    2587957905: CharacterArmature/spine1/pelvis_r/upperLegControl_r/thigh_r
+    2580457792: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/arm_r
     0: 
-    603269435: DollArmature/spine1/pelvis_r/upperLegControl_r
-    2776842732: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r
-    2749159861: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/arm_r
-    92863192: DollArmature/spine1/pelvis_l/upperLegControl_l/kneecap_l
-    2027547462: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/ring1_r/ring2_r/ring3_r
-    1875724528: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/thumb1_l/thumb2_l/thumb3_l
-    3073230902: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeIndex1_r
-    980596801: DollArmature/spine1/spine2/spine3/neck/head
-    3444516781: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r
-    2366395704: DollArmature/spine1
-    92041201: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l
-    3635800221: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l
-    1381645182: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r
-    1653229181: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/ring1_r/ring2_r
-    1930874117: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/thumb1_r/thumb2_r
-    3700998669: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/pinky1_r/pinky2_r
-    903806517: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeMiddle1_l/toeMiddle2_l
-    577761873: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/handTarget_l
-    3005840378: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/wrist_l
-    381598530: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeBig1_r/toeBig2_r
-    201822501: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/middle1_l/middle2_l/middle3_l
-    2440902422: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r
-    132718402: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/thumb1_r/thumb2_r/thumb3_r
-    308554751: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeMiddle1_r/toeMiddle2_r
-    2983570827: DollArmature/spine1/pelvis_l/upperLegControl_l/thigh_l
-    3126376769: DollArmature/spine1/spine2/spine3/shoulder_l
-    993877302: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeRing1_l/toeRing2_l
-    3125619412: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/ring1_l
-    1589983684: DollArmature/spine1/pelvis_l/upperLegControl_l
-    3657717793: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeBig1_r
-    3916405096: DollArmature/spine1/spine2/spine3/neck/head/eyeball_l
-    1828520843: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/middle1_l
-    1079477282: DollArmature/spine1/spine2/spine3/shoulder_r
-    650131495: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/index1_r/index2_r
-    744532001: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/middle1_r/middle2_r
-    3635606717: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeRing1_r/toeRing2_r
-    2033294741: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/arm_l
-    3188007639: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeRing1_l
-    3479731376: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/ring1_l/ring2_l
-    2629578964: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/index1_r
-    3397985240: DollArmature/spine1/pelvis_l/upperLegControl_l/upperThigh_l
-    4242603889: DollArmature/spine1/pelvis_l/glute_l
-    2014408257: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/index1_l
-    1122580913: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeIndex1_l/toeIndex2_l
-    3329358239: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeRing1_r
-    988541037: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeIndex1_r/toeIndex2_r
-    3797871755: DollArmature
-    3503585401: DollArmature/spine1/pelvis_r/hip_r
-    499470398: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toePinky_l
-    2488059449: DollArmature/spine1/spine2/spine3/breast_r
-    1301344977: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/pinky1_l/pinky2_l
-    2018869421: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/pinky1_l
-    2633555512: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/pinky1_r
-    3896338550: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeBig1_l/toeBig2_l
-    1931856075: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/bicep_l
-    325100555: DollArmature/spine1/spine2/spine3/neck/head/eyeball_r
-    3160252273: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/ring1_l/ring2_l/ring3_l
-    3128078408: DollArmature/spine1/pelvis_r/upperLegControl_r/kneecap_r
-    329658247: DollArmature/spine1/spine2/spine3/neck/head/mouth
-    3106651217: DollArmature/spine1/pelvis_r
-    2736876292: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/index1_l/index2_l/index3_l
-    2488353016: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l
-    1378469023: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r
-    3083340027: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/index1_l/index2_l
-    1849949018: DollArmature/spine1/spine2/spine3/breast_l
-    3258108834: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/middle1_r
-    3822291237: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/ring1_r
-    1659722737: DollArmature/spine1/pelvis_r/glute_r
-    3526025632: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/middle1_l/middle2_l
-    1225514034: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeMiddle1_l
-    715995861: DollArmature/spine1/pelvis_r/upperLegControl_r/upperThigh_r
-    105901421: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/upperArm_l
-    3793681881: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/thumb1_l/thumb2_l
-    1394183956: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeBig1_l
-    574923179: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l
-    1706134390: DollArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toePinky_r
-    2272114105: DollArmature/spine1/spine2/spine3
-    2116163832: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/pinky1_l/pinky2_l/pinky3_l
-    369512266: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/pinky1_r/pinky2_r/pinky3_r
-    490381961: DollArmature/spine1/pelvis_l/hip_l
-    2270217397: DollArmature/spine1/spine2/spine3/neck
-    31646852: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/middle1_r/middle2_r/middle3_r
-    548998675: DollArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l
-    3776739315: DollArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeIndex1_l
-    2406308490: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/bicep_r
-    3750497296: DollArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/thumb1_r
+    1189062786: CharacterArmature/spine1
+    3487658008: CharacterArmature/spine1/pelvis_l/upperLegControl_l/upperThigh_l
+    2377484593: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/upperArm_l
+    2699910116: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/thumb1_r/thumb2_r
+    1459618144: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeMiddle1_r/toeMiddle2_r
+    3018716209: CharacterArmature/spine1/pelvis_l/upperLegControl_l/kneecap_l
+    1891292330: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeMiddle1_l/toeMiddle2_l
+    801466645: CharacterArmature/spine1/pelvis_r/upperLegControl_r/upperThigh_r
+    4095436927: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/middle1_l
+    1310907912: CharacterArmature
+    544696118: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/pinky1_r/pinky2_r/pinky3_r
+    1762394081: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeBig1_l
+    2657838128: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/pinky1_l/pinky2_l
+    2335835308: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r
+    2484430038: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r
+    3698729012: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeBig1_l/toeBig2_l
+    4018233501: CharacterArmature/spine1/spine2/spine3/shoulder_l
+    2824642453: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toePinky_r
+    2353499262: CharacterArmature/spine1/pelvis_l/upperLegControl_l
+    1097591906: CharacterArmature/spine1/spine2/spine3/neck/head/mouth
+    586543872: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeBig1_r/toeBig2_r
+    4051147905: CharacterArmature/spine1/pelvis_r/upperLegControl_r
+    1919520518: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/middle1_r/middle2_r
+    1523884118: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/middle1_r
+    3844570723: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/bicep_l
+    3637651749: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeIndex1_l
+    3775594598: CharacterArmature/spine1/pelvis_r
+    1248046075: CharacterArmature/spine1/spine2/spine3/neck
+    623897374: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/ring1_r/ring2_r/ring3_r
+    2946340431: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/ring1_l/ring2_l
+    3724638799: CharacterArmature/spine1/pelvis_r/hip_r
+    100640125: CharacterArmature/spine1/pelvis_r/glute_r
+    258611911: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/thumb1_l
+    4114329286: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/index1_r/index2_r
+    2289010994: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l
+    2505065336: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/index1_l/index2_l/index3_l
+    3786121001: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/ring1_l/ring2_l/ring3_l
+    3759548628: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeBig1_r
+    3692843043: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l
+    1944598068: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeRing1_l
+    3955704914: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/thumb1_r
+    1061426948: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeIndex1_l/toeIndex2_l
+    2171964760: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toeRing1_l/toeRing2_l
+    334471359: CharacterArmature/spine1/pelvis_l/hip_l
+    3868019702: CharacterArmature/spine1/spine2/spine3/neck/head
+    2371113679: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/upperArm_r
+    1280976387: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/index1_l
+    453262597: CharacterArmature/spine1/pelvis_l
+    426765346: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/bicep_r
+    3182607895: CharacterArmature/spine1/spine2/spine3/breast_r
+    872158640: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l
+    361651710: CharacterArmature/spine1/spine2/spine3/shoulder_r
+    3492299997: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l/toePinky_l
+    1126428000: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/arm_l
+    733212455: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/middle1_l/middle2_l/middle3_l
+    1681104410: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/index1_l/index2_l
+    1203602292: CharacterArmature/spine1/spine2/spine3/breast_l
+    1541086811: CharacterArmature/spine1/spine2
+    3326228300: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/ring1_r
+    3363863579: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l/foot_end_l
+    2397279968: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeIndex1_r
+    10629966: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r
+    1505517708: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/thumb1_l/thumb2_l/thumb3_l
+    258168044: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/pinky1_r/pinky2_r
+    202882721: CharacterArmature/spine1/pelvis_r/upperLegControl_r/kneecap_r
+    4182932751: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r
+    3818152113: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeMiddle1_r
+    2830341754: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/pinky1_r
+    1660560595: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeRing1_r/toeRing2_r
+    2834790550: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/index1_r
+    1277085935: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/pinky1_l
+    4252243146: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/index1_r/index2_r/index3_r
+    2682033341: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/ring1_l
+    711933581: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/handTarget_r
+    486563522: CharacterArmature/spine1/pelvis_l/upperLegControl_l/leg_l/foot_l
+    1606606052: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/handTarget_l
+    2330404140: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/wrist_l
+    2616328701: CharacterArmature/spine1/pelvis_l/glute_l
+    194833788: CharacterArmature/spine1/pelvis_r/upperLegControl_r/leg_r/foot_r/foot_end_r/toeRing1_r
+    1213411460: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/pinky1_l/pinky2_l/pinky3_l
+    358153342: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l
+    618896905: CharacterArmature/spine1/pelvis_l/upperLegControl_l/thigh_l
+    2313662897: CharacterArmature/spine1/spine2/spine3
+    41921666: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/ring1_r/ring2_r
+    837118776: CharacterArmature/spine1/spine2/spine3/shoulder_l/armControl_l/forearmControl_l/hand_l/thumb1_l/thumb2_l
+    832059198: CharacterArmature/spine1/spine2/spine3/shoulder_r/armControl_r/forearmControl_r/hand_r/thumb1_r/thumb2_r/thumb3_r
   m_HumanDescription:
     serializedVersion: 3
     m_Human:
@@ -2148,7 +2148,7 @@ Avatar:
       m_Position: {x: 0, y: 0, z: 0}
       m_Rotation: {x: 0, y: 0, z: 0, w: 1}
       m_Scale: {x: 1, y: 1, z: 1}
-    - m_Name: DollArmature
+    - m_Name: CharacterArmature
       m_ParentName: 
       m_Position: {x: -0, y: 0, z: 0}
       m_Rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}

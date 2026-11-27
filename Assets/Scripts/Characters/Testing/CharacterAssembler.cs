@@ -14,9 +14,17 @@ public class CharacterAssembler : MonoBehaviour
     private string charactersFolder = null;
     #endregion
 
-    private void Start()
+    private void Awake()
     {
         GetCharactersFolder();
+    }
+
+    private void Start()
+    {
+        if (string.IsNullOrEmpty(charactersFolder))
+        {
+            GetCharactersFolder();
+        }
     }
 
     private void GetCharactersFolder()
@@ -72,6 +80,11 @@ public class CharacterAssembler : MonoBehaviour
         }
 
         isLoading = true;
+
+        if (string.IsNullOrEmpty(charactersFolder))
+        {
+            GetCharactersFolder();
+        }
 
         if (!Directory.Exists(charactersFolder))
         {
@@ -160,14 +173,20 @@ public class CharacterAssembler : MonoBehaviour
             }
 
             // 4. Final setup on Main Thread
+            UpgradeIncompatibleMaterialsToURP(prefab);
+
             VivaCharacter newData = prefab.AddComponent<VivaCharacter>();
             newData.characterData = fileData.CharData;
+
+            GameObject headObj = !string.IsNullOrEmpty(fileData.CharData?.Info?.HeadBonePath)
+                ? VivaUtilities.FindGameObjectByPath(prefab.gameObject, fileData.CharData.Info.HeadBonePath)
+                : null;
 
             CharacterModel newCharacterModel = new()
             {
                 bundleName = bundleName,
                 prefab = prefab,
-                headBone = VivaUtilities.FindGameObjectByPath(prefab.gameObject, fileData.CharData.Info.HeadBonePath).transform,
+                headBone = headObj != null ? headObj.transform : null,
                 vivaCharacterData = fileData.CharData
             };
 
@@ -180,6 +199,100 @@ public class CharacterAssembler : MonoBehaviour
 
         Debug.Log($"[Chara Loader] Loaded {loadedCharacters.Count} characters.");
         isLoading = false;
+    }
+
+    private static void UpgradeIncompatibleMaterialsToURP(GameObject root)
+    {
+        Shader urpLit = Shader.Find("Universal Render Pipeline/Lit");
+        Shader urpUnlit = Shader.Find("Universal Render Pipeline/Unlit");
+        if (urpLit == null && urpUnlit == null) return;
+
+        foreach (Renderer renderer in root.GetComponentsInChildren<Renderer>(true))
+        {
+            Material[] mats = renderer.sharedMaterials;
+            if (mats == null) continue;
+
+            for (int i = 0; i < mats.Length; i++)
+            {
+                Material mat = mats[i];
+                if (mat == null) continue;
+
+                string shaderName = mat.shader != null ? mat.shader.name : string.Empty;
+                bool isBuiltInOnly =
+                    shaderName == "Hidden/InternalErrorShader" ||
+                    shaderName == "Standard" ||
+                    shaderName == "Standard (Specular setup)" ||
+                    shaderName.StartsWith("Legacy Shaders/", StringComparison.Ordinal) ||
+                    shaderName.StartsWith("Mobile/", StringComparison.Ordinal) ||
+                    shaderName.StartsWith("Unlit/", StringComparison.Ordinal);
+
+                // If the project has a URP-compiled version of this shader (e.g. lilToon),
+                // rebind to the local project shader instead of the AssetBundle's Built-in RP shader.
+                if (!string.IsNullOrEmpty(shaderName) && !isBuiltInOnly)
+                {
+                    Shader localShader = Shader.Find(shaderName);
+                    if (localShader != null && localShader.isSupported)
+                    {
+                        if (mat.shader != localShader)
+                        {
+                            mat.shader = localShader;
+                            Debug.Log($"[Chara Loader] Rebound AssetBundle shader '{shaderName}' on '{mat.name}' to project URP shader.");
+                        }
+                        continue;
+                    }
+                }
+
+                bool isBrokenOrBuiltIn =
+                    mat.shader == null ||
+                    !mat.shader.isSupported ||
+                    isBuiltInOnly ||
+                    Shader.Find(shaderName) == null;
+
+                if (!isBrokenOrBuiltIn) continue;
+
+                Texture mainTex = mat.HasProperty("_MainTex") ? mat.GetTexture("_MainTex") : mat.mainTexture;
+                Color baseColor = mat.HasProperty("_Color") ? mat.GetColor("_Color") : Color.white;
+                Texture bumpMap = mat.HasProperty("_BumpMap") ? mat.GetTexture("_BumpMap") : null;
+                float cutoff = mat.HasProperty("_Cutoff") ? mat.GetFloat("_Cutoff") : 0.5f;
+                float mode = mat.HasProperty("_Mode") ? mat.GetFloat("_Mode") : 0f;
+                int prevRenderQueue = mat.renderQueue;
+
+                bool useUnlit = shaderName.StartsWith("Unlit/", StringComparison.Ordinal) && urpUnlit != null;
+                mat.shader = useUnlit ? urpUnlit : (urpLit ?? urpUnlit);
+
+                if (mainTex != null && mat.HasProperty("_BaseMap"))
+                {
+                    mat.SetTexture("_BaseMap", mainTex);
+                }
+                if (mat.HasProperty("_BaseColor"))
+                {
+                    mat.SetColor("_BaseColor", baseColor);
+                }
+                if (bumpMap != null && mat.HasProperty("_BumpMap"))
+                {
+                    mat.SetTexture("_BumpMap", bumpMap);
+                    mat.EnableKeyword("_NORMALMAP");
+                }
+
+                // Preserve Cutout (mode == 1) or Transparent (mode == 2/3)
+                if (mode >= 2f || prevRenderQueue >= 3000)
+                {
+                    if (mat.HasProperty("_Surface")) mat.SetFloat("_Surface", 1f);
+                    mat.SetOverrideTag("RenderType", "Transparent");
+                    mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                }
+                else if (Mathf.Approximately(mode, 1f) || (prevRenderQueue >= 2450 && prevRenderQueue < 3000))
+                {
+                    if (mat.HasProperty("_AlphaClip")) mat.SetFloat("_AlphaClip", 1f);
+                    if (mat.HasProperty("_Cutoff")) mat.SetFloat("_Cutoff", cutoff);
+                    mat.EnableKeyword("_ALPHATEST_ON");
+                    mat.SetOverrideTag("RenderType", "TransparentCutout");
+                    mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+                }
+
+                Debug.Log($"[Chara Loader] Remapped shader '{shaderName}' on '{mat.name}' to '{mat.shader.name}'.");
+            }
+        }
     }
 
     /// <summary>

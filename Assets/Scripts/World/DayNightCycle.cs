@@ -321,13 +321,13 @@ public class DayNightCycle : MonoBehaviour
                 new GradientColorKey[]
                 {
                     new GradientColorKey(new Color(0.25f, 0.35f, 0.55f), 0.000f), // 00h00 Midnight indigo
-                    new GradientColorKey(new Color(0.95f, 0.48f, 0.35f), 0.220f), // 05h17 Dawn rose
-                    new GradientColorKey(new Color(1.00f, 0.72f, 0.42f), 0.250f), // 06h00 Sunrise golden peach
+                    new GradientColorKey(new Color(0.45f, 0.65f, 0.98f), 0.220f), // 05h17 Dawn blue
+                    new GradientColorKey(new Color(0.68f, 0.80f, 1.00f), 0.250f), // 06h00 Sunrise cool blue
                     new GradientColorKey(new Color(1.00f, 0.92f, 0.78f), 0.300f), // 07h12 Warm morning
                     new GradientColorKey(new Color(1.00f, 0.98f, 0.94f), 0.500f), // 12h00 Clean midday sun
                     new GradientColorKey(new Color(1.00f, 0.82f, 0.55f), 0.700f), // 16h48 Golden hour
-                    new GradientColorKey(new Color(1.00f, 0.52f, 0.22f), 0.750f), // 18h00 Fiery amber sunset
-                    new GradientColorKey(new Color(0.85f, 0.32f, 0.28f), 0.790f)  // 18h57 Dusk crimson
+                    new GradientColorKey(new Color(1.00f, 0.48f, 0.20f), 0.750f), // 18h00 Fiery orange-red sunset
+                    new GradientColorKey(new Color(0.85f, 0.28f, 0.22f), 0.790f)  // 18h57 Dusk reddish
                 },
                 new GradientAlphaKey[]
                 {
@@ -387,11 +387,12 @@ public class DayNightCycle : MonoBehaviour
             moonIntensityCurve = new AnimationCurve();
             moonIntensityCurve.AddKey(new Keyframe(0.000f, 0.18f)); // Midnight peak
             moonIntensityCurve.AddKey(new Keyframe(0.200f, 0.15f)); // Late night
-            moonIntensityCurve.AddKey(new Keyframe(0.230f, 0.08f)); // Dawn begins
-            moonIntensityCurve.AddKey(new Keyframe(0.250f, 0.00f)); // Sunrise (06h00)
-            moonIntensityCurve.AddKey(new Keyframe(0.730f, 0.00f)); // Day
-            moonIntensityCurve.AddKey(new Keyframe(0.750f, 0.03f)); // Sunset (18h00)
-            moonIntensityCurve.AddKey(new Keyframe(0.780f, 0.09f)); // Dusk
+            moonIntensityCurve.AddKey(new Keyframe(0.230f, 0.10f)); // Dawn begins
+            moonIntensityCurve.AddKey(new Keyframe(0.250f, 0.06f)); // Sunrise overlap (06h00)
+            moonIntensityCurve.AddKey(new Keyframe(0.270f, 0.00f)); // Post-sunrise fade out (06h29)
+            moonIntensityCurve.AddKey(new Keyframe(0.720f, 0.00f)); // Day
+            moonIntensityCurve.AddKey(new Keyframe(0.750f, 0.06f)); // Sunset overlap (18h00)
+            moonIntensityCurve.AddKey(new Keyframe(0.780f, 0.10f)); // Dusk
             moonIntensityCurve.AddKey(new Keyframe(0.850f, 0.16f)); // Night
             moonIntensityCurve.AddKey(new Keyframe(1.000f, 0.18f));
 
@@ -663,19 +664,30 @@ public class DayNightCycle : MonoBehaviour
             skyFillLight.transform.rotation = Quaternion.Euler(60f, azimuth + 180f, 0f);
         }
 
-        // 5. Ambient Intensity & Fog Color (Smooth Environment Transitions)
+        // 5. Ambient Intensity, Ambient Tint & Fog Color (Smooth Environment Transitions)
         if (ambientIntensityCurve != null)
         {
             RenderSettings.ambientIntensity = ambientIntensityCurve.Evaluate(normalizedTime);
         }
+        RenderSettings.ambientLight = CalculateAmbientColor(timeOfDay);
 
         if (RenderSettings.fog && fogColorGradient != null)
         {
             RenderSettings.fogColor = fogColorGradient.Evaluate(normalizedTime);
         }
 
-        // 6. Moon & Moonlight
+        // 6. Moon & Moonlight (with dawn/dusk overlap floor so sun/moon handoff never goes pitch black)
         float moonIntensity = moonIntensityCurve != null ? Mathf.Max(0f, moonIntensityCurve.Evaluate(normalizedTime)) : 0f;
+        if (timeOfDay >= 5.25f && timeOfDay <= 6.5f)
+        {
+            float dawnBridge = Mathf.InverseLerp(6.5f, 5.5f, timeOfDay) * 0.08f;
+            moonIntensity = Mathf.Max(moonIntensity, dawnBridge);
+        }
+        else if (timeOfDay >= 17.5f && timeOfDay <= 18.75f)
+        {
+            float duskBridge = Mathf.InverseLerp(17.5f, 18.5f, timeOfDay) * 0.08f;
+            moonIntensity = Mathf.Max(moonIntensity, duskBridge);
+        }
         if (moonLight != null)
         {
             moonLight.intensity = moonIntensity;
@@ -712,8 +724,12 @@ public class DayNightCycle : MonoBehaviour
         bool isNightTime = (timeOfDay < 5.75f || timeOfDay >= 17.75f);
         UpdateDaylightSensors(isNightTime);
 
-        // 8. Update Environment reflections/GI (throttled to avoid frame-by-frame ambient probe thrashing)
-        if (Application.isPlaying && updateEnvironmentGI && environmentUpdateInterval > 0f)
+        // 8. Update Environment reflections/GI (throttled in Play Mode, immediate on scrub in Edit Mode)
+        if (!Application.isPlaying)
+        {
+            DynamicGI.UpdateEnvironment();
+        }
+        else if (updateEnvironmentGI && environmentUpdateInterval > 0f)
         {
             if (Time.time - _lastEnvironmentUpdateTime >= environmentUpdateInterval)
             {
@@ -1036,7 +1052,30 @@ public class DayNightCycle : MonoBehaviour
         if (t < 5.5f || t > 18.5f) return 0f;
         float rad = (t - 6f) / 24f * Mathf.PI * 2f;
         float trueElevation = Mathf.Sin(rad) * maxSunElevation;
-        return Mathf.Clamp01((trueElevation - 4f) / Mathf.Max(0.1f, minSunElevation - 4f));
+        return Mathf.Clamp01((trueElevation + 2f) / Mathf.Max(0.1f, minSunElevation + 2f));
+    }
+
+    /// <summary>
+    /// Smoothly tints ambient light across the day: blue at break of dawn, neutral/warm by day,
+    /// orange/reddish at turn of night, and cool slate-blue at night.
+    /// </summary>
+    public static Color CalculateAmbientColor(float t)
+    {
+        Color nightBlue = new Color(0.14f, 0.20f, 0.34f);
+        Color dawnBlue = new Color(0.32f, 0.48f, 0.78f);
+        Color morningNeutral = new Color(0.76f, 0.75f, 0.74f);
+        Color dayNeutral = new Color(0.78f, 0.77f, 0.74f);
+        Color duskOrangeRed = new Color(0.82f, 0.42f, 0.24f);
+        Color twilightRed = new Color(0.45f, 0.20f, 0.22f);
+
+        if (t < 4.5f) return nightBlue;
+        if (t < 6.0f) return Color.Lerp(nightBlue, dawnBlue, (t - 4.5f) / 1.5f);
+        if (t < 7.5f) return Color.Lerp(dawnBlue, morningNeutral, (t - 6.0f) / 1.5f);
+        if (t < 16.5f) return dayNeutral;
+        if (t < 18.0f) return Color.Lerp(dayNeutral, duskOrangeRed, (t - 16.5f) / 1.5f);
+        if (t < 19.25f) return Color.Lerp(duskOrangeRed, twilightRed, (t - 18.0f) / 1.25f);
+        if (t < 20.5f) return Color.Lerp(twilightRed, nightBlue, (t - 19.25f) / 1.25f);
+        return nightBlue;
     }
 
     /// <summary>

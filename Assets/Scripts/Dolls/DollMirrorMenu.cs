@@ -18,9 +18,9 @@ namespace Viva.Dolls
     public class DollMirrorMenu : MonoBehaviour, IInteractable
     {
         [Header("Proximity & Activation")]
-        [SerializeField] private float approachRadius = 1.85f;
-        [SerializeField] private float exitResetRadius = 2.4f;
-        [SerializeField] private Vector3 proximityLocalOffset = new Vector3(-0.31f, -0.30f, 0.96f);
+        [SerializeField] private float approachRadius = 0.85f;
+        [SerializeField] private float exitResetRadius = 1.35f;
+        [SerializeField] private Vector3 proximityLocalOffset = new Vector3(-0.31f, -0.30f, 0.70f);
 
         [Header("UI References")]
         [SerializeField] private Canvas mirrorCanvas;

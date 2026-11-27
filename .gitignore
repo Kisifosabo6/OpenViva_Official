@@ -142,6 +142,8 @@ application_generated_unity_*
 /Assets/Scenes/MainScene/Models/loli.meta
 
 # Third-party proprietary assets
+/Assets/Paid/
+/Assets/Paid.meta
 /Assets/MagicaCloth2/
 /Assets/MagicaCloth2.meta
 

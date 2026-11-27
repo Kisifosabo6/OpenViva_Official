@@ -49,10 +49,7 @@ public class RagdollSpawner : MonoBehaviour
 
         _characterReader = GetComponent<CharacterAssembler>();
 
-        if (_characterReader != null)
-        {
-            _characterReader.ReloadAllCharacters(); // Initial reload
-        }
+        ResolveListContentObject();
 
         StartCoroutine(ReloadRoutine());
     }
@@ -91,8 +88,46 @@ public class RagdollSpawner : MonoBehaviour
         yield return null;
     }
     
+    private void ResolveListContentObject()
+    {
+        if (listContentObject != null) return;
+
+        PauseMenu pauseMenu = FindFirstObjectByType<PauseMenu>(FindObjectsInactive.Include);
+        if (pauseMenu == null) return;
+
+        foreach (Transform t in pauseMenu.GetComponentsInChildren<Transform>(true))
+        {
+            if (t.name == "CharactersSelection")
+            {
+                Transform content = t.Find("Scroll Menu/Viewport/Content");
+                if (content == null)
+                {
+                    foreach (Transform child in t.GetComponentsInChildren<Transform>(true))
+                    {
+                        if (child.name == "Content")
+                        {
+                            content = child;
+                            break;
+                        }
+                    }
+                }
+                if (content != null)
+                {
+                    listContentObject = content.gameObject;
+                }
+                break;
+            }
+        }
+    }
+
     private void FillBookCharacters()
     {
+        ResolveListContentObject();
+        if (listContentObject == null || characterItemPrefab == null || _characterReader == null)
+        {
+            return;
+        }
+
         foreach (Transform child in listContentObject.transform)
         {
             Destroy(child.gameObject);
@@ -105,14 +140,20 @@ public class RagdollSpawner : MonoBehaviour
             GameObject newEntry = Instantiate(characterItemPrefab, listContentObject.transform);
 
             var item = newEntry.GetComponent<CharacterListItem>();
-
-            item.SetupButton(model.bundleName, model.vivaCharacterData.Info.Name, SpawnAndSetupRagdoll);
+            if (item != null)
+            {
+                string displayName = !string.IsNullOrEmpty(model.vivaCharacterData?.Info?.Name)
+                    ? model.vivaCharacterData.Info.Name
+                    : model.bundleName;
+                item.SetupButton(model.bundleName, displayName, SpawnAndSetupRagdoll);
+            }
         }
     }
 
     private GameObject SpawnCharacter(GameObject prefabToSpawn)
     {
-        GameObject instance = Instantiate(prefabToSpawn, spawnLocation.position, spawnLocation.rotation.normalized);
+        Transform targetLocation = spawnLocation != null ? spawnLocation : transform;
+        GameObject instance = Instantiate(prefabToSpawn, targetLocation.position, targetLocation.rotation.normalized);
         instance.name = "RagdollCharacter_" + Time.frameCount;
 
         return instance;
@@ -208,7 +249,7 @@ public class RagdollSpawner : MonoBehaviour
         agent.speed = agentSpeed;
         agent.radius = agentRadius;
         agent.height = agentHeight;
-        agent.baseOffset = -0.03f;
+        agent.baseOffset = 0f;
         agent.angularSpeed = 3600f;
         agent.acceleration = 8f;
         agent.stoppingDistance = stoppingDistance;
@@ -246,7 +287,7 @@ public class RagdollSpawner : MonoBehaviour
         ReduceAndUpdateThickness(ragdoll);
 
         // 7. Set up cloth physics
-        if (physicsBoneDataList.Count != 0)
+        if (physicsBoneDataList != null && physicsBoneDataList.Count != 0)
         {
             // TODO: Use PhysicsBone parameters instead of default values here
             _physicsAttacher.CreateBoneCloth(newChar, physicsBoneDataList);
@@ -264,7 +305,9 @@ public class RagdollSpawner : MonoBehaviour
         CharacterInteractable newInteractableScript = newChar.AddComponent<CharacterInteractable>();
         newInteractableScript.selectionArrow = newSelectorScript.SpawnedSelector;
         newInteractableScript.SetSelectedVisual(false);
-        newInteractableScript.characterName = importedModel.vivaCharacterData.CharacterName;
+        newInteractableScript.characterName = importedModel?.vivaCharacterData != null
+            ? importedModel.vivaCharacterData.CharacterName
+            : bundleName;
 
         Outline newOutline = newChar.AddComponent<Outline>();
         newOutline.enabled = false;
@@ -319,6 +362,7 @@ public class RagdollSpawner : MonoBehaviour
         if (animatorController != null)
         {
             animator.runtimeAnimatorController = animatorController;
+            animator.applyRootMotion = false;
             Debug.Log($"[Chara Loader] Assigned Animator Controller: {animatorController}");
         }
         else
