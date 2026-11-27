@@ -19,12 +19,12 @@ float3 ScreenColor(float3 a, float3 b)
 
 float3 ApplyColorFromLight(float3 a, float3 mainLightColor, float sun, float camRim, float worldRim)
 {
-    float lightRim = saturate(3.0 - camRim * 6.0) * worldRim;
+    float lightRim = saturate(3.0 - camRim * 6.0) * worldRim * saturate(sun * 2.5) * 0.25;
     camRim = 1.0 - saturate(camRim + 0.3);
     camRim *= camRim;
-    a *= saturate(1.0 - camRim); // darkening
-    a = ScreenColor(a, mainLightColor * sun); // lights
-    a += mainLightColor * lightRim; // lights
+    a *= saturate(1.0 - camRim * 0.35); // subtle edge darkening
+    a = ScreenColor(a, mainLightColor * sun * 0.35); // direct light highlight
+    a += mainLightColor * lightRim; // shadow-attenuated rim
     return a;
 }
 
@@ -44,14 +44,13 @@ float3 AnimeCalculateAmbience(float3 worldPos, float3 worldNorm, float3 ambient,
         Light light = GetAdditionalLight(lightIndex, worldPos);
         float3 toLight = light.direction;
         float ndotl = max(0.0, dot(toLight, worldNorm));
-        float diff = (0.7 + ndotl * 0.3) * (light.distanceAttenuation * light.shadowAttenuation);
+        float diff = (0.2 + ndotl * 0.8) * (light.distanceAttenuation * light.shadowAttenuation);
         additionalLightsColor += light.color * diff;
     }
 #endif
 
-    float3 ambience = additionalLightsColor;
-    ambience += lerp(ambient, mainLightColor, sun) + toonAmbience;
-    return ambience;
+    float3 ambience = additionalLightsColor + ambient + mainLightColor * sun + toonAmbience;
+    return min(ambience, 1.15);
 }
 
 #endif

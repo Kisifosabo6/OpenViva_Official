@@ -5,7 +5,7 @@
         _MainTex ("Main Texture", 2D) = "white" {}
         _SkinColor ("Skin color", Color) = (1., 0.86, 0.82)
         _SkinShadeColor ("Skin Shade color", Color) = (1., 0.86, 0.82)
-        _ToonProximityAmbience ("Toon Proximity Ambience", Color) = (1., 1., 1.)
+        _ToonProximityAmbience ("Toon Proximity Ambience", Color) = (0., 0., 0., 1.)
         _OutlineColor ("Outline color", Color) = (0., 0., 0.)
         _OutSizeMin ("Outline Size Min", Range(0., 0.003)) = 0.001
         _OutSizeMax ("Outline Size Max", Range(0., 0.003)) = 0.001

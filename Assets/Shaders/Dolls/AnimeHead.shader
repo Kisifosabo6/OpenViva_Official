@@ -3,7 +3,10 @@
     Properties
     {
         _MainTex ("Main Texture", 2D) = "white" {}
-        _ToonProximityAmbience ("Toon Proximity Ambience", Color) = (1, 1, 1, 1)
+        _BodyTex ("Body Torso Texture", 2D) = "white" {}
+        _SkinColor ("Skin Color", Color) = (1, 0.86, 0.82, 1)
+        _UseNeckBlend ("Use Neck Blend", Float) = 0
+        _ToonProximityAmbience ("Toon Proximity Ambience", Color) = (0, 0, 0, 1)
         _OutlineColor ("Outline color", Color) = (0, 0, 0, 1)
         _OutSizeMin ("Outline Size Min", Range(0., 0.003)) = 0.001
         _OutSizeMax ("Outline Size Max", Range(0., 0.003)) = 0.001
@@ -49,6 +52,9 @@
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
+                float4 _BodyTex_ST;
+                float4 _SkinColor;
+                float _UseNeckBlend;
                 float4 _ToonProximityAmbience;
                 float4 _OutlineColor;
                 float _OutSizeMin;
@@ -101,23 +107,32 @@
             {
                 float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
+                float2 uv1 : TEXCOORD1;
                 float3 normalOS : NORMAL;
+                float4 color : COLOR;
             };
 
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float3 normalWS : TEXCOORD1;
-                float3 positionWS : TEXCOORD2;
-                float fogFactor : TEXCOORD3;
+                float2 uv1 : TEXCOORD1;
+                float3 normalWS : TEXCOORD2;
+                float3 positionWS : TEXCOORD3;
+                float fogFactor : TEXCOORD4;
+                float neckBlend : TEXCOORD5;
             };
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
+            TEXTURE2D(_BodyTex);
+            SAMPLER(sampler_BodyTex);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
+                float4 _BodyTex_ST;
+                float4 _SkinColor;
+                float _UseNeckBlend;
                 float4 _ToonProximityAmbience;
                 float4 _OutlineColor;
                 float _OutSizeMin;
@@ -136,6 +151,8 @@
                 output.positionWS = vertexInput.positionWS;
                 output.normalWS = normalInput.normalWS;
                 output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+                output.uv1 = input.uv1;
+                output.neckBlend = input.color.r;
                 output.fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
                 return output;
             }
@@ -151,6 +168,12 @@
                 float worldRim = saturate(dot(mainLight.direction, worldNorm));
                 float4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 float3 color = texColor.rgb;
+                if (_UseNeckBlend > 0.5)
+                {
+                    float bodyR = SAMPLE_TEXTURE2D(_BodyTex, sampler_BodyTex, input.uv1).r;
+                    float3 bodyCol = _SkinColor.rgb * float3(1.0, bodyR, bodyR);
+                    color = lerp(bodyCol, color, saturate(input.neckBlend));
+                }
 
                 float3 worldViewDir = normalize(GetCameraPositionWS() - worldPos);
                 float camRim = dot(worldViewDir, worldNorm);

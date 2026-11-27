@@ -28,6 +28,9 @@ namespace Viva.Dolls
         public DollModel CurrentModel { get; set; }
         public readonly List<GameObject> createdBones = new List<GameObject>();
 
+        private Mesh baseBodyMeshAsset;
+        private Mesh runtimeBodyMesh;
+
         private static readonly int SkinColorProp = Shader.PropertyToID("_SkinColor");
         private static readonly int NeckColorProp = Shader.PropertyToID("_NeckColor");
         private static readonly int NeckBlendStrengthProp = Shader.PropertyToID("_NeckBlendStrength");
@@ -48,7 +51,6 @@ namespace Viva.Dolls
             {
                 bodyArmature = transform.Find("DollArmature")
                     ?? transform.Find("default_armature")
-                    ?? transform.Find("ShinobuArmature")
                     ?? DollUtilities.FindTransformRecursive(transform, "Armature")
                     ?? transform;
             }
@@ -161,6 +163,35 @@ namespace Viva.Dolls
                     }
                 }
             }
+        }
+
+        public Mesh GetBaseBodyMesh()
+        {
+            if (bodySMRs == null || bodySMRs.Length == 0 || bodySMRs[0] == null) return null;
+            if (baseBodyMeshAsset == null)
+            {
+                baseBodyMeshAsset = bodySMRs[0].sharedMesh;
+            }
+            return baseBodyMeshAsset;
+        }
+
+        public Mesh GetOrCreateRuntimeBodyMesh()
+        {
+            if (bodySMRs == null || bodySMRs.Length == 0 || bodySMRs[0] == null) return null;
+            if (baseBodyMeshAsset == null)
+            {
+                baseBodyMeshAsset = bodySMRs[0].sharedMesh;
+            }
+            if (baseBodyMeshAsset == null) return null;
+
+            if (runtimeBodyMesh != null)
+            {
+                Destroy(runtimeBodyMesh);
+            }
+            runtimeBodyMesh = Instantiate(baseBodyMeshAsset);
+            runtimeBodyMesh.name = $"{baseBodyMeshAsset.name}_Runtime";
+            bodySMRs[0].sharedMesh = runtimeBodyMesh;
+            return runtimeBodyMesh;
         }
 
         public void DestroyAllCreatedBones()

@@ -3,7 +3,7 @@
     Properties
     {
         _MainTex ("Main Texture", 2D) = "white" {}
-        _ToonProximityAmbience ("Toon Proximity Ambience", Color) = (1, 1, 1, 1)
+        _ToonProximityAmbience ("Toon Proximity Ambience", Color) = (0, 0, 0, 1)
         _PupilShrink ("Pupil Shrink", Range(1., 2.)) = 1.0
         _SideMultiplier ("Side Multiplier", Range(-1., 1.)) = 1.0
         _PupilRight ("Pupil Right", Range(-1., 1.)) = 0.0
@@ -101,7 +101,7 @@
                 float3 ambient = SampleSH(worldNorm);
                 float3 ambience = AnimeCalculateAmbience(input.positionWS, worldNorm, ambient, mainLight.color, sun, _ToonProximityAmbience.rgb);
 
-                color.rgb *= ambience;
+                color.rgb *= saturate(ambience);
                 color.rgb = MixFog(color.rgb, input.fogFactor);
                 return half4(color.rgb, 1.0);
             }

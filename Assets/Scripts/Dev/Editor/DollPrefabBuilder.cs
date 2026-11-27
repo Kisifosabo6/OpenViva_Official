@@ -29,9 +29,16 @@ namespace Viva.Dev
         private const string ShirtMatPath = "Assets/Materials/Dolls/Materials/default_shirt.mat";
         private const string SkirtMatPath = "Assets/Materials/Dolls/Materials/default_skirt.mat";
         private const string PantiesMatPath = "Assets/Materials/Dolls/Materials/default_panties.mat";
+        private const string ShoeMatPath = "Assets/Materials/Dolls/Materials/default_shoe.mat";
+        private const string ShirtAlbedoPath = "Assets/Materials/Dolls/Textures/default_shirt_albedo.png";
+        private const string ShirtNormalPath = "Assets/Materials/Dolls/Textures/default_shirt_normal.png";
+        private const string ShoeAlbedoPath = "Assets/Materials/Dolls/Textures/default_shoe_albedo.png";
+        private const string ShoeNormalPath = "Assets/Materials/Dolls/Textures/default_shoe_normal.png";
+        private const string ShoeMetallicPath = "Assets/Materials/Dolls/Textures/default_shoe_metallic.png";
         private const string PreviewMirrorMatPath = "Assets/Materials/Dolls/Materials/default_preview_mirror.mat";
         private const string PoseCachePath = "Assets/Materials/Dolls/Pose/default_apose.asset";
         private const string DollAvatarPath = "Assets/Materials/Dolls/Pose/DollAvatar.asset";
+        private const string DollControllerPath = "Assets/Materials/Dolls/Pose/DollAC.controller";
 
         [MenuItem("OpenViva/Dolls/1. Configure Doll Assets & Materials", false, 10)]
         public static void ConfigureDollAssetsAndMaterials()
@@ -91,7 +98,7 @@ namespace Viva.Dev
             instance.SetActive(true);
 
             Animator animator = DollUtilities.EnsureComponent<Animator>(instance);
-            RuntimeAnimatorController ac = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Resources/Animations/LoliAC.controller");
+            RuntimeAnimatorController ac = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(DollControllerPath);
             if (ac != null) animator.runtimeAnimatorController = ac;
 
             BoxCollider col = DollUtilities.EnsureComponent<BoxCollider>(instance);
@@ -138,13 +145,11 @@ namespace Viva.Dev
 
             Material matTorso = AssetDatabase.LoadAssetAtPath<Material>(TorsoMatPath);
             Material matLimbs = AssetDatabase.LoadAssetAtPath<Material>(LimbsMatPath);
-            Material matHeadDefault = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Head.mat");
-            Material matEyesDefault = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Eyes.mat");
-            Material matCheeksDefault = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Cheeks.mat");
-            Material matHairDefault = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Hair.mat");
-            Material matShirt = AssetDatabase.LoadAssetAtPath<Material>(ShirtMatPath) ?? AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Shirt.mat");
-            Material matSkirt = AssetDatabase.LoadAssetAtPath<Material>(SkirtMatPath) ?? AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Skirt.mat");
-            Material matPanties = AssetDatabase.LoadAssetAtPath<Material>(PantiesMatPath) ?? AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Shinobu/Shinobu_Panties.mat");
+            Material matHeadDefault = AssetDatabase.LoadAssetAtPath<Material>(HeadMatPath);
+            Material matShirt = AssetDatabase.LoadAssetAtPath<Material>(ShirtMatPath);
+            Material matSkirt = AssetDatabase.LoadAssetAtPath<Material>(SkirtMatPath);
+            Material matPanties = AssetDatabase.LoadAssetAtPath<Material>(PantiesMatPath);
+            Material matShoe = AssetDatabase.LoadAssetAtPath<Material>(ShoeMatPath);
 
             // Build Humanoid DollAvatar BEFORE attaching head/hair/cloth meshes (which add duplicate 'head'/'spine3' names)
             Avatar dollAvatar = CreateOrUpdateDollAvatar(instance);
@@ -165,32 +170,20 @@ namespace Viva.Dev
             );
             DollPoseCache poseCache = CreateOrUpdatePoseCache(bodySMR);
 
-            // 2. Fallback default head (replaced dynamically when loading a card via Stegosaurus)
-            SkinnedMeshRenderer headSMR = AttachSubMesh(
-                instance,
-                "Assets/Resources/Models/loli/head.fbx",
-                "head",
-                new[] { matHeadDefault, matHeadDefault, matEyesDefault, matCheeksDefault != null ? matCheeksDefault : matHeadDefault, matEyesDefault },
-                boneMap,
-                headBone
-            );
-            if (headSMR == null)
-            {
-                GameObject headGo = new GameObject("head");
-                headGo.transform.SetParent(instance.transform, false);
-                headSMR = headGo.AddComponent<SkinnedMeshRenderer>();
-                headSMR.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(HeadMatPath);
-                headSMR.rootBone = headBone;
-            }
+            // 2. Placeholder head SMR (populated dynamically when loading a character PNG via Stegosaurus)
+            GameObject headGo = new GameObject("head");
+            headGo.transform.SetParent(instance.transform, false);
+            SkinnedMeshRenderer headSMR = headGo.AddComponent<SkinnedMeshRenderer>();
+            headSMR.sharedMaterial = matHeadDefault;
+            headSMR.rootBone = headBone;
+            headSMR.updateWhenOffscreen = true;
             companionAI.headSMR = headSMR;
 
-            // 3. Fallback default hair (hidden automatically when a card head is loaded)
-            GameObject hairObj = AttachDefaultHair(instance, matHairDefault, headBone);
-
-            // 4. Default clothing (shirt, panties, skirt)
+            // 4. Default clothing (shirt, panties, skirt, shoes)
             AttachSubMesh(instance, "Assets/Models/clothes/prefabs/shirt 1.prefab", "shirt 1", new[] { matShirt }, boneMap, rootBone);
             AttachSubMesh(instance, "Assets/Models/clothes/prefabs/panty 1.prefab", "panty 1", new[] { matPanties }, boneMap, rootBone);
             AttachSkirt(instance, matSkirt, boneMap);
+            AttachFootwear(instance, "Assets/Models/clothes/prefabs/shoe 1.prefab", matShoe, boneMap);
 
             // 5. Wire DollInstance & SpringManager
             DollInstance doll = DollUtilities.EnsureComponent<DollInstance>(instance);
@@ -198,7 +191,7 @@ namespace Viva.Dev
             doll.headBone = headBone;
             doll.headSMR = headSMR;
             doll.bodySMRs = bodySMR != null ? new[] { bodySMR } : System.Array.Empty<SkinnedMeshRenderer>();
-            doll.defaultHairRoot = hairObj;
+            doll.defaultHairRoot = null;
             doll.basePoseCache = poseCache;
             doll.EnsureEyeTransforms();
 
@@ -340,33 +333,75 @@ namespace Viva.Dev
             if (torsoMat.HasProperty("_SkinShadeColor")) torsoMat.SetColor("_SkinShadeColor", defaultShade);
             if (torsoMat.HasProperty("_NeckColor")) torsoMat.SetColor("_NeckColor", defaultSkin);
             if (torsoMat.HasProperty("_NeckBlendStrength")) torsoMat.SetFloat("_NeckBlendStrength", 1.0f);
+            if (torsoMat.HasProperty("_ToonProximityAmbience")) torsoMat.SetColor("_ToonProximityAmbience", Color.black);
             EditorUtility.SetDirty(torsoMat);
 
             Material limbsMat = LoadOrCreateMaterial(LimbsMatPath, bodyShader);
             limbsMat.SetTexture("_MainTex", limbsTex);
             if (limbsMat.HasProperty("_SkinColor")) limbsMat.SetColor("_SkinColor", defaultSkin);
             if (limbsMat.HasProperty("_SkinShadeColor")) limbsMat.SetColor("_SkinShadeColor", defaultShade);
+            if (limbsMat.HasProperty("_ToonProximityAmbience")) limbsMat.SetColor("_ToonProximityAmbience", Color.black);
             EditorUtility.SetDirty(limbsMat);
 
             Material headMat = LoadOrCreateMaterial(HeadMatPath, headShader);
+            if (headMat.HasProperty("_ToonProximityAmbience")) headMat.SetColor("_ToonProximityAmbience", Color.black);
             EditorUtility.SetDirty(headMat);
 
             Material pupilMat = LoadOrCreateMaterial(PupilMatPath, pupilShader);
+            if (pupilMat.HasProperty("_ToonProximityAmbience")) pupilMat.SetColor("_ToonProximityAmbience", Color.black);
             EditorUtility.SetDirty(pupilMat);
 
             Material previewMirrorMat = LoadOrCreateMaterial(PreviewMirrorMatPath, mirrorShader);
             if (previewMirrorMat.HasProperty("_BaseColor")) previewMirrorMat.SetColor("_BaseColor", Color.white);
             EditorUtility.SetDirty(previewMirrorMat);
 
-            CopyMaterialIfPresent("Assets/Materials/Shinobu/Shinobu_Shirt.mat", ShirtMatPath);
-            CopyMaterialIfPresent("Assets/Materials/Shinobu/Shinobu_Skirt.mat", SkirtMatPath);
-            CopyMaterialIfPresent("Assets/Materials/Shinobu/Shinobu_Panties.mat", PantiesMatPath);
+            ConfigureNormalMap(ShirtNormalPath);
+            ConfigureNormalMap(ShoeNormalPath);
+
+            Shader urpLit = Shader.Find("Universal Render Pipeline/Lit");
+            Shader clothShader = Shader.Find("lilToon") ?? urpLit;
+
+            Material shirtMat = LoadOrCreateMaterial(ShirtMatPath, clothShader);
+            Texture2D shirtAlbedo = AssetDatabase.LoadAssetAtPath<Texture2D>(ShirtAlbedoPath);
+            Texture2D shirtNormal = AssetDatabase.LoadAssetAtPath<Texture2D>(ShirtNormalPath);
+            if (shirtAlbedo != null)
+            {
+                if (shirtMat.HasProperty("_MainTex")) shirtMat.SetTexture("_MainTex", shirtAlbedo);
+                if (shirtMat.HasProperty("_BaseMap")) shirtMat.SetTexture("_BaseMap", shirtAlbedo);
+                if (shirtNormal != null && shirtMat.HasProperty("_BumpMap")) shirtMat.SetTexture("_BumpMap", shirtNormal);
+                EditorUtility.SetDirty(shirtMat);
+            }
+
+            LoadOrCreateMaterial(SkirtMatPath, clothShader);
+            LoadOrCreateMaterial(PantiesMatPath, clothShader);
+
+            Material shoeMat = LoadOrCreateMaterial(ShoeMatPath, clothShader);
+            Texture2D shoeAlbedo = AssetDatabase.LoadAssetAtPath<Texture2D>(ShoeAlbedoPath);
+            Texture2D shoeNormal = AssetDatabase.LoadAssetAtPath<Texture2D>(ShoeNormalPath);
+            Texture2D shoeMetallic = AssetDatabase.LoadAssetAtPath<Texture2D>(ShoeMetallicPath);
+            if (shoeAlbedo != null)
+            {
+                if (shoeMat.HasProperty("_MainTex")) shoeMat.SetTexture("_MainTex", shoeAlbedo);
+                if (shoeMat.HasProperty("_BaseMap")) shoeMat.SetTexture("_BaseMap", shoeAlbedo);
+            }
+            if (shoeNormal != null && shoeMat.HasProperty("_BumpMap")) shoeMat.SetTexture("_BumpMap", shoeNormal);
+            if (shoeMetallic != null && shoeMat.HasProperty("_MetallicGlossMap")) shoeMat.SetTexture("_MetallicGlossMap", shoeMetallic);
+            EditorUtility.SetDirty(shoeMat);
+        }
+
+        private static void ConfigureNormalMap(string path)
+        {
+            if (AssetImporter.GetAtPath(path) is TextureImporter ti && ti.textureType != TextureImporterType.NormalMap)
+            {
+                ti.textureType = TextureImporterType.NormalMap;
+                ti.SaveAndReimport();
+            }
         }
 
         private static void CopyMaterialIfPresent(string srcPath, string dstPath)
         {
+            if (AssetDatabase.LoadAssetAtPath<Material>(dstPath) != null) return;
             if (AssetDatabase.LoadAssetAtPath<Material>(srcPath) == null) return;
-            if (AssetDatabase.LoadAssetAtPath<Material>(dstPath) != null) AssetDatabase.DeleteAsset(dstPath);
             AssetDatabase.CopyAsset(srcPath, dstPath);
         }
 
@@ -434,7 +469,7 @@ namespace Viva.Dev
                 SkeletonBone[] srcSkel = desc.skeleton;
                 for (int i = 0; i < srcSkel.Length; i++)
                 {
-                    string key = i == 0 ? root.name : (srcSkel[i].name == "ShinobuArmature" ? "DollArmature" : srcSkel[i].name);
+                    string key = i == 0 ? root.name : srcSkel[i].name;
                     if (!srcBones.ContainsKey(key)) srcBones[key] = srcSkel[i];
                 }
 
@@ -484,6 +519,105 @@ namespace Viva.Dev
             {
                 Object.DestroyImmediate(tPoseRoot);
             }
+        }
+
+        private static void AttachFootwear(
+            GameObject root,
+            string assetPath,
+            Material material,
+            Dictionary<string, Transform> boneMap)
+        {
+            GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            if (asset == null)
+            {
+                Debug.LogWarning($"[DollPrefabBuilder] Footwear asset not found at {assetPath}");
+                return;
+            }
+
+            if (!boneMap.TryGetValue("foot_r", out Transform footR) || !boneMap.TryGetValue("foot_l", out Transform footL))
+            {
+                Debug.LogWarning($"[DollPrefabBuilder] Could not find foot_r/foot_l bones on {root.name} for footwear.");
+                return;
+            }
+
+            GameObject container = Object.Instantiate(asset);
+            container.name = asset.name;
+            if (container.transform.childCount >= 2)
+            {
+                Transform rightFootwear = container.transform.GetChild(0);
+                Transform leftFootwear = container.transform.GetChild(1);
+                rightFootwear.SetParent(footR, false);
+                leftFootwear.SetParent(footL, false);
+
+                if (material != null)
+                {
+                    if (rightFootwear.TryGetComponent<MeshRenderer>(out var rMr)) rMr.sharedMaterial = material;
+                    if (leftFootwear.TryGetComponent<MeshRenderer>(out var lMr)) lMr.sharedMaterial = material;
+                }
+            }
+            Object.DestroyImmediate(container);
+        }
+
+        private static void AttachAllSubMeshes(
+            GameObject root,
+            string assetPath,
+            Material[] materials,
+            Dictionary<string, Transform> boneMap,
+            Transform fallbackRootBone)
+        {
+            GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            if (asset == null)
+            {
+                Debug.LogWarning($"[DollPrefabBuilder] Asset not found at {assetPath}");
+                return;
+            }
+
+            GameObject subObj = Object.Instantiate(asset);
+            foreach (SkinnedMeshRenderer srcSMR in subObj.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {
+                if (srcSMR == null || srcSMR.sharedMesh == null) continue;
+
+                GameObject container = new GameObject(srcSMR.gameObject.name);
+                container.transform.SetParent(root.transform, false);
+                container.transform.localPosition = srcSMR.transform.localPosition;
+                container.transform.localRotation = srcSMR.transform.localRotation;
+                container.transform.localScale = srcSMR.transform.localScale;
+
+                SkinnedMeshRenderer newSMR = container.AddComponent<SkinnedMeshRenderer>();
+                newSMR.sharedMesh = srcSMR.sharedMesh;
+                newSMR.updateWhenOffscreen = true;
+
+                int submeshCount = srcSMR.sharedMesh.subMeshCount;
+                Material[] assignedMats = new Material[submeshCount];
+                for (int m = 0; m < submeshCount; m++)
+                {
+                    if (materials != null && m < materials.Length && materials[m] != null)
+                        assignedMats[m] = materials[m];
+                    else if (materials != null && materials.Length > 0 && materials[0] != null)
+                        assignedMats[m] = materials[0];
+                }
+                newSMR.sharedMaterials = assignedMats;
+
+                Transform[] oldBones = srcSMR.bones;
+                Transform[] remappedBones = new Transform[oldBones.Length];
+                for (int b = 0; b < oldBones.Length; b++)
+                {
+                    if (oldBones[b] != null && boneMap.TryGetValue(oldBones[b].name, out Transform mapped))
+                        remappedBones[b] = mapped;
+                    else
+                        remappedBones[b] = fallbackRootBone != null ? fallbackRootBone : root.transform;
+                }
+                newSMR.bones = remappedBones;
+
+                Transform targetRoot = fallbackRootBone;
+                if (srcSMR.rootBone != null && boneMap.TryGetValue(srcSMR.rootBone.name, out Transform mappedRoot))
+                {
+                    targetRoot = mappedRoot;
+                }
+                newSMR.rootBone = targetRoot != null ? targetRoot : root.transform;
+                newSMR.localBounds = srcSMR.sharedMesh.bounds;
+            }
+            Object.DestroyImmediate(subObj);
         }
 
         private static SkinnedMeshRenderer AttachSubMesh(
@@ -550,32 +684,6 @@ namespace Viva.Dev
 
             Object.DestroyImmediate(subObj);
             return newSMR;
-        }
-
-        private static GameObject AttachDefaultHair(GameObject root, Material matHair, Transform headBone)
-        {
-            GameObject hairAsset = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Models/loli/hair.fbx");
-            if (hairAsset == null) return null;
-
-            GameObject hairInstance = Object.Instantiate(hairAsset);
-            hairInstance.name = "hair";
-            hairInstance.transform.SetParent(root.transform, false);
-
-            Transform hairArmature = hairInstance.transform.Find("hairArmature");
-            if (hairArmature != null && headBone != null)
-            {
-                hairArmature.SetParent(headBone, true);
-            }
-
-            foreach (var smr in hairInstance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-            {
-                if (matHair != null) smr.sharedMaterial = matHair;
-                if (headBone != null) smr.rootBone = headBone;
-                smr.updateWhenOffscreen = true;
-                if (smr.sharedMesh != null) smr.localBounds = smr.sharedMesh.bounds;
-            }
-
-            return hairInstance;
         }
 
         private static void AttachSkirt(GameObject root, Material matSkirt, Dictionary<string, Transform> boneMap)
