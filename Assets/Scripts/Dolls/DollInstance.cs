@@ -273,7 +273,7 @@ namespace Viva.Dolls
 
         public void SetPreviewMode(bool preview)
         {
-            if (TryGetComponent<CompanionAI>(out var ai))
+            if (TryGetComponent<CharacterAI>(out var ai))
             {
                 ai.isPreviewMode = preview;
                 if (preview)
@@ -287,7 +287,7 @@ namespace Viva.Dolls
                 agent.enabled = !preview;
             }
 
-            if (TryGetComponent<CompanionPhysicalReaction>(out var phys))
+            if (TryGetComponent<CharacterPhysicalReaction>(out var phys))
             {
                 phys.enabled = !preview;
             }

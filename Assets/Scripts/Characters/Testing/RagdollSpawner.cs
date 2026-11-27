@@ -1,4 +1,4 @@
-﻿using FIMSpace.FProceduralAnimation;
+using FIMSpace.FProceduralAnimation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -152,11 +152,11 @@ public class RagdollSpawner : MonoBehaviour
         GameObject newChar = SpawnCharacter(prefabToUse);
 
         // Check if this is an advanced companion character with its own AI
-        if (newChar.TryGetComponent<CompanionAI>(out var companionAI))
+        if (newChar.TryGetComponent<CharacterAI>(out var CharacterAI))
         {
             if (playerFollowObject != null)
             {
-                companionAI.target = playerFollowObject;
+                CharacterAI.target = playerFollowObject;
             }
 
             if (selectorPrefab != null && !newChar.TryGetComponent<SpawnSelectorVisuals>(out _))

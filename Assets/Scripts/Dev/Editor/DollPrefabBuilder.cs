@@ -115,10 +115,10 @@ namespace Viva.Dev
             CharacterInteractable interactable = DollUtilities.EnsureComponent<CharacterInteractable>(instance);
             interactable.characterName = "Doll";
 
-            CompanionAI companionAI = DollUtilities.EnsureComponent<CompanionAI>(instance);
-            companionAI.stoppingDistance = 1.8f;
-            companionAI.walkSpeed = 1.5f;
-            companionAI.runSpeed = 3.2f;
+            CharacterAI CharacterAI = DollUtilities.EnsureComponent<CharacterAI>(instance);
+            CharacterAI.stoppingDistance = 1.8f;
+            CharacterAI.walkSpeed = 1.5f;
+            CharacterAI.runSpeed = 3.2f;
 
             Dictionary<string, Transform> boneMap = new Dictionary<string, Transform>();
             Transform rootBone = null;
@@ -140,8 +140,8 @@ namespace Viva.Dev
                 if (lower == "neck" && neckBone == null) neckBone = t;
             }
 
-            companionAI.headBone = headBone;
-            companionAI.neckBone = neckBone;
+            CharacterAI.headBone = headBone;
+            CharacterAI.neckBone = neckBone;
 
             Material matTorso = AssetDatabase.LoadAssetAtPath<Material>(TorsoMatPath);
             Material matLimbs = AssetDatabase.LoadAssetAtPath<Material>(LimbsMatPath);
@@ -177,7 +177,7 @@ namespace Viva.Dev
             headSMR.sharedMaterial = matHeadDefault;
             headSMR.rootBone = headBone;
             headSMR.updateWhenOffscreen = true;
-            companionAI.headSMR = headSMR;
+            CharacterAI.headSMR = headSMR;
 
             // 4. Default clothing (shirt, panties, skirt, shoes)
             AttachSubMesh(instance, "Assets/Models/clothes/prefabs/shirt 1.prefab", "shirt 1", new[] { matShirt }, boneMap, rootBone);
@@ -206,7 +206,7 @@ namespace Viva.Dev
             springManager.enableCollision = true;
 
             // 6. Physical Reaction & Ragdoll
-            CompanionPhysicalReaction physReaction = DollUtilities.EnsureComponent<CompanionPhysicalReaction>(instance);
+            CharacterPhysicalReaction physReaction = DollUtilities.EnsureComponent<CharacterPhysicalReaction>(instance);
             physReaction.EnsureRagdollBones();
 
             // Save Prefab

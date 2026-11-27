@@ -10,7 +10,7 @@ using Viva.Interaction;
 /// for Unity 6, URP, and the new interaction/movement system.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
-public class CompanionAI : MonoBehaviour
+public class CharacterAI : MonoBehaviour
 {
     public enum CompanionState
     {
@@ -145,9 +145,9 @@ public class CompanionAI : MonoBehaviour
         }
         if (interactable == null) interactable = GetComponent<CharacterInteractable>();
 
-        if (!TryGetComponent<CompanionPhysicalReaction>(out _))
+        if (!TryGetComponent<CharacterPhysicalReaction>(out _))
         {
-            gameObject.AddComponent<CompanionPhysicalReaction>();
+            gameObject.AddComponent<CharacterPhysicalReaction>();
         }
 
         CacheAnimatorParameters();
@@ -306,7 +306,7 @@ public class CompanionAI : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[CompanionAI] Could not find NavMesh within 15m of {transform.position}");
+            Debug.LogWarning($"[CharacterAI] Could not find NavMesh within 15m of {transform.position}");
             if (agent != null)
             {
                 agent.agentTypeID = 0;
@@ -781,7 +781,7 @@ public class CompanionAI : MonoBehaviour
 
     public void ReceiveCommand(string commandID)
     {
-        Debug.Log($"[CompanionAI] Received command: {commandID}");
+        Debug.Log($"[CharacterAI] Received command: {commandID}");
 
         switch (commandID)
         {
@@ -807,14 +807,14 @@ public class CompanionAI : MonoBehaviour
 
             case "Knockdown":
             case "Push":
-                if (TryGetComponent<CompanionPhysicalReaction>(out var physReact))
+                if (TryGetComponent<CharacterPhysicalReaction>(out var physReact))
                 {
                     physReact.TriggerKnockdown();
                 }
                 break;
 
             default:
-                Debug.LogWarning($"[CompanionAI] Unhandled command: {commandID}");
+                Debug.LogWarning($"[CharacterAI] Unhandled command: {commandID}");
                 break;
         }
     }

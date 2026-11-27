@@ -747,11 +747,11 @@ public class PauseMenu : MonoBehaviour
 
         Globals.isDesktopMode = false;
 
-        var companionAI = FindFirstObjectByType<CompanionAI>();
-        if (companionAI != null)
+        var CharacterAI = FindFirstObjectByType<CharacterAI>();
+        if (CharacterAI != null)
         {
-            companionAI.UpdateTargetReference();
-            companionAI.EnsureMeshRenderersActiveAndUpdated();
+            CharacterAI.UpdateTargetReference();
+            CharacterAI.EnsureMeshRenderersActiveAndUpdated();
         }
 
         if (PlayerManager.Instance != null)
@@ -894,11 +894,11 @@ public class PauseMenu : MonoBehaviour
 
         Globals.isDesktopMode = true;
 
-        var companionAI = FindFirstObjectByType<CompanionAI>();
-        if (companionAI != null)
+        var CharacterAI = FindFirstObjectByType<CharacterAI>();
+        if (CharacterAI != null)
         {
-            companionAI.UpdateTargetReference();
-            companionAI.EnsureMeshRenderersActiveAndUpdated();
+            CharacterAI.UpdateTargetReference();
+            CharacterAI.EnsureMeshRenderersActiveAndUpdated();
         }
         EnsureInputModuleActive();
         Globals.handleMovement = true;

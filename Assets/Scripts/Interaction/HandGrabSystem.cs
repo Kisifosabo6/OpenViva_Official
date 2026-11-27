@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// Physics-based hand grab system matching old OpenViva's OccupyState + RigidBodyBlend.
 /// Hands are REAL Rigidbodies that interact with the world physically.
 /// Items are grabbed via ConfigurableJoint (spring-driven) or FixedJoint.
-/// Blend system ramps massScale from 0→heldMassScale over blendDuration.
-/// Works for both Desktop and VR — the hand Rigidbody is ALWAYS required.
+/// Blend system ramps massScale from 0?heldMassScale over blendDuration.
+/// Works for both Desktop and VR � the hand Rigidbody is ALWAYS required.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class HandGrabSystem : MonoBehaviour
@@ -30,7 +30,7 @@ public class HandGrabSystem : MonoBehaviour
     public LayerMask grabLayerMask = ~0;
     public float grabRayDistance = 0.15f;
 
-    [Header("Grab Physics (old: spring=100000, damper=10, massScale ramps 0→10)")]
+    [Header("Grab Physics (old: spring=100000, damper=10, massScale ramps 0?10)")]
     [Tooltip("Grab blend duration in seconds (old: 0.6)")]
     public float blendDuration = 0.6f;
     [Tooltip("Release blend duration (old: 0.4)")]
@@ -158,7 +158,7 @@ public class HandGrabSystem : MonoBehaviour
     /// <summary>
     /// Move hand toward target by directly setting velocity each step.
     /// Unlike AddForce (which accumulates and oscillates), this converges cleanly.
-    /// Still respects physics — walls block movement, objects get pushed.
+    /// Still respects physics � walls block movement, objects get pushed.
     /// </summary>
     void ApplyHandPhysics()
     {
@@ -320,7 +320,7 @@ public class HandGrabSystem : MonoBehaviour
             item.GetHoldTransform(isLeftHand, out heldLocalPos, out heldLocalRot);
         }
 
-        // Start blend 0→1
+        // Start blend 0?1
         blendProgress = 0f;
         blendTarget = 1f;
         blendSpeed = 1f / Mathf.Max(blendDuration, 0.01f);
@@ -610,7 +610,7 @@ public class HandGrabSystem : MonoBehaviour
 
     #endregion
 
-    #region Blend (old: blendProgress 0→1 over 0.6s, massScale ramps)
+    #region Blend (old: blendProgress 0?1 over 0.6s, massScale ramps)
 
     void UpdateBlend()
     {
@@ -740,7 +740,7 @@ public class HandGrabSystem : MonoBehaviour
         }
 
         // Never make companions, dolls (e.g. Shinobu), or characters grabbable
-        if (target.GetComponentInParent<CompanionAI>() != null ||
+        if (target.GetComponentInParent<CharacterAI>() != null ||
             target.GetComponentInParent<CharacterInteractable>() != null)
         {
             return null;

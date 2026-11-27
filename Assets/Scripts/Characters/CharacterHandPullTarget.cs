@@ -4,14 +4,14 @@ using UnityEngine;
 /// Attached to companion hands to allow player hands (or debug controls)
 /// to hold and lead the companion by the hand.
 /// </summary>
-public class CompanionHandPullTarget : MonoBehaviour
+public class CharacterHandPullTarget : MonoBehaviour
 {
-    [SerializeField] private CompanionPhysicalReaction reaction;
+    [SerializeField] private CharacterPhysicalReaction reaction;
     [SerializeField] private bool isLeftHand;
 
     private Transform currentPullerTransform = null;
 
-    public void Initialize(CompanionPhysicalReaction physicalReaction, bool isLeft)
+    public void Initialize(CharacterPhysicalReaction physicalReaction, bool isLeft)
     {
         reaction = physicalReaction;
         isLeftHand = isLeft;

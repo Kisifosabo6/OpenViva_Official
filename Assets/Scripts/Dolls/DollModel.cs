@@ -458,7 +458,7 @@ namespace Viva.Dolls
             bodyArmature.position = cachedArmaturePos;
             bodyArmature.rotation = cachedArmatureRot;
 
-            // Re-bind animator and refresh CompanionAI + SpringBone physics
+            // Re-bind animator and refresh CharacterAI + SpringBone physics
             if (targetDoll.TryGetComponent<Animator>(out var animator))
             {
                 animator.Rebind();
@@ -473,7 +473,7 @@ namespace Viva.Dolls
                 interactable.characterName = string.IsNullOrEmpty(name) ? "Doll" : name;
             }
 
-            if (targetDoll.TryGetComponent<CompanionAI>(out var ai))
+            if (targetDoll.TryGetComponent<CharacterAI>(out var ai))
             {
                 ai.headSMR = destSMR;
                 ai.RefreshFaceSetup();

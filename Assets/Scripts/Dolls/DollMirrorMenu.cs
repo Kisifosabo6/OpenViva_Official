@@ -427,7 +427,7 @@ namespace Viva.Dolls
             {
                 spawnPos = selectedExisting.transform.position;
                 spawnRot = selectedExisting.transform.rotation;
-                if (selectedExisting.TryGetComponent<CompanionAI>(out var oldAi))
+                if (selectedExisting.TryGetComponent<CharacterAI>(out var oldAi))
                 {
                     preserveFollow = oldAi.isFollowing;
                     preserveTarget = oldAi.target;
@@ -464,7 +464,7 @@ namespace Viva.Dolls
                 yield break;
             }
 
-            if (newDollGo.TryGetComponent<CompanionAI>(out var ai))
+            if (newDollGo.TryGetComponent<CharacterAI>(out var ai))
             {
                 ai.isFollowing = preserveFollow;
                 ai.target = preserveTarget != null ? preserveTarget : (Camera.main != null ? Camera.main.transform : null);

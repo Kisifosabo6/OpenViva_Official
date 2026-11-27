@@ -49,9 +49,9 @@ public class CharacterInteractable : MonoBehaviour, IItemInteractable, IInteract
     {
         Debug.Log($"{gameObject.name} received command: {commandID}");
 
-        if (TryGetComponent<CompanionAI>(out var companionAI))
+        if (TryGetComponent<CharacterAI>(out var CharacterAI))
         {
-            companionAI.ReceiveCommand(commandID);
+            CharacterAI.ReceiveCommand(commandID);
             return;
         }
 

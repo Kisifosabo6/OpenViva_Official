@@ -9,7 +9,7 @@ using UnityEssentials.ActiveRagdoll;
 /// Handles character physical perturbations, responsive arm-pull leading with Two-Bone IK,
 /// dynamic ragdoll falls when overextended or yanked, and directional floor recovery (getting up) with synchronized multi-layer animations.
 /// </summary>
-public class CompanionPhysicalReaction : MonoBehaviour
+public class CharacterPhysicalReaction : MonoBehaviour
 {
     public enum PhysicalState
     {
@@ -25,7 +25,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
     public PhysicalState CurrentState => currentState;
 
     [Header("Core References")]
-    [SerializeField] private CompanionAI companionAI;
+    [SerializeField] private CharacterAI CharacterAI;
     [SerializeField] private Animator animator;
     [SerializeField] private NavMeshAgent agent;
 
@@ -100,7 +100,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
 
     private void Awake()
     {
-        if (companionAI == null) companionAI = GetComponent<CompanionAI>();
+        if (CharacterAI == null) CharacterAI = GetComponent<CharacterAI>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         if (slaveController == null) slaveController = GetComponentInChildren<SlaveController>();
@@ -137,12 +137,12 @@ public class CompanionPhysicalReaction : MonoBehaviour
     {
         if (leftHandBone != null)
         {
-            var target = GetOrAddComponent<CompanionHandPullTarget>(leftHandBone);
+            var target = GetOrAddComponent<CharacterHandPullTarget>(leftHandBone);
             target.Initialize(this, true);
         }
         if (rightHandBone != null)
         {
-            var target = GetOrAddComponent<CompanionHandPullTarget>(rightHandBone);
+            var target = GetOrAddComponent<CharacterHandPullTarget>(rightHandBone);
             target.Initialize(this, false);
         }
     }
@@ -218,7 +218,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
 
         if (hipsBone == null)
         {
-            Debug.LogWarning("[CompanionPhysicalReaction] Cannot ensure ragdoll bones: hipsBone not found!");
+            Debug.LogWarning("[CharacterPhysicalReaction] Cannot ensure ragdoll bones: hipsBone not found!");
             return;
         }
 
@@ -286,7 +286,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
         }
 
         SetRagdollKinematic(true);
-        Debug.Log("[CompanionPhysicalReaction] Ensured ragdoll bones initialized successfully.");
+        Debug.Log("[CharacterPhysicalReaction] Ensured ragdoll bones initialized successfully.");
     }
 
     private void SetupLimbChain(
@@ -476,7 +476,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
             ragdollJoints.Add(j);
         }
 
-        Debug.Log($"[CompanionPhysicalReaction] Cached {ragdollRigidbodies.Count} ragdoll rigidbodies (hipsRb={(hipsRigidbody != null ? hipsRigidbody.name : "null")}), {ragdollColliders.Count} colliders, {ragdollJoints.Count} joints.");
+        Debug.Log($"[CharacterPhysicalReaction] Cached {ragdollRigidbodies.Count} ragdoll rigidbodies (hipsRb={(hipsRigidbody != null ? hipsRigidbody.name : "null")}), {ragdollColliders.Count} colliders, {ragdollJoints.Count} joints.");
     }
 
     public void SetRagdollKinematic(bool kinematic)
@@ -577,7 +577,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
         }
 
         // 4. Player/Camera view ray (natural forward hand holding position)
-        Transform camT = (companionAI != null && companionAI.target != null) ? companionAI.target : (Camera.main != null ? Camera.main.transform : null);
+        Transform camT = (CharacterAI != null && CharacterAI.target != null) ? CharacterAI.target : (Camera.main != null ? Camera.main.transform : null);
         if (camT != null)
         {
             float sideOffset = pullingLeftHand ? -0.22f : 0.22f;
@@ -603,9 +603,9 @@ public class CompanionPhysicalReaction : MonoBehaviour
         smoothedPullVelocity = 0f;
         currentState = PhysicalState.Pulled;
 
-        if (companionAI != null)
+        if (CharacterAI != null)
         {
-            companionAI.SetState(CompanionAI.CompanionState.Pulled);
+            CharacterAI.SetState(CharacterAI.CompanionState.Pulled);
         }
     }
 
@@ -629,9 +629,9 @@ public class CompanionPhysicalReaction : MonoBehaviour
         if (currentState == PhysicalState.Pulled)
         {
             currentState = PhysicalState.Normal;
-            if (companionAI != null)
+            if (CharacterAI != null)
             {
-                companionAI.SetState(CompanionAI.CompanionState.Idle);
+                CharacterAI.SetState(CharacterAI.CompanionState.Idle);
             }
         }
     }
@@ -658,7 +658,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
         // If pulled too hard (displacement > 1.40m) or yanked violently (vel > 5.0 m/s), she loses balance and falls down!
         if (displacement > pullKnockdownThreshold || (instantVel > pullKnockdownVelocity && smoothedPullVelocity > 3.8f))
         {
-            Debug.Log($"[CompanionPhysicalReaction] Lost balance from excessive pull (disp={displacement:F2}m, vel={instantVel:F2}m/s) -> Falling to the ground!");
+            Debug.Log($"[CharacterPhysicalReaction] Lost balance from excessive pull (disp={displacement:F2}m, vel={instantVel:F2}m/s) -> Falling to the ground!");
             Vector3 stumbleImpulse = (activePullTarget - transform.position).normalized * 4.2f + Vector3.up * 1.0f;
             TriggerKnockdown(stumbleImpulse);
             return;
@@ -678,8 +678,8 @@ public class CompanionPhysicalReaction : MonoBehaviour
             // - Close (0.2m - 0.4m): gentle walk (1.6 m/s)
             // - Medium (0.4m - 0.75m): fast walk / jog (2.2 - 3.2 m/s)
             // - Extended (0.75m - 1.35m): run / sprint (3.5 - 4.5 m/s) to keep up with player!
-            float walkSpd = companionAI != null ? companionAI.walkSpeed : 1.5f;
-            float runSpd = companionAI != null ? companionAI.runSpeed : 3.2f;
+            float walkSpd = CharacterAI != null ? CharacterAI.walkSpeed : 1.5f;
+            float runSpd = CharacterAI != null ? CharacterAI.runSpeed : 3.2f;
             float targetSpeed = Mathf.Lerp(walkSpd * 1.1f, runSpd * 1.4f, Mathf.InverseLerp(0.30f, 0.95f, displacement));
 
             bool movedByAgent = false;
@@ -861,14 +861,14 @@ public class CompanionPhysicalReaction : MonoBehaviour
         currentState = PhysicalState.Falling;
         fallTimer = 0f;
 
-        if (companionAI != null)
+        if (CharacterAI != null)
         {
-            companionAI.SetState(CompanionAI.CompanionState.Falling);
+            CharacterAI.SetState(CharacterAI.CompanionState.Falling);
             // Play vocal reaction
-            if (companionAI.stopClips != null && companionAI.stopClips.Count > 0 && companionAI.voiceSource != null)
+            if (CharacterAI.stopClips != null && CharacterAI.stopClips.Count > 0 && CharacterAI.voiceSource != null)
             {
-                var clip = companionAI.stopClips[Random.Range(0, companionAI.stopClips.Count)];
-                companionAI.voiceSource.PlayOneShot(clip);
+                var clip = CharacterAI.stopClips[Random.Range(0, CharacterAI.stopClips.Count)];
+                CharacterAI.voiceSource.PlayOneShot(clip);
             }
         }
 
@@ -899,7 +899,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
             hitRb.AddForce(impulse, ForceMode.Impulse);
         }
 
-        Debug.Log($"[CompanionPhysicalReaction] Knockdown triggered with impulse {impulse}. Dynamic rigidbodies count: {ragdollRigidbodies.Count}");
+        Debug.Log($"[CharacterPhysicalReaction] Knockdown triggered with impulse {impulse}. Dynamic rigidbodies count: {ragdollRigidbodies.Count}");
     }
 
     private void CheckForFloorSettle()
@@ -907,14 +907,14 @@ public class CompanionPhysicalReaction : MonoBehaviour
         Rigidbody checkRb = hipsRigidbody != null ? hipsRigidbody : GetComponentInChildren<Rigidbody>();
         if (checkRb == null)
         {
-            Debug.LogWarning("[CompanionPhysicalReaction] CheckForFloorSettle: No hipsRigidbody found!");
+            Debug.LogWarning("[CharacterPhysicalReaction] CheckForFloorSettle: No hipsRigidbody found!");
             return;
         }
 
         float sqrVel = checkRb.linearVelocity.sqrMagnitude;
         if (sqrVel < settleVelocitySqrThreshold || fallTimer > maxFallTimeout)
         {
-            Debug.Log($"[CompanionPhysicalReaction] Ragdoll settled on floor (sqrVel={sqrVel:F3}, time={fallTimer:F2}s). Starting get-up sequence.");
+            Debug.Log($"[CharacterPhysicalReaction] Ragdoll settled on floor (sqrVel={sqrVel:F3}, time={fallTimer:F2}s). Starting get-up sequence.");
             currentState = PhysicalState.OnFloor;
             if (getUpCoroutine != null) StopCoroutine(getUpCoroutine);
             getUpCoroutine = StartCoroutine(GetUpSequenceRoutine());
@@ -951,7 +951,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
             faceDown = true;
         }
 
-        Debug.Log($"[CompanionPhysicalReaction] Settled on floor (chest.y={chestFacing.y:F2}). Selected get-up: {standUpAnimation}");
+        Debug.Log($"[CharacterPhysicalReaction] Settled on floor (chest.y={chestFacing.y:F2}). Selected get-up: {standUpAnimation}");
 
         // 2. Align root transform to physics hips position grounded on floor
         Vector3 hipsPos = refHips.position;
@@ -977,9 +977,9 @@ public class CompanionPhysicalReaction : MonoBehaviour
         if (animFollow != null) animFollow.isAlive = true;
 
         currentState = PhysicalState.GettingUp;
-        if (companionAI != null)
+        if (CharacterAI != null)
         {
-            companionAI.SetState(CompanionAI.CompanionState.GettingUp);
+            CharacterAI.SetState(CharacterAI.CompanionState.GettingUp);
         }
 
         // 4. Play stand-up animation across ALL main layers (legs, torso, face) simultaneously!
@@ -1018,16 +1018,16 @@ public class CompanionPhysicalReaction : MonoBehaviour
         }
 
         currentState = PhysicalState.Normal;
-        if (companionAI != null)
+        if (CharacterAI != null)
         {
-            companionAI.SetState(CompanionAI.CompanionState.Idle);
-            companionAI.isFollowing = true;
+            CharacterAI.SetState(CharacterAI.CompanionState.Idle);
+            CharacterAI.isFollowing = true;
         }
 
         // Smoothly restore standard layer weights
         yield return StartCoroutine(RestoreLayerWeightsRoutine(0.4f));
 
-        Debug.Log("[CompanionPhysicalReaction] Character successfully recovered and returned to normal locomotion.");
+        Debug.Log("[CharacterPhysicalReaction] Character successfully recovered and returned to normal locomotion.");
         getUpCoroutine = null;
     }
 
@@ -1085,10 +1085,10 @@ public class CompanionPhysicalReaction : MonoBehaviour
         }
 
         currentState = PhysicalState.Normal;
-        if (companionAI != null)
+        if (CharacterAI != null)
         {
-            companionAI.SetState(CompanionAI.CompanionState.Idle);
-            companionAI.isFollowing = true;
+            CharacterAI.SetState(CharacterAI.CompanionState.Idle);
+            CharacterAI.isFollowing = true;
         }
     }
 
@@ -1117,7 +1117,7 @@ public class CompanionPhysicalReaction : MonoBehaviour
                 useLeftHand = distLeft < distRight;
             }
             BeginPull(useLeftHand, pullTarget);
-            Debug.Log($"[CompanionPhysicalReaction] P active: Leading Shinobu ({ (useLeftHand ? "left" : "right") } hand) towards player at {pullTarget}");
+            Debug.Log($"[CharacterPhysicalReaction] P active: Leading Shinobu ({ (useLeftHand ? "left" : "right") } hand) towards player at {pullTarget}");
         }
         else if (pHeld && isPullActive)
         {
@@ -1127,20 +1127,20 @@ public class CompanionPhysicalReaction : MonoBehaviour
         else if (pUp && isPullActive)
         {
             EndPull();
-            Debug.Log("[CompanionPhysicalReaction] P released: Released pull towards main character.");
+            Debug.Log("[CharacterPhysicalReaction] P released: Released pull towards main character.");
         }
 
         // 'K' key: Knockdown
         if (kDown)
         {
-            Debug.Log("[CompanionPhysicalReaction] K pressed: Knocking down Shinobu into dynamic ragdoll.");
+            Debug.Log("[CharacterPhysicalReaction] K pressed: Knocking down Shinobu into dynamic ragdoll.");
             TriggerKnockdown();
         }
 
         // 'R' key: Reset
         if (rDown)
         {
-            Debug.Log("[CompanionPhysicalReaction] R pressed: Resetting Shinobu to standing pose.");
+            Debug.Log("[CharacterPhysicalReaction] R pressed: Resetting Shinobu to standing pose.");
             ResetToStanding();
         }
     }
